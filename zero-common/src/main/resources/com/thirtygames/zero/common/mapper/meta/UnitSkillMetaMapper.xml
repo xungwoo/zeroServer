@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.UnitSkillMetaMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.meta.UnitSkill" keyColumn="skillType">
+        insert into UnitSkill (skillType, level, mpCost, upgradeCost, lifeTime, skillCoolTime, spellScaler, attackScaler, param1, param2, param3, levelMax)
+        values (#{skillType}, #{level}, #{mpCost}, #{upgradeCost}, #{lifeTime}, #{skillCoolTime}, #{spellScaler}, #{attackScaler}, #{param1}, #{param2}, #{param3}, #{levelMax}) 
+        on duplicate key update
+        	skillType = #{skillType}, 
+        	level = #{level}, 
+        	mpCost = #{mpCost}, 
+        	upgradeCost = #{upgradeCost}, 
+        	lifeTime = #{lifeTime}, 
+        	skillCoolTime = #{skillCoolTime},
+        	spellScaler = #{spellScaler}, 
+        	attackScaler = #{attackScaler}, 
+        	param1 = #{param1}, 
+        	param2 = #{param2}, 
+			param3 = #{param3},
+			levelMax = #{levelMax}
+    </insert>
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.meta.UnitSkill">
+		select
+			skillType, level, mpCost, upgradeCost, lifeTime, skillCoolTime, spellScaler, attackScaler, param1, param2, param3, levelMax, modYmdt, modId 
+		from UnitSkill
+	</select>
+	
+	<select id="search" parameterType="com.thirtygames.zero.common.model.meta.UnitSkill" resultType="com.thirtygames.zero.common.model.meta.UnitSkill">
+		select
+			skillType, level, mpCost, upgradeCost, lifeTime, skillCoolTime, spellScaler, attackScaler, param1, param2, param3, levelMax, modYmdt, modId 
+		from UnitSkill
+		where 1=1
+		<if test="model.skillType != null">and skillType = #{model.skillType}</if>
+		order by level asc
+	</select>
+
+</mapper>

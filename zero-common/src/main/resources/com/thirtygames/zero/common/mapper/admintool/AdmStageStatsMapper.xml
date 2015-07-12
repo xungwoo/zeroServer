@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmStageStatsMapper">
+
+    <select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminStageStats">
+		SELECT 
+			stageKey, substring_index(stageKey, '_', 1) as chapter, substring_index(stageKey, '_', -1) as stage,
+			clearMode, AVG(playTime) as playTimeAvg, AVG(gainGold) as gainGoldAvg, AVG(isWin) as winAvg, COUNT(*) as playCount 
+		FROM StageLog
+		WHERE clearMode IS NOT null
+		and stageKey not like '300%'
+		and logYmdt &gt;= DATE_ADD(NOW( ) , INTERVAL -7 DAY) 
+		<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	<choose>
+	           		<when test="rule.field == 'chapter'">and stageKey like concat(#{rule.data}, '%')</when>
+	           		<otherwise>
+	           			and ${rule.field}
+			           	<choose>
+			           		<when test="rule.op == 'eq'"> = </when>
+			           		<when test="rule.op == 'le'"> &lt;= </when>
+			           		<when test="rule.op == 'ge'"> &gt;= </when>
+			           	</choose> 
+			           	#{rule.data}	           		
+	           		</otherwise>
+	           	</choose>
+	       	</foreach>
+       	</if>
+		GROUP BY clearMode, stageKey
+		<choose>
+			<when test="sidx != '' and sord != ''">
+				order by ${sidx} ${sord}
+			</when>
+			<otherwise>
+				ORDER BY clearMode ASC, stageKey ASC
+			</otherwise>
+		</choose>
+    </select>
+    
+    
+    <select id="size" resultType="int">
+    	select count(1) from (
+	        select count(1) from StageLog
+			WHERE clearMode IS NOT null
+			and stageKey not like '300%'
+			and logYmdt &gt;= DATE_ADD(NOW( ) , INTERVAL -7 DAY) 
+			<if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	<choose>
+		           		<when test="rule.field == 'chapter'">and stageKey like concat(#{rule.data}, '%')</when>
+		           		<otherwise>
+		           			and ${rule.field}
+				           	<choose>
+				           		<when test="rule.op == 'eq'"> = </when>
+				           		<when test="rule.op == 'le'"> &lt;= </when>
+				           		<when test="rule.op == 'ge'"> &gt;= </when>
+				           	</choose> 
+				           	#{rule.data}	           		
+		           		</otherwise>
+		           	</choose>
+		       	</foreach>
+	       	</if>			
+			GROUP BY clearMode, stageKey
+		) as x     
+    </select>    
+</mapper>

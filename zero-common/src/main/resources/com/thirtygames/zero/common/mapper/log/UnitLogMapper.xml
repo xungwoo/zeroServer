@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.log.UnitLogMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.log.UnitLog">
+        insert into UnitLog (unitId, unitType, accountId, status, prevLevel, prevSkill0Lv, prevSkill1Lv, prevSkill2Lv, prevSkill3Lv, resultLevel)
+        values (#{unitId}, #{unitType}, #{accountId}, #{status}, #{prevLevel}, #{prevSkill0Lv}, #{prevSkill1Lv}, #{prevSkill2Lv}, #{prevSkill3Lv}, #{resultLevel}) 
+    </insert>
+
+</mapper>

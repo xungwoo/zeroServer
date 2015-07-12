@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.ShopItemMetaMapper">
+
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.meta.ShopItem" keyColumn="itemKey">
+		INSERT INTO ShopItem(itemKey, productId, itemId, itemCategory, itemType, repeatType, addRewardType1, addReward1, addRewardType2, addReward2, addRewardType3, addReward3, addRewardType4, addReward4,itemImageName, itemQuantity, buyType, price, sort) 
+		VALUES (#{itemKey}, #{productId}, #{itemId}, #{itemCategory}, #{itemType}, #{repeatType}, #{addRewardType1}, #{addReward1}, #{addRewardType2}, #{addReward2}, #{addRewardType3}, #{addReward3}, #{addRewardType4}, #{addReward4}, #{itemImageName}, #{itemQuantity}, #{buyType}, #{price}, #{sort})
+        on duplicate key update
+        	itemKey = #{itemKey}, 
+        	productId = #{productId}, 
+        	itemId = #{itemId}, 
+        	itemCategory = #{itemCategory}, 
+        	itemType = #{itemType}, 
+        	addRewardType1 = #{addRewardType1}, 
+        	addReward1 = #{addReward1}, 
+        	addRewardType2 = #{addRewardType2}, 
+        	addReward2 = #{addReward2}, 
+        	addRewardType3 = #{addRewardType3}, 
+        	addReward3 = #{addReward3}, 
+        	addRewardType4 = #{addRewardType4}, 
+        	addReward4 = #{addReward4}, 
+        	itemImageName = #{itemImageName},
+        	itemQuantity = #{itemQuantity}, 
+        	buyType = #{buyType}, 
+        	price = #{price}, 
+        	sort = #{sort} 
+	</insert>
+
+
+    <select id="get" resultType="com.thirtygames.zero.common.model.meta.ShopItem">
+    	select
+    		itemKey, productId, itemId, itemCategory, itemType, repeatType,
+    		addRewardType1, addReward1, addRewardType2, addReward2, addRewardType3, addReward3, addRewardType4, addReward4, 
+    		itemImageName, itemQuantity, itemQuantityBonus, bonusText, buyType, price, sort, isDel, modYmdt, modId 
+    	from ShopItem 
+    	where itemKey = #{id} 
+    	and isDel = 0
+    </select>
+
+    <select id="getByItemId" resultType="com.thirtygames.zero.common.model.meta.ShopItem">
+    	select
+    		itemKey, productId, itemId, itemCategory, itemType, repeatType,
+    		addRewardType1, addReward1, addRewardType2, addReward2, addRewardType3, addReward3, addRewardType4, addReward4, 
+    		itemImageName, itemQuantity, itemQuantityBonus, bonusText, buyType, price, sort, isDel, modYmdt, modId 
+    	from ShopItem 
+    	where itemId = #{itemId} 
+    	and isDel = 0
+    </select>
+        
+    <select id="search" resultType="com.thirtygames.zero.common.model.meta.ShopItem">
+    	select 
+    		s.itemKey, s.productId, s.itemId, s.itemCategory, s.itemType, s.repeatType,
+    		s.addRewardType1, s.addReward1, s.addRewardType2, s.addReward2, s.addRewardType3, s.addReward3, s.addRewardType4, s.addReward4, 
+    		s.itemImageName, s.itemQuantity, s.itemQuantityBonus, s.bonusText, s.buyType, s.price, s.sort, s.isDel, s.modYmdt, s.modId,
+		 	<choose>
+				<when test="model.lang == 'ko'">n.itemName_ko</when>
+				<when test="model.lang == 'en'">n.itemName_en</when>				
+				<otherwise>n.itemName_en</otherwise>
+			</choose> as itemName, 
+		 	<choose>
+				<when test="model.lang == 'ko'">n.itemDesc_ko</when>
+				<when test="model.lang == 'en'">n.itemDesc_en</when>				
+				<otherwise>n.itemDesc_en</otherwise>
+			</choose> as itemDesc    		 
+    	from ShopItem s, ShopItemName n 
+    	where s.itemKey = n.itemKey 
+    	and s.isDel = 0
+		order by s.sort asc, s.itemKey desc
+    </select>
+</mapper>

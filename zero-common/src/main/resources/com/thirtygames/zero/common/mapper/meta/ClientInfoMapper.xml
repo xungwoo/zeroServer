@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.ClientInfoMapper">
+
+	<select id="search" resultType="com.thirtygames.zero.common.model.meta.ClientInfo">
+		select
+			clientKey, clientVersion, clientPlatform, clientHash, isValid, modYmdt, modId 
+		from ClientInfo
+		where clientVersion = #{model.clientVersion}
+		and clientPlatform = #{model.clientPlatform}
+		<if test="model.clientHash != null and model.clientHash != 'FANTASTIC30GAMES'">and clientHash = #{model.clientHash}</if>
+		and isValid = 1
+	</select>
+	
+</mapper>

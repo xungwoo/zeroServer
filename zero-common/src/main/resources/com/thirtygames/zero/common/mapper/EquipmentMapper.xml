@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.EquipmentMapper">
+
+	<resultMap id="equipmentResult" type="com.thirtygames.zero.common.model.equipment.Equipment">
+	  <id property="equipmentId" column="equipmentId"/>	  
+	  <result property="accountId" column="accountId"/>	  
+	  <result property="unitId" column="unitId"/>	  
+	  <result property="equipmentType" column="equipmentType"/>	  
+	  <result property="category" column="category"/>
+	  <result property="subCategory" column="subCategory"/>
+	  <result property="decoration1" column="decoration1"/>
+	  <result property="decoration2" column="decoration2"/>
+	  <result property="equipPosition" column="equipPosition"/>
+	  <result property="eqClass" column="eqClass"/>
+	  <result property="grade" column="grade"/>
+	  <result property="level" column="level"/>
+	  <result property="exp" column="exp"/>
+	  <result property="totalExp" column="totalExp"/>
+	  <result property="count" column="count"/>
+	  <result property="openSockets" column="openSockets"/>
+	  <result property="maxSockets" column="maxSockets"/>
+	  <result property="socket1" column="socket1"/>
+	  <result property="socket2" column="socket2"/>
+	  <result property="socket3" column="socket3"/>
+	  <result property="image" column="image"/>
+	  <result property="genYmdt" column="genYmdt"/>
+	  <collection property="stats" ofType="com.thirtygames.zero.common.model.equipment.EquipmentStat" resultMap="equipmentStatResult"/>
+	</resultMap>    
+
+	<resultMap id="equipmentStatResult" type="com.thirtygames.zero.common.model.equipment.EquipmentStat">
+		<id property="statKey" column="statKey"/>
+		<result property="type" column="type"/>
+		<result property="min" column="min"/>
+		<result property="max" column="max"/>
+		<result property="statRate" column="statRate"/>
+		<result property="duration" column="duration"/>
+		<result property="baseStat" column="baseStat"/>
+		<result property="setStat" column="setStat"/>
+		<result property="onlyFor" column="onlyFor"/>
+		<result property="gemStatType" column="gemStatType"/>
+	</resultMap>   
+
+	<!-- 수정금지!! order by es.baseStat desc, es.setStat asc, es.type asc -->
+	<select id="get" resultMap="equipmentResult" parameterType="string">
+		select
+		 	e.equipmentKey, e.equipmentId, e.equipmentType, e.category, e.subCategory, e.decoration1, e.decoration2, e.accountId, e.unitId, e.equipPosition, e.eqClass, e.grade, e.level, e.exp, e.totalExp, e.count, e.openSockets, e.maxSockets, e.socket1, e.socket2, e.socket3, unix_timestamp(e.genYmdt) as genYmdt, e.modYmdt, e.isDel, 
+		 	es.statKey, es.equipmentId, es.accountId, es.type, es.min, es.max, es.statRate, es.duration, es.minRandom, es.maxRandom, es.rateRandom, es.durRandom, es.baseStat, es.setStat, es.onlyFor, es.gemStatType, es.modYmdt, es.isDel
+		from Equipment e, EquipmentStat es
+		where e.equipmentId = #{id}
+		and e.isDel = 0
+		and e.equipmentId = es.equipmentId
+		order by es.baseStat desc, es.setStat asc, es.type asc
+	</select>
+
+	<select id="search" resultType="com.thirtygames.zero.common.model.equipment.Equipment" parameterType="com.thirtygames.zero.common.model.equipment.Equipment">
+		select 
+			equipmentId, equipmentType, category, subCategory, decoration1, decoration2, accountId, unitId, equipPosition, eqClass, grade, level, exp, totalExp, count,
+			openSockets, maxSockets, socket1, socket2, socket3, unix_timestamp(genYmdt) as genYmdt
+		from Equipment
+		<trim prefix="where" prefixOverrides="and ">
+			<if test="model.accountId != null">and accountId = #{model.accountId}</if>
+			<if test="model.equipmentId != null">and equipmentId = #{model.equipmentId}</if>
+			<if test="model.unitId != null">and unitId = #{model.unitId}</if>
+			<if test="model.equipPosition != null">and equipPosition = #{model.equipPosition}</if>
+			and isDel = 0
+			ORDER BY equipmentId asc
+		</trim>
+	</select>
+
+	<select id="getEquipList" resultType="com.thirtygames.zero.common.model.equipment.Equipment" parameterType="string">
+		select 
+			equipmentId as eqId, equipmentId, equipmentType, category, subCategory, decoration1, decoration2, accountId, unitId, equipPosition, eqClass, grade, level, exp, totalExp, count,
+			openSockets, maxSockets, socket1, socket2, socket3, unix_timestamp(genYmdt) as genYmdt
+		from Equipment
+		<trim prefix="where" prefixOverrides="and ">
+			and accountId = #{accountId}
+			and isDel = 0
+			ORDER BY equipmentId asc
+		</trim>
+	</select>
+
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.equipment.Equipment">
+		insert into Equipment (equipmentId, equipmentType, category, subCategory, decoration1, decoration2, accountId, unitId, equipPosition, eqClass, grade, level, count,
+			openSockets, maxSockets, socket1, socket2, socket3, genYmdt)
+		values (#{equipmentId}, #{equipmentType}, #{category}, #{subCategory}, #{decoration1}, #{decoration2}, #{accountId}, #{unitId}, #{equipPosition}, #{eqClass}, #{grade}, #{level}, #{count},
+			#{openSockets}, #{maxSockets}, #{socket1}, #{socket2}, #{socket3}, now())
+	</insert>
+
+	<update id="update" parameterType="com.thirtygames.zero.common.model.equipment.Equipment">
+		update Equipment
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="unitId != null">unitId = #{unitId},</if>
+			<if test="equipPosition != null">equipPosition = #{equipPosition},</if>
+			<if test="grade != null">grade = #{grade},</if>
+			<if test="level != null">level = #{level},</if>
+			<if test="exp != null">exp = #{exp},</if>
+			<if test="totalExp != null">totalExp = #{totalExp},</if>
+			<if test="count != null">count = #{count},</if>
+			<if test="openSockets != null">openSockets = #{openSockets},</if>
+		</trim>
+		where equipmentId = #{equipmentId}
+	</update>
+	
+	<update id="delete" parameterType="string">
+		update Equipment e, EquipmentStat es
+			set e.isDel = 1, es.isDel = 1
+		where e.equipmentId = es.equipmentId
+		and e.equipmentId = #{id}
+	</update>	
+	
+	<update id="deleteStat" parameterType="string">
+		update EquipmentStat
+		set isDel = 1
+		where equipmentId = #{id}
+	</update>	
+	
+	<update id="updateStat" parameterType="com.thirtygames.zero.common.model.equipment.EquipmentStat">
+		update EquipmentStat
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="min != null">min = #{min},</if>
+			<if test="max != null">max = #{max},</if>
+			<if test="statRate != null">statRate = #{statRate},</if>
+			<if test="duration != null">duration = #{duration},</if>
+		</trim>
+		where equipmentId = #{equipmentId}
+		and type = #{type}
+	</update>	
+
+	<insert id="saveStat" parameterType="com.thirtygames.zero.common.model.equipment.EquipmentStat">
+		insert into EquipmentStat (accountId, equipmentId, type, min, max, statRate, duration, minRandom, maxRandom, rateRandom, durRandom, baseStat, setStat, onlyFor, gemStatType)
+		values (#{accountId}, #{equipmentId}, #{type}, #{min}, #{max}, #{statRate}, #{duration}, #{minRandom}, #{maxRandom}, #{rateRandom}, #{durRandom}, #{baseStat}, #{setStat}, #{onlyFor}, #{gemStatType})
+	</insert>	
+	
+	<!-- 수정금지!! order by equipmentId asc, baseStat desc, setStat asc, type asc -->
+	<select id="getStatList" parameterType="string" resultType="com.thirtygames.zero.common.model.equipment.EquipmentStat">
+	/* getStatList */
+		select 
+			es.statKey, es.equipmentId, es.accountId, es.type, es.min, es.max, es.statRate, es.duration, es.minRandom, es.maxRandom, es.rateRandom, es.durRandom, es.baseStat, es.setStat, es.onlyFor, es.gemStatType, es.modYmdt, es.isDel 
+		from EquipmentStat es, Equipment e
+		where es.equipmentId = e.equipmentId
+		and e.accountId = #{accountId}
+		and es.isDel = 0
+		and e.isDel = 0
+		order by es.equipmentId asc, es.baseStat desc, es.setStat asc, es.type asc
+	</select>
+	
+	<select id="getUseEquipments" resultType="com.thirtygames.zero.common.model.equipment.Equipment">
+		select
+			equipmentKey, equipmentId, equipmentType, category, subCategory, decoration1, decoration2, accountId, unitId, equipPosition, eqClass, grade, level, exp, totalExp, count, openSockets, maxSockets, socket1, socket2, socket3, genYmdt, modYmdt, isDel 
+		from Equipment
+		where isDel = 0
+		and equipmentId in
+	        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+	            #{item}
+	        </foreach>			
+	</select>
+
+
+	<update id="gemInstall">
+		update Equipment
+		<trim prefix="SET" suffixOverrides=",">
+			<choose>
+				<when test="socketNo == 1">socket1 = #{gemId}</when>
+				<when test="socketNo == 2">socket2 = #{gemId}</when>
+				<when test="socketNo == 3">socket3 = #{gemId}</when>
+			</choose>
+		</trim>
+		where equipmentId = #{equipmentId}
+	</update>
+
+	<update id="gemClear">
+		update Equipment
+		<trim prefix="SET" suffixOverrides=",">
+			<choose>
+				<when test="socketNo == 1">socket1 = null</when>
+				<when test="socketNo == 2">socket2 = null</when>
+				<when test="socketNo == 3">socket3 = null</when>
+			</choose>
+		</trim>
+		where equipmentId = #{equipmentId}
+	</update>
+	
+	<update id="clearSocketByGemId" parameterType="string">
+		update Equipment equip, Equipment gem 
+		set 
+			equip.socket1 = case when equip.socket1 = gem.equipmentId then null else equip.socket1 end,
+			equip.socket2 = case when equip.socket2 = gem.equipmentId then null else equip.socket2 end,
+			equip.socket3 = case when equip.socket3 = gem.equipmentId then null else equip.socket3 end
+		where (equip.socket1 = gem.equipmentId or equip.socket2 = gem.equipmentId or equip.socket3 = gem.equipmentId)
+		and gem.equipmentId = #{gemId}
+	</update>	
+	
+	<select id="checkInstalledGem" resultType="int">
+		SELECT IF( MAX( equipmentId ) is NULL , 0, 1 ) FROM Equipment 
+		where isDel = 0
+		and (socket1 = #{gemId} or socket2 = #{gemId} or socket3 = #{gemId})
+	</select>	
+	
+	<select id="getInstalledGem" parameterType="string" resultMap="equipmentResult">
+		select
+		 	e.equipmentKey, e.equipmentId, e.equipmentType, e.category, e.subCategory, e.decoration1, e.decoration2, e.accountId, e.unitId, e.equipPosition, e.eqClass, e.grade, e.level, e.exp, e.totalExp, e.count, e.openSockets, e.maxSockets, e.socket1, e.socket2, e.socket3, e.genYmdt, e.modYmdt, e.isDel, 
+		 	es.statKey, es.equipmentId, es.accountId, es.type, es.min, es.max, es.statRate, es.duration, es.minRandom, es.maxRandom, es.rateRandom, es.durRandom, es.baseStat, es.setStat, es.onlyFor, es.gemStatType, es.modYmdt, es.isDel
+		from Equipment e, EquipmentStat es
+		where e.equipmentId = #{equipmentId}
+		and e.isDel = 0
+		and e.equipmentId = es.equipmentId
+		order by es.baseStat desc, es.setStat asc, es.type asc
+	</select>	
+</mapper>

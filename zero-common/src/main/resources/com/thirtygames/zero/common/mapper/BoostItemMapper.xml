@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.BoostItemMapper">
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.BoostItem" keyColumn="accountId">
+        insert into BoostItem (accountId, boostType, startYmdt, endYmdt)
+        values (#{accountId}, #{boostType}, unix_timestamp(), unix_timestamp() + #{durationTime} * 60 * 60) 
+        on duplicate key update
+        	accountId = #{accountId},
+        	boostType = #{boostType},
+        	startYmdt = unix_timestamp(), 
+        	endYmdt = unix_timestamp() + #{durationTime} * 60 * 60
+    </insert>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.BoostItem">
+    	update BoostItem
+	    	<trim prefix="set" suffixOverrides=",">
+	    		accountId = #{accountId},
+	    		<if test="endYmdt != null">endYmdt = endYmdt + (#{durationTime} * 60 * 60),</if>
+	    		<if test="duplicationCount != null">duplicationCount = #{duplicationCount},</if>
+	    	</trim>
+    	where accountId = #{accountId}
+    	and boostType = #{boostType}
+    </update>
+    
+    <select id="getByBoostType" parameterType="String" resultType="com.thirtygames.zero.common.model.BoostItem">
+        select
+        	itemKey, accountId, boostType, startYmdt, endYmdt, duplicationCount, buyYmdt 
+        from BoostItem 
+        where accountId = #{accountId}
+        and endYmdt &gt; unix_timestamp()
+        and boostType = #{boostType}
+    </select>
+    
+    <select id="search" resultType="com.thirtygames.zero.common.model.BoostItem">
+        select
+        	itemKey, accountId, boostType, startYmdt, endYmdt, duplicationCount, buyYmdt 
+        from BoostItem 
+        where accountId = #{model.accountId}
+        and endYmdt &gt; unix_timestamp()
+    </select>    
+</mapper>

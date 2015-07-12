@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmDeckMapper">
+	<insert id="create">
+		CREATE TABLE IF NOT EXISTS Deck (
+			deckKey int(10) unsigned NOT NULL AUTO_INCREMENT,
+			accountId char(36) COLLATE utf8_unicode_ci NOT NULL,
+			teamId tinyint(3) unsigned NOT NULL,
+			positionId tinyint(3) unsigned NOT NULL,
+			unitId char(36) COLLATE utf8_unicode_ci NOT NULL,
+			PRIMARY KEY (deckKey),
+			KEY indexAccountId (accountId)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+	</insert>
+
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.Deck" keyProperty="deckKey" keyColumn="deckKey">
+		INSERT INTO Deck (accountId, teamId, positionId, unitId)
+		values (#{accountId}, #{teamId}, #{positionId}, #{unitId})
+		on duplicate key update
+			accountId = #{accountId},
+			teamId = #{teamId},
+			positionId = #{positionId},
+			unitId = #{unitId}
+	</insert>
+	
+	<update id="update" parameterType="com.thirtygames.zero.common.model.Deck">
+		update Deck
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="unitId != null">unitId = #{unitId}</if>
+		</trim>
+		where accountId = #{accountId}
+		and teamId = #{teamId}
+		and positionId = #{positionId}
+	</update>
+	
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.admintool.DeckGrid">
+		select 
+			d.*, u.unitType, u.level, from_unixtime(if(u.limitExceedEndYmdt=0, null, u.limitExceedEndYmdt)) as limitExceedEndYmdt, u.skill0Lv, u.skill1Lv, u.skill2Lv, u.skill3Lv 
+		from Deck d, Unit u
+		where d.unitId = u.unitId
+       	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	<choose>
+					<when test="model.groupOp == 'AND'">and </when>
+					<otherwise>or </otherwise>
+				</choose>
+				<if test="rule.field != 'accountId'">u.</if><if test="rule.field == 'accountId'">d.</if>${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+       	</if>
+        <if test="model.accountId != null">and d.accountId = #{model.accountId}</if>
+        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+	</select>
+	
+	<select id="excel" parameterType="map" resultType="com.thirtygames.zero.common.model.admintool.DeckGrid">
+		select 
+			d.*, u.unitType, u.level, from_unixtime(if(u.limitExceedEndYmdt=0, null, u.limitExceedEndYmdt)) as limitExceedEndYmdt, u.skill0Lv, u.skill1Lv, u.skill2Lv, u.skill3Lv 
+		from Deck d, Unit u
+		where d.unitId = u.unitId
+        	<if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	<choose>
+						<when test="model.groupOp == 'AND'">and </when>
+						<otherwise>or </otherwise>
+					</choose>
+					<if test="rule.field != 'accountId'">u.</if><if test="rule.field == 'accountId'">d.</if>${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	        <if test="model.accountId != null">and accountId = #{model.accountId}</if>
+	</select>
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.DeckGrid">
+        select * from Deck limit #{from}, #{length}
+    </select>
+
+	<select id="size" resultType="int">
+        select count(*) from Deck d, Unit u
+		where d.unitId = u.unitId
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	<choose>
+						<when test="model.groupOp == 'AND'">and </when>
+						<otherwise>or </otherwise>
+					</choose>
+					<if test="rule.field != 'accountId'">u.</if><if test="rule.field == 'accountId'">d.</if>${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+    </select>
+</mapper>

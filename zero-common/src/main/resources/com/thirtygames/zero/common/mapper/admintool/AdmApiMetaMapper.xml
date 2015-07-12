@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmApiMetaMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminApiMeta" keyColumn="metaKey">
+		insert into ApiMeta (name, value, longValue, floatValue, description)
+		values (#{name}, #{value}, #{longValue}, #{floatValue}, #{description})
+		on duplicate key update
+			name = #{name},
+			value = #{value},
+			longValue = #{longValue},
+			floatValue = #{floatValue},
+			description = #{description}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.admintool.AdminApiMeta">
+		delete from ApiMeta
+		where metaKey = #{id}
+    </delete>
+
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminApiMeta">
+		update ApiMeta
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="name != null">name = #{name},</if>  
+        	<if test="value != null">value = #{value},</if>
+        	<if test="longValue != null">longValue = #{longValue},</if>  
+        	<if test="floatValue != null">floatValue = #{floatValue},</if>  
+        	<if test="description != null">description = #{description},</if>  
+		</trim>
+		where metaKey = #{metaKey}
+	</update>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminApiMeta" parameterType="map">
+    	select
+       		metaKey, name, value, longValue, floatValue, description, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from ApiMeta 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='name'">order by name ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminApiMeta" parameterType="map">
+    	select
+       		metaKey, name, value, longValue, floatValue, description, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from ApiMeta 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminApiMeta">
+        select 
+        	metaKey, name, value, longValue, floatValue, description, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from ApiMeta 
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminApiMeta">
+        select count(*) from ApiMeta
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

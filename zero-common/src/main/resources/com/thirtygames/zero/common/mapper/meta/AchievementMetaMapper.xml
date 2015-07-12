@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.AchievementMetaMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.Achievement" keyColumn="achievementId">
+        insert into AchievementMeta (achievementId, step, missionType, title, description, param1, param2, param3, goal, rewardType, reward)
+        values (#{achievementId}, #{step}, #{missionType}, #{title}, #{description}, #{param1}, #{param2}, #{param3}, #{goal}, #{rewardType}, #{reward}) 
+        on duplicate key update
+        	step = #{step},
+        	missionType = #{missionType}, 
+        	title = #{title}, 
+        	description = #{description},
+        	param1 = #{param1}, 
+        	param2 = #{param2}, 
+			param3 = #{param3},
+			goal = #{goal}
+			rewardType = #{rewardType}
+			reward = #{reward}
+    </insert>
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.Achievement">
+		select 
+			achvMetaKey, achievementId, step, isLastStep, missionType, param1, param2, param3, goal, rewardType, reward, modYmdt, modId, 
+			0 as current, 0 as rewardDone
+		from AchievementMeta
+		ORDER BY achievementId asc , step ASC 
+	</select>
+	
+	<select id="search" parameterType="int" resultType="com.thirtygames.zero.common.model.Achievement">
+		select 
+			am.achvMetaKey, am.achievementId, am.step, am.isLastStep, am.missionType, am.param1, am.param2, am.param3, am.goal, am.rewardType, am.reward, am.modYmdt, am.modId, 
+			0 as current, 0 as rewardDone,
+		 	<choose>
+				<when test="model.lang == 'ko'">n.title_ko</when>
+				<when test="model.lang == 'en'">n.title_en</when>				
+				<otherwise>n.ko</otherwise>
+			</choose> as title, 
+		 	<choose>
+				<when test="model.lang == 'ko'">n.description_ko</when>
+				<when test="model.lang == 'en'">n.description_en</when>				
+				<otherwise>n.ko</otherwise>
+			</choose> as description
+		from AchievementMeta am, AchievementName n
+		where am.achievementId = n.achievementId
+		and am.step = n.step
+		order by am.achievementId asc, am.step asc
+	</select>
+	
+	<select id="getCurrentAndNextStep" parameterType="map" resultType="com.thirtygames.zero.common.model.Achievement">
+		select 
+			a.achvMetaKey, a.achievementId, a.step, a.isLastStep, a.missionType, a.param1, a.param2, a.param3, a.goal, a.rewardType, a.reward, a.modYmdt, a.modId,
+			 <choose>
+				<when test="lang == 'ko'">n.title_ko</when>
+				<when test="lang == 'en'">n.title_en</when>				
+				<otherwise>n.ko</otherwise>
+			</choose> as title, 
+		 	<choose>
+				<when test="lang == 'ko'">n.description_ko</when>
+				<when test="lang == 'en'">n.description_en</when>				
+				<otherwise>n.ko</otherwise>
+			</choose> as description		 
+		from AchievementMeta a, AchievementName n
+		where a.achievementId = n.achievementId
+		and a.step = n.step
+		and a.achievementId = #{achievementId}
+		and a.step &gt;= #{step}
+		order by a.step asc
+	</select>
+	
+</mapper>

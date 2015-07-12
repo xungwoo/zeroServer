@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.BossRaidHostMapper">
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.BossRaid" keyColumn="accountId,bossRaidId" keyProperty="raidKey">
+        insert into BossRaidHost (accountId, isEvent, bossRaidMetaId, bossRaidId, bossRaidStatus, difficulty, bossUnitLevel, bossMaxHp, bossNowHp, goldReward, equipmentReward, endYmdt)
+        values (
+        	<trim suffixOverrides=",">
+	        	#{accountId}, #{isEvent}, #{bossRaidMetaId}, #{bossRaidId}, #{bossRaidStatus}, #{difficulty}, #{bossUnitLevel}, #{bossMaxHp}, #{bossNowHp}, #{goldReward}, #{equipmentReward}, 
+	        	<choose>
+	        		<when test="endYmdt != null">from_unixtime(#{endYmdt})</when>
+	        		<otherwise>date_add(now(), interval #{playTime} second)</otherwise>
+	        	</choose>
+	        </trim>
+        )
+    </insert>
+    
+
+    <select id="get" resultType="com.thirtygames.zero.common.model.BossRaid">
+        select
+        	unix_timestamp(b.startYmdt) as startYmdt, 
+        	unix_timestamp(b.endYmdt) as endYmdt, 
+        	b.accountId as foundAccountId,
+        	b.*
+        from BossRaidHost b
+        where b.bossRaidId = #{id}
+    </select>    
+
+    <select id="getLiveHost" resultType="com.thirtygames.zero.common.model.BossRaid">
+    	/* getLiveHost */
+        select
+			unix_timestamp(b.startYmdt) as startYmdt, 
+			unix_timestamp(b.endYmdt) as endYmdt, 
+        	b.accountId as foundAccountId,
+        	b.*
+        from BossRaidHost b
+        where b.accountId = #{accountId}
+        and b.bossRaidStatus &lt;= 1
+        and b.endYmdt &gt; now() 
+        and b.isEvent = 0
+    </select> 
+
+    <select id="getHostRaidInfo" resultType="com.thirtygames.zero.common.model.BossRaid">
+    	/* getHostRaidInfo */
+        select
+			unix_timestamp(b.startYmdt) as startYmdt, 
+			unix_timestamp(b.endYmdt) as endYmdt, 
+			TIMESTAMPDIFF(SECOND, b.endYmdt, now()) &gt; 0 as isOverEndTime,
+        	b.accountId as foundAccountId,
+        	b.*
+        from BossRaidHost b
+        where b.bossRaidId = #{id}
+    </select> 
+
+    
+    <update id="incPartyCount">
+    	update BossRaidHost
+	    	set countPartyFriend = countPartyFriend + 1 
+	    where bossRaidId = #{id} 	
+    </update>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.BossRaid">
+    	update BossRaidHost
+	    <trim prefix="set" suffixOverrides=",">
+    		<if test="bossRaidStatus != null">bossRaidStatus = #{bossRaidStatus},</if>    	
+    		<if test="bossNowHp != null">bossNowHp = #{bossNowHp},</if>    	
+    		<if test="isClear != null">
+    			isClear = #{isClear},
+    			<if test="isClear == true">endYmdt = now(),</if>
+    		</if>    	
+    		<if test="totalDamage != null">totalDamage = totalDamage + #{totalDamage},</if>    	
+		</trim> 
+	    where bossRaidId = #{bossRaidId}
+    </update>      
+    
+      
+    <select id="checkTimeOver" resultType="int">
+    	/* checkTimeOver */
+        select
+        	case 
+          		when endYmdt &gt; now() then 0
+          		when endYmdt &gt; date_add(now(), interval -5 minute) then 1
+        		else 2
+        	end as result
+        from BossRaidHost
+        where bossRaidId = #{id}
+    </select>
+    
+    <select id="isHostClear" resultType="int">
+    	/* isHostClear */
+        select isClear from BossRaidHost
+        where bossRaidId = #{bossRaidId}
+    </select>    
+    
+
+    <select id="getHostResult" resultType="com.thirtygames.zero.common.model.BossRaid">
+    	/* getHostResult */
+        select
+			unix_timestamp(b.startYmdt) as startYmdt, 
+			unix_timestamp(b.endYmdt) as endYmdt, 
+        	b.accountId as foundAccountId,
+        	b.*
+		from BossRaidHost b
+        where b.bossRaidId = #{id}
+    </select>
+            
+    <select id="getNoRewardRaidList"  resultType="com.thirtygames.zero.common.model.BossRaid" parameterType="string">
+    	/* getNoRewardRaidList */
+		select	
+        	unix_timestamp(b.startYmdt) as startYmdt, 
+        	unix_timestamp(b.endYmdt) as endYmdt, 
+        	b.accountId as foundAccountId,
+        	b.*
+ 		from BossRaidHost b
+		where b.bossRaidId in 
+			<foreach item="item" index="index" collection="bossRaidIdList" open="(" separator="," close=")">
+	        	#{item}
+	  		</foreach>
+		and b.isClear = 1
+        and b.endYmdt &lt;= now()
+    </select> 
+        
+    
+    <select id="getFriendBossRaidListByMemberNoList"  resultType="com.thirtygames.zero.common.model.BossRaid" parameterType="string">
+    	/* getFriendBossRaidListByMemberNoList */
+		select	
+        	unix_timestamp(b.startYmdt) as startYmdt, 
+        	unix_timestamp(b.endYmdt) as endYmdt, 
+        	b.accountId as foundAccountId,
+        	b.*
+ 		from BossRaidHost b, Account a
+		where a.memberNo in 
+			<foreach item="item" index="index" collection="memberNoList" open="(" separator="," close=")">
+	        	#{item.friendMemberNo}
+	  		</foreach>
+		and a.accountId = b.accountId
+		and b.endYmdt &gt; now()
+		and b.isEvent = 0
+    </select>    
+    
+
+    <select id="getEventBossList" resultType="String">
+    	/* getEventBossList */
+        select
+			bossRaidMetaId
+		from BossRaidHost
+        where accountId = #{accountId}
+        and isEvent = 1
+    </select>
+    
+
+    <select id="getLiveEventHost" resultType="com.thirtygames.zero.common.model.BossRaid">
+    	/* getLiveEventHost */
+        select
+			unix_timestamp(b.startYmdt) as startYmdt, 
+        	unix_timestamp(b.endYmdt) as endYmdt, 
+        	b.accountId as foundAccountId,
+        	b.*	
+		from BossRaidHost b
+		where b.accountId = #{accountId}
+        and b.bossRaidStatus &lt;= 1
+        and b.endYmdt &gt; now() 
+        and b.isEvent = 1
+    </select>
+        
+</mapper>

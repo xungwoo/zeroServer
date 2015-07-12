@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmUnitMetaMapper">
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminUnitMeta"
+        keyProperty="metaKey" keyColumn="metaKey">
+        insert into UnitMeta (
+        	 `metaKey`,`unitType`,`attackType`,`presentionType`,`unlockKey`,`levelMax`,`attackLv1`,`attackGrowth`,`spellLv1`,`spellGrowth`,`hpLv1`,`hpGrowth`,`hpRegen`,`mpLv1`,`mpGrowth`,`mpRegen`,`defensePhyLv1`,`defensePhyGrowth`,`defenseSpellLv1`,`defenseSpellGrowth`,`goldLv1`,`goldGrowth`,`moveSpeed`,`attackCoolTime`,`attackRange`,`criticalRate`,`criticalDamage`,`scale`,`power`,`mass`,`evo1LvJump`,`evo2LvJump`,`evo3LvJump`,`evo4LvJump`,`evo5LvJump`,`evo6LvJump`,`evo7LvJump`,`evo8LvJump`,`evo9LvJump`,`skill0Type`,`skill1Type`,`skill2Type`,`skill3Type`,`skill4Type`,`weapon1`,`weapon2`,`weapon3`,`weapon4`,`weapon5`,`modId`,`modYmdt`)
+        values (
+        	#{metaKey},#{unitType},#{attackType},#{presentionType},#{unlockKey},#{levelMax},#{attackLv1},#{attackGrowth},#{spellLv1},#{spellGrowth},#{hpLv1},#{hpGrowth},#{hpRegen},#{mpLv1},#{mpGrowth},#{mpRegen},#{defensePhyLv1},#{defensePhyGrowth},#{defenseSpellLv1},#{defenseSpellGrowth},#{goldLv1},#{goldGrowth},#{moveSpeed},#{attackCoolTime},#{attackRange},#{criticalRate},#{criticalDamage},#{scale},#{power},#{mass},#{evo1LvJump},#{evo2LvJump},#{evo3LvJump},#{evo4LvJump},#{evo5LvJump},#{evo6LvJump},#{evo7LvJump},#{evo8LvJump},#{evo9LvJump},#{skill0Type},#{skill1Type},#{skill2Type},#{skill3Type},#{skill4Type},#{weapon1},#{weapon2},#{weapon3},#{weapon4},#{weapon5},#{modId},now()
+		)
+        on duplicate key update
+        	metaKey = #{metaKey},
+			unitType = #{unitType},
+			attackType = #{attackType},
+			presentionType = #{presentionType},
+			unlockKey = #{unlockKey},
+			levelMax = #{levelMax},
+			attackLv1 = #{attackLv1},
+			attackGrowth = #{attackGrowth},
+			spellLv1 = #{spellLv1},
+			spellGrowth = #{spellGrowth},
+			hpLv1 = #{hpLv1},
+			hpGrowth = #{hpGrowth},
+			hpRegen = #{hpRegen},
+			mpLv1 = #{mpLv1},
+			mpGrowth = #{mpGrowth},
+			mpRegen = #{mpRegen},
+			defensePhyLv1 = #{defensePhyLv1},
+			defensePhyGrowth = #{defensePhyGrowth},
+			defenseSpellLv1 = #{defenseSpellLv1},
+			defenseSpellGrowth = #{defenseSpellGrowth},
+			goldLv1 = #{goldLv1},
+			goldGrowth = #{goldGrowth},
+			moveSpeed = #{moveSpeed},
+			attackCoolTime = #{attackCoolTime},
+			attackRange = #{attackRange},
+			criticalRate = #{criticalRate},
+			criticalDamage = #{criticalDamage},
+			scale = #{scale},
+			power = #{power},
+			mass = #{mass},
+			evo1LvJump = #{evo1LvJump},
+			evo2LvJump = #{evo2LvJump},
+			evo3LvJump = #{evo3LvJump},
+			evo4LvJump = #{evo4LvJump},
+			evo5LvJump = #{evo5LvJump},
+			evo6LvJump = #{evo6LvJump},
+			evo7LvJump = #{evo7LvJump},
+			evo8LvJump = #{evo8LvJump},
+			evo9LvJump = #{evo9LvJump},
+			skill0Type = #{skill0Type},
+			skill1Type = #{skill1Type},
+			skill2Type = #{skill2Type},
+			skill3Type = #{skill3Type},
+			skill4Type = #{skill4Type},
+			weapon1 = #{weapon1},
+			weapon2 = #{weapon2},
+			weapon3 = #{weapon3},
+			weapon4 = #{weapon4},
+			weapon5 = #{weapon5},
+			modId = #{modId},
+        	modYmdt = now()
+    </insert>
+    
+	<update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminUnitMeta">
+		update UnitMeta
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="metaKey != null">metaKey = #{metaKey},</if>
+			<if test="unitType != null">unitType = #{unitType},</if>
+			<if test="attackType != null">attackType = #{attackType},</if>
+			<if test="presentionType != null">presentionType = #{presentionType},</if>
+			<if test="unlockKey != null">unlockKey = #{unlockKey},</if>
+			<if test="levelMax != null">levelMax = #{levelMax},</if>
+			<if test="attackLv1 != null">attackLv1 = #{attackLv1},</if>
+			<if test="attackGrowth != null">attackGrowth = #{attackGrowth},</if>
+			<if test="spellLv1 != null">spellLv1 = #{spellLv1},</if>
+			<if test="spellGrowth != null">spellGrowth = #{spellGrowth},</if>
+			<if test="hpLv1 != null">hpLv1 = #{hpLv1},</if>
+			<if test="hpGrowth != null">hpGrowth = #{hpGrowth},</if>
+			<if test="hpRegen != null">hpRegen = #{hpRegen},</if>
+			<if test="mpLv1 != null">mpLv1 = #{mpLv1},</if>
+			<if test="mpGrowth != null">mpGrowth = #{mpGrowth},</if>
+			<if test="mpRegen != null">mpRegen = #{mpRegen},</if>
+			<if test="defensePhyLv1 != null">defensePhyLv1 = #{defensePhyLv1},</if>
+			<if test="defensePhyGrowth != null">defensePhyGrowth = #{defensePhyGrowth},</if>
+			<if test="defenseSpellLv1 != null">defenseSpellLv1 = #{defenseSpellLv1},</if>
+			<if test="defenseSpellGrowth != null">defenseSpellGrowth = #{defenseSpellGrowth},</if>
+			<if test="goldLv1 != null">goldLv1 = #{goldLv1},</if>
+			<if test="goldGrowth != null">goldGrowth = #{goldGrowth},</if>
+			<if test="moveSpeed != null">moveSpeed = #{moveSpeed},</if>
+			<if test="attackCoolTime != null">attackCoolTime = #{attackCoolTime},</if>
+			<if test="attackRange != null">attackRange = #{attackRange},</if>
+			<if test="criticalRate != null">criticalRate = #{criticalRate},</if>
+			<if test="criticalDamage != null">criticalDamage = #{criticalDamage},</if>
+			<if test="scale != null">scale = #{scale},</if>
+			<if test="power != null">power = #{power},</if>
+			<if test="mass != null">mass = #{mass},</if>
+			<if test="evo1LvJump != null">evo1LvJump = #{evo1LvJump},</if>
+			<if test="evo2LvJump != null">evo2LvJump = #{evo2LvJump},</if>
+			<if test="evo3LvJump != null">evo3LvJump = #{evo3LvJump},</if>
+			<if test="evo4LvJump != null">evo4LvJump = #{evo4LvJump},</if>
+			<if test="evo5LvJump != null">evo5LvJump = #{evo5LvJump},</if>
+			<if test="evo6LvJump != null">evo6LvJump = #{evo6LvJump},</if>
+			<if test="evo7LvJump != null">evo7LvJump = #{evo7LvJump},</if>
+			<if test="evo8LvJump != null">evo8LvJump = #{evo8LvJump},</if>
+			<if test="evo9LvJump != null">evo9LvJump = #{evo9LvJump},</if>
+			<if test="skill0Type != null">skill0Type = #{skill0Type},</if>
+			<if test="skill1Type != null">skill1Type = #{skill1Type},</if>
+			<if test="skill2Type != null">skill2Type = #{skill2Type},</if>
+			<if test="skill3Type != null">skill3Type = #{skill3Type},</if>
+			<if test="skill4Type != null">skill4Type = #{skill4Type},</if>
+			<if test="weapon1 != null">weapon1 = #{weapon1},</if>
+			<if test="weapon2 != null">weapon2 = #{weapon2},</if>
+			<if test="weapon3 != null">weapon3 = #{weapon3},</if>
+			<if test="weapon4 != null">weapon4 = #{weapon4},</if>
+			<if test="weapon5 != null">weapon5 = #{weapon5},</if>
+			<if test="modId != null">modId = #{modId},</if>
+		</trim>
+		where metaKey = #{metaKey}
+	</update>
+
+    <select id="get" parameterType="map" resultType="com.thirtygames.zero.common.model.admintool.AdminUnitMeta">
+        select * from UnitMeta where unitType = #{id}
+    </select>
+
+    <select id="search" parameterType="com.thirtygames.zero.common.model.admintool.AdminUnitMeta" resultType="com.thirtygames.zero.common.model.admintool.AdminUnitMeta">
+        select
+        	 `metaKey`,`unitType`,`attackType`,`presentionType`,`unlockKey`,`levelMax`,`attackLv1`,`attackGrowth`,`spellLv1`,`spellGrowth`,`hpLv1`,`hpGrowth`,`hpRegen`,`mpLv1`,`mpGrowth`,`mpRegen`,`defensePhyLv1`,`defensePhyGrowth`,`defenseSpellLv1`,`defenseSpellGrowth`,`goldLv1`,`goldGrowth`,`moveSpeed`,`attackCoolTime`,`attackRange`,`criticalRate`,`criticalDamage`,`scale`,`power`,`mass`,`evo1LvJump`,`evo2LvJump`,`evo3LvJump`,`evo4LvJump`,`evo5LvJump`,`evo6LvJump`,`evo7LvJump`,`evo8LvJump`,`evo9LvJump`,`skill0Type`,`skill1Type`,`skill2Type`,`skill3Type`,`skill4Type`,`weapon1`,`weapon2`,`weapon3`,`weapon4`,`weapon5`,`modId`,`modYmdt`
+		from UnitMeta
+		<where>
+			1=1
+			<if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+       	</where>
+       	
+       	<if test="sidx != '' and sord != ''">
+			order by ${sidx} ${sord}
+		</if>
+			
+		<if test="length &gt; 0">limit #{from}, #{length}</if>
+    </select>
+    
+    <select id="excel" parameterType="com.thirtygames.zero.common.model.admintool.AdminUnitMeta" resultType="com.thirtygames.zero.common.model.admintool.AdminUnitMeta">
+        select
+        	 `metaKey`,`unitType`,`attackType`,`presentionType`,`unlockKey`,`levelMax`,`attackLv1`,`attackGrowth`,`spellLv1`,`spellGrowth`,`hpLv1`,`hpGrowth`,`hpRegen`,`mpLv1`,`mpGrowth`,`mpRegen`,`defensePhyLv1`,`defensePhyGrowth`,`defenseSpellLv1`,`defenseSpellGrowth`,`goldLv1`,`goldGrowth`,`moveSpeed`,`attackCoolTime`,`attackRange`,`criticalRate`,`criticalDamage`,`scale`,`power`,`mass`,`evo1LvJump`,`evo2LvJump`,`evo3LvJump`,`evo4LvJump`,`evo5LvJump`,`evo6LvJump`,`evo7LvJump`,`evo8LvJump`,`evo9LvJump`,`skill0Type`,`skill1Type`,`skill2Type`,`skill3Type`,`skill4Type`,`weapon1`,`weapon2`,`weapon3`,`weapon4`,`weapon5`
+		from UnitMeta
+		<where>
+			1=1
+			<if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+       	</where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminUnitMeta">
+        select * from UnitMeta limit #{from}, #{length}
+    </select>
+    
+    <update id="delete" parameterType="String">
+    	delete from UnitMeta 
+    	where metaKey = #{id}
+    </update>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminUnitMeta">
+        select count(*) from UnitMeta
+        <where>
+			1=1
+			<if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+       	</where>
+    </select>
+</mapper>

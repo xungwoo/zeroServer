@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmPostMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminPost"
+        keyProperty="postKey" keyColumn="postKey">
+        insert into PostUser (postType, accountId, lang, text, fromAccountId, fromNickName, fromProfileUrl, fromLeague, rewardType, reward, rewardDone, startYmdt, expireYmdt)
+        values (1, #{accountId}, #{lang}, #{text}, #{fromAccountId}, #{fromNickName}, #{fromProfileUrl}, #{fromLeague}, #{rewardType}, #{reward}, #{rewardDone}, 
+        	str_to_date(rpad(#{startYmdt}, 14, '0'), '%Y%m%d%H%i%s'), 
+        	str_to_date(rpad(#{expireYmdt}, 14, '0'), '%Y%m%d%H%i%s')) 
+        on duplicate key update
+        	postType = 1, 
+        	accountId = #{accountId}, 
+        	fromAccountId = #{fromAccountId}, 
+        	fromNickName = #{fromNickName}, 
+        	fromProfileUrl = #{fromProfileUrl}, 
+        	fromLeague = #{fromLeague}, 
+        	rewardType = #{rewardType}, 
+        	reward = #{reward},
+			rewardDone = #{rewardDone},
+			startYmdt = str_to_date(rpad(#{startYmdt}, 14, '0'), '%Y%m%d%H%i%s'),
+			expireYmdt = str_to_date(rpad(#{expireYmdt}, 14, '0'), '%Y%m%d%H%i%s')
+    </insert>
+
+    
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminPost">
+    	update PostUser
+	    	<trim prefix="set" suffixOverrides=",">
+	    		genYmdt = now(), 
+				<if test="accountId != null">accountId = #{accountId},</if>	    		
+				<if test="lang != null">lang = #{lang},</if>	    		
+				<if test="text != null">text = #{text},</if>	    		
+				<if test="fromAccountId != null">fromAccountId = #{fromAccountId},</if>	    		
+				<if test="fromNickName != null">fromNickName = #{fromNickName},</if>	    		
+				<if test="fromProfileUrl != null">fromProfileUrl = #{fromProfileUrl},</if>	    		
+				<if test="fromLeague != null">fromLeague = #{fromLeague},</if>	    		
+				<if test="rewardType != null">rewardType = #{rewardType},</if>	    		
+				<if test="reward != null">reward = #{reward},</if>	    		
+				<if test="rewardDone != null">rewardDone = #{rewardDone},</if>	    		
+				<if test="startYmdt != null">startYmdt = str_to_date(rpad(#{startYmdt}, 14, '0'), '%Y%m%d%H%i%s'),</if>	    		
+				<if test="expireYmdt != null">expireYmdt = str_to_date(rpad(#{expireYmdt}, 14, '0'), '%Y%m%d%H%i%s'),</if>	    		
+	    	</trim>
+    	where postKey = #{postKey}
+    </update>
+
+    <select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.admintool.AdminPost">
+        select 
+        	postKey, postAdminKey, postType, accountId, lang, text, fromAccountId, fromNickName, fromProfileUrl, fromLeague, rewardType, reward, rewardDone, 
+        	date_format(startYmdt, '%Y-%m-%d %H:%i:%s') as startYmdt,
+        	date_format(expireYmdt, '%Y-%m-%d %H:%i:%s') as expireYmdt, 
+        	date_format(genYmdt, '%Y-%m-%d %H:%i:%s') as genYmdt
+        from PostUser 
+        where a.accountId = #{id}
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminPost">
+        select 
+                	postKey, postAdminKey, postType, accountId, lang, text, fromAccountId, fromNickName, fromProfileUrl, fromLeague, rewardType, reward, rewardDone, 
+        	date_format(startYmdt, '%Y-%m-%d %H:%i:%s') as startYmdt,
+        	date_format(expireYmdt, '%Y-%m-%d %H:%i:%s') as expireYmdt, 
+        	date_format(genYmdt, '%Y-%m-%d %H:%i:%s') as genYmdt 
+        from PostUser 
+        order by postKey desc
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminPost" parameterType="map">
+    	select 
+    	        	postKey, postAdminKey, postType, accountId, lang, text, fromAccountId, fromNickName, fromProfileUrl, fromLeague, rewardType, reward, rewardDone, 
+        	date_format(startYmdt, '%Y-%m-%d %H:%i:%s') as startYmdt,
+        	date_format(expireYmdt, '%Y-%m-%d %H:%i:%s') as expireYmdt, 
+        	date_format(genYmdt, '%Y-%m-%d %H:%i:%s') as genYmdt 
+    	from PostUser
+        <if test="model.rules != null">			
+        	<trim prefix="where" prefixOverrides="and">
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+        	</trim>
+	    </if>
+	    order by postKey desc
+	    <if test="length &gt; 0">limit #{from}, #{length}</if>	
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminPost" parameterType="map">
+        select 
+                	postKey, postAdminKey, postType, accountId, lang, text, fromAccountId, fromNickName, fromProfileUrl, fromLeague, rewardType, reward, rewardDone, 
+        	date_format(startYmdt, '%Y-%m-%d %H:%i:%s') as startYmdt,
+        	date_format(expireYmdt, '%Y-%m-%d %H:%i:%s') as expireYmdt, 
+        	date_format(genYmdt, '%Y-%m-%d %H:%i:%s') as genYmdt 
+        from PostUser
+        <if test="model.rules != null">			
+        	<trim prefix="where" prefixOverrides="and">
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+        	</trim>
+	    </if>
+	    order by postKey desc
+    </select>
+    
+    <delete id="delete" parameterType="String">
+        delete from PostUser where postKey = #{id}
+    </delete>
+
+    <select id="size" resultType="int">
+        select count(*) from PostUser
+        <if test="model.rules != null">			
+        	<trim prefix="where" prefixOverrides="and">
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+        	</trim>
+	    </if>
+    </select>
+</mapper>

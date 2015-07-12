@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.AchievementMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.Achievement" keyColumn="achievementId">
+        insert into Achievement (achievementId, step, accountId, current, rewardDone)
+        values (#{achievementId}, 1, #{accountId}, #{current}, 0) 
+        on duplicate key update
+        	current = current + #{current}
+    </insert>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.Achievement">
+    	update Achievement
+		<trim prefix="set" suffixOverrides=",">
+    		<if test="step != null">step = #{step},</if>    	
+    		<if test="current != null">current = #{current},</if>    	
+    		<if test="rewardDone != null">rewardDone = #{rewardDone},</if>    	
+		</trim>   
+    	where achievementId = #{achievementId}
+    	and accountId = #{accountId}
+    </update>
+	
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.Achievement">
+		select
+			achievementKey, achievementId, step, accountId, current, rewardDone 
+		from Achievement
+    	where accountId = #{model.accountId}
+    	order by achievementId asc
+	</select>		
+	
+	<select id="getAchvList" resultType="com.thirtygames.zero.common.model.Achievement">
+		select
+			achievementKey, achievementId, step, accountId, current, rewardDone 
+		from Achievement
+    	where accountId = #{accountId}
+    	order by achievementId asc
+	</select>		
+	
+	<select id="getByAccountId" resultType="com.thirtygames.zero.common.model.Achievement">
+		select
+			achievementKey, achievementId, step, accountId, current, rewardDone 
+		from Achievement
+    	where accountId = #{accountId}
+    	and achievementId = #{id}
+	</select>		
+	
+</mapper>

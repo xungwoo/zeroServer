@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.AccountMapper">
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.Account"
+        keyColumn="memberNo">
+        insert into Account (memberNo, accountId, channelType, authToken, authTokenValidYmdt, language, country, localTimeZone, genYmdt)
+        values (#{memberNo}, #{accountId}, #{channelType}, #{authToken}, date_add(now(), interval +1 day), #{language}, #{country}, #{localTimeZone}, null) 
+        on duplicate key update
+        	memberNo = #{memberNo}, 
+        	accountId = #{accountId}, 
+        	channelType = #{channelType}, 
+			language = #{language},
+			country = #{country},
+			authToken = #{authToken}, 
+         	authTokenValidYmdt = date_add(now(), interval +1 day),			
+			localTimeZone = #{localTimeZone}
+    </insert>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.Account" flushCache="true">
+    	update Account
+	    	<trim prefix="set" suffixOverrides=",">
+	    		<if test="authToken != null">
+	    			authToken = #{authToken},
+	    			authTokenValidYmdt = date_add(now(), interval +1 day),
+	    		</if>
+	    		<if test="facebookId != null">facebookId = #{facebookId},</if>
+	    		<if test="profileUrl != null">profileUrl = #{profileUrl},</if>
+	    		<if test="tutorial != null">tutorial = #{tutorial},</if>
+	    		<if test="title != null">title = #{title},</if>
+	    		<if test="maxClearStage != null">maxClearStage = #{maxClearStage},</if>
+	    		<if test="maxClearMode != null">maxClearMode = #{maxClearMode},</if>
+	    		<if test="castlePoint != null">castlePoint = #{castlePoint},</if>
+	    		<if test="castleLastClearFloor != null">castleLastClearFloor = #{castleLastClearFloor},</if>
+	    		<if test="nickName != null">nickName = #{nickName},</if>
+	    		<if test="channelId != null">channelId = #{channelId},</if>
+	    		<if test="channelType != null">channelType = #{channelType},</if>
+	    		<if test="channelCertification != null">channelCertification = #{channelCertification},</if>
+	    	</trim>
+    	where accountId = #{accountId}
+    </update>
+    
+    <update id="nickNameUpdate" parameterType="com.thirtygames.zero.common.model.Account" flushCache="true">
+    	update Account
+	    	<trim prefix="set" suffixOverrides=",">
+	    		<if test="nickName != null">nickName = #{nickName},</if>
+	    	</trim>
+    	where accountId = #{accountId}
+    </update>
+    
+    <update id="buyExtraInventory" parameterType="com.thirtygames.zero.common.model.Account" flushCache="true">
+    	update Account
+	    	<trim prefix="set" suffixOverrides=",">
+	    		<if test="extraInventory != null">extraInventory = extraInventory + #{extraInventory},</if>
+	    	</trim>
+    	where accountId = #{accountId}
+    </update>
+    
+    <select id="checkMaxInventory" resultType="boolean">
+    	select if(extraInventory >= #{extraInventoryMaxCount}, 1, 0) from Account
+    	where accountId = #{accountId}
+    </select>
+    
+    <update id="updateWithdraw" parameterType="com.thirtygames.zero.common.model.Account" flushCache="true">
+    	update Account
+	    	set withdraw = #{withdraw}
+    	where accountId = #{accountId}
+    </update>
+    
+    <update id="updateToken" flushCache="true">
+    	update Account
+	    set	
+	    	authToken = #{authToken}, 
+	    	authTokenValidYmdt = date_add(now(), interval +1 day),
+	    	lastLoginYmdt = now()
+    	where accountId = #{accountId}
+    </update>    
+    
+    <select id="getToken" resultType="string">
+        select authToken from Account 
+        where accountId = #{accountId}
+        and withdraw = 0
+    </select>
+
+    <select id="getAccountLoginInfo" resultType="com.thirtygames.zero.common.model.Account">
+        select accountId, authToken, language from Account 
+        where accountId = #{accountId}
+        and withdraw = 0
+    </select>
+
+    <select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.Account">
+        select
+        	a.accountKey, a.memberNo, a.accountId, a.nickName, a.channelId, a.facebookId, a.channelType, a.channelToken, a.channelCertification, a.password, a.profileType, a.profileUrl, a.title, a.maxClearStage, a.maxClearMode, a.castlePoint, a.castleLastClearFloor, 
+        	a.tutorial, a.authToken, a.authTokenValidYmdt, a.language, a.country, a.localTimeZone, a.isBlock, a.withdraw, a.sendLog, a.genYmdt, a.modYmdt, a.lastSyncYmdt, 
+        	a.extraInventory, unix_timestamp(a.genYmdt) as genTimeStamp, 
+        	r.resourceKey, r.accountId, r.apLastYmdt, r.apLastValue, r.apMax, r.apExtra, r.bpLastYmdt, r.bpLastValue, r.bpMax, r.bpExtra, r.fp, r.gold, r.cash, r.unlockKey, r.titleBundle1, r.titleBundle2, r.titleBundle3, r.equipLevelUpDrug, r.equipTicket, r.modYmdt, 
+        	unix_timestamp() as currentYmdt, 
+        	l.leagueKey, l.accountId, l.league, l.resetDate, l.isRewarded, l.ladder, l.win, l.lose, l.isPrevWin, l.winningStreakCnt, l.winningStreakMax, l.lastGameTimeStamp, l.lastGameNo, l.modYmdt
+        from Account a, Resource r left outer join Ladder l on r.accountId = l.accountId 
+        where a.accountId = #{id}
+        and a.accountId = r.accountId
+        and a.withdraw = 0
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.Account">
+        select
+			accountKey, memberNo, accountId, nickName, channelId, facebookId, channelType, channelToken, channelCertification, password, profileType, profileUrl, title, extraInventory, maxClearStage, maxClearMode, castlePoint, castleLastClearFloor, 
+			tutorial, authToken, authTokenValidYmdt, language, country, localTimeZone, isBlock, withdraw, sendLog, genYmdt, modYmdt, lastSyncYmdt         	
+        from Account limit #{from}, #{length}
+    </select>
+    
+    <select id="search" resultType="com.thirtygames.zero.common.model.Account" parameterType="map">
+        select
+        	accountKey, memberNo, accountId, nickName, channelId, facebookId, channelType, channelToken, channelCertification, password, profileType, profileUrl, title, extraInventory, maxClearStage, maxClearMode, castlePoint, castleLastClearFloor,
+        	tutorial, authToken, authTokenValidYmdt, language, country, localTimeZone, isBlock, withdraw, sendLog, genYmdt, modYmdt, lastSyncYmdt 
+        from Account
+        where withdraw = 0
+        <if test="model.accountId != null">and accountId = #{model.accountId}</if>
+        <if test="model.channelId != null">and channelId like concat(#{model.channelId}, '%')</if>	
+        <if test="length &gt; 0">limit #{from}, #{length}</if>
+    </select>
+    
+    <select id="existNickName" parameterType="string" resultType="int">
+    	select IFNULL(max(1), 0) from Account
+    	where nickName = #{nickName}
+    	and accountId != #{accountId} 
+    </select>
+    
+    <delete id="delete" parameterType="String">
+        delete from Account where accountId = #{id}
+    </delete>
+
+    <select id="size" resultType="int">
+        select count(*) from Account
+    </select>
+    
+    <update id="updateLastSyncTime" parameterType="string" flushCache="true">
+    	update Account
+    	set lastSyncYmdt = unix_timestamp()
+    	where accountId = #{id}
+    </update>
+    
+    
+    
+    <update id="updateRemoveFacebookId">
+    	update Account
+    	set facebookId = null
+    	where facebookId = #{facebookId}
+    </update>
+        
+
+    <select id="getDiffMinuteLastLogin" resultType="int">
+        select IFNULL(TIMESTAMPDIFF(MINUTE, lastLoginYmdt, now()), 0)  from Account
+        where accountId = #{id}
+    </select>
+</mapper>

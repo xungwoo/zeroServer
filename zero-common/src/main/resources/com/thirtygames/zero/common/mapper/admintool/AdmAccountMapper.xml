@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmAccountMapper">
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.UserAccount">
+    	update Account
+	    	<trim prefix="set" suffixOverrides=",">
+				<if test="tutorial != null and (tutorial == '65535' or tutorial == '0')">tutorial = #{tutorial},</if>	    		
+				<if test="authToken != null">authToken = #{authToken},</if>	    		
+				<if test="title != null">title = #{title},</if>	    		
+				<if test="extraInventory != null">extraInventory = #{extraInventory},</if>	    		
+				<if test="language != null">language = #{language},</if>	    		
+				<if test="country != null">country = #{country},</if>	    		
+				<if test="localTimeZone != null">localTimeZone = #{localTimeZone},</if>	    		
+				<if test="profileUrl != null">profileUrl = #{profileUrl},</if>	    		
+				<if test="isBlock != null">isBlock = #{isBlock},</if>	    		
+				<if test="withdraw != null">withdraw = #{withdraw},</if>	    		
+				<if test="sendLog != null">sendLog = #{sendLog},</if>	    		
+	    	</trim>
+    	where accountId = #{accountId}
+    </update>
+    
+    <update id="resetAuthTokenValidYmdt">
+    	update Account
+    		set authToken = 0
+    	where accountId = #{accountId}
+    </update>
+
+    <select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.admintool.UserAccount">
+        select
+        	accountKey, memberNo, accountId, nickName, channelId, channelType, channelToken, channelCertification, password, profileType, profileUrl, title, extraInventory, maxClearStage, maxClearMode, tutorial, authToken, authTokenValidYmdt, language, country, localTimeZone, isBlock, withdraw, sendLog, genYmdt, 
+        	date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, date_format(from_unixtime(lastSyncYmdt), '%Y-%m-%d %H:%i:%s') as lastSyncYmdt
+        from Account 
+        where accountId = #{id}
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.UserAccount">
+        select
+        	accountKey, memberNo, accountId, nickName, channelId, channelType, channelToken, channelCertification, password, profileType, profileUrl, title, extraInventory, maxClearStage, maxClearMode, tutorial, authToken, authTokenValidYmdt, language, country, localTimeZone, isBlock, withdraw, sendLog, genYmdt, 
+        	date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, date_format(from_unixtime(lastSyncYmdt), '%Y-%m-%d %H:%i:%s') as lastSyncYmdt 
+        from Account
+        order by accountKey desc 
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="search" resultType="com.thirtygames.zero.common.model.admintool.UserAccount" parameterType="map">
+    	select
+        	accountKey, memberNo, accountId, nickName, channelId, channelType, channelToken, channelCertification, password, profileType, profileUrl, title, extraInventory, maxClearStage, maxClearMode, tutorial, authToken, authTokenValidYmdt, language, country, localTimeZone, isBlock, withdraw, sendLog, genYmdt, 
+        	date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, date_format(from_unixtime(lastSyncYmdt), '%Y-%m-%d %H:%i:%s') as lastSyncYmdt 
+        from Account
+        <where>
+        	1=1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+			order by accountKey desc 
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.UserAccount" parameterType="map">
+    	select
+        	accountKey, memberNo, accountId, nickName, channelId, channelType, channelToken, channelCertification, password, profileType, profileUrl, title, extraInventory, maxClearStage, maxClearMode, tutorial, authToken, authTokenValidYmdt, language, country, localTimeZone, isBlock, withdraw, sendLog, genYmdt, 
+        	date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, date_format(from_unixtime(lastSyncYmdt), '%Y-%m-%d %H:%i:%s') as lastSyncYmdt 
+        from Account
+        <where>
+        	1=1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	order by accountKey desc 
+        </where>
+    </select>
+    
+    <delete id="delete" parameterType="String">
+        delete from Account where accountId = #{id}
+    </delete>
+
+    <select id="size" resultType="int">
+        select count(*) from Account
+        <where>
+			1=1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	    </where>
+    </select>
+</mapper>

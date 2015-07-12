@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmMetaRevisionMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.meta.MetaRevision" keyColumn="revisionKey">
+		insert into MetaRevision (metaName, metaUrl, revision)
+		values (#{metaName}, #{metaUrl}, #{revision})
+		on duplicate key update
+			metaName = #{metaName},
+			metaUrl = #{metaUrl},
+			revision = #{revision}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.meta.MetaRevision">
+		delete from MetaRevision
+		where revisionKey = #{id}
+    </delete>
+
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.meta.MetaRevision">
+		update MetaRevision
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="metaName != null">metaName = #{metaName},</if>  
+        	<if test="metaUrl != null">metaUrl = #{metaUrl},</if>
+        	<if test="revision != null">revision = #{revision},</if>  
+		</trim>
+		where revisionKey = #{revisionKey}
+	</update>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.meta.MetaRevision" parameterType="map">
+    	select
+       		revisionKey, metaName, metaUrl, revision, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from MetaRevision 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='metaName'">order by metaName ${sord}</when>
+						<when test="sidx=='metaUrl'">order by metaUrl ${sord}</when>
+						<when test="sidx=='revision'">order by revision ${sord}</when>
+						<when test="sidx=='modYmdt'">order by modYmdt ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.meta.MetaRevision" parameterType="map">
+    	select
+       		revisionKey, metaName, metaUrl, revision, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from MetaRevision 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.meta.MetaRevision">
+        select 
+        	revisionKey, metaName, metaUrl, revision, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from MetaRevision 
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.meta.MetaRevision">
+        select count(*) from MetaRevision
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

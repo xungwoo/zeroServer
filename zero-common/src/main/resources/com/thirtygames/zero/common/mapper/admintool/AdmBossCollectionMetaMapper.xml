@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmBossCollectionMetaMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminBossCollection" keyColumn="metaKey" keyProperty="metaKey">
+		insert into BossCollectionMeta (collectionId, bossMetaIds, title, difficulty, rewardType, reward)
+		values (#{collectionId}, #{bossMetaIds}, #{title}, #{difficulty}, #{rewardType}, #{reward})
+		on duplicate key update
+			collectionId = #{collectionId},
+			bossMetaIds = #{bossMetaIds},
+			title = #{title},
+			difficulty = #{difficulty},
+			rewardType = #{rewardType},
+			reward = #{reward}
+    </insert>
+
+	<delete id="delete">
+		delete from BossCollectionMeta
+		where metaKey = #{id}
+    </delete>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminBossCollection">
+		update BossCollectionMeta
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="collectionId != null">collectionId = #{collectionId},</if>  
+        	<if test="bossMetaIds != null">bossMetaIds = #{bossMetaIds},</if>  
+        	<if test="title != null">title = #{title},</if>  
+        	<if test="difficulty != null">difficulty = #{difficulty},</if>  
+        	<if test="rewardType != null">rewardType = #{rewardType},</if>  
+        	<if test="reward != null">reward = #{reward},</if>  
+		</trim>
+		where metaKey = #{metaKey}
+	</update>
+    
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminBossCollection" parameterType="map">
+		select 
+        	date_format(b.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, b.*
+        from BossCollectionMeta b
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and b.${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+			order by b.${sidx} ${sord}
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminBossCollection" parameterType="map">
+		select 
+        	date_format(b.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, b.*
+        from BossCollectionMeta b 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and b.${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminBossCollection">
+        select count(*)
+        from BossCollectionMeta b 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and b.${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

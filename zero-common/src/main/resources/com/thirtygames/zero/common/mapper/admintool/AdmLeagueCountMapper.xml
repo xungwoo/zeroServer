@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmLeagueCountMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.meta.LeagueCount">
+		insert into LeagueCount (league, resetDate, count)
+		values (#{league}, #{resetDate}, 1)
+		on duplicate key update
+			count = count + 1
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.meta.LeagueCount">
+		delete from LeagueCount
+		where countKey = #{id}
+    </delete>
+
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.meta.LeagueCount">
+		update LeagueCount
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="league != null">league = #{league},</if>  
+        	<if test="count != null">count = #{count},</if>
+        	<if test="resetDate != null">resetDate = #{resetDate},</if>  
+		</trim>
+		where countKey = #{countKey}
+	</update>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.meta.LeagueCount" parameterType="map">
+    	select
+       		l.countKey, l.league, l.count, l.resetDate
+        from LeagueCount l
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='countKey'">order by countKey ${sord}</when>
+						<when test="sidx=='league'">order by league ${sord}</when>
+						<when test="sidx=='count'">order by count ${sord}</when>
+						<when test="sidx=='resetDate'">order by resetDate ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.meta.LeagueCount" parameterType="map">
+    	select
+       		l.countKey, l.league, l.count, l.resetDate
+        from LeaegueCount l
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.meta.LeagueCount">
+        select * from LeagueCount limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.meta.LeagueCount">
+        select count(*)
+        from LeagueCount l
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

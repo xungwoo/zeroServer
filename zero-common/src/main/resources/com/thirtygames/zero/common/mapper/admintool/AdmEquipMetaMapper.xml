@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmEquipMetaMapper">
+	<select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipmentMeta">
+		select * from EquipMeta
+		where equipMetaKey = #{id}
+	</select>
+	
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipmentMeta">
+		insert into EquipMeta (equipmentType, category, subCategory, deco1Grade, deco1Rate, deco2Grade, deco2Rate, grade, statGrowth, sellPrice, maxSockets, eqClass, dropRate, setKey, image)
+		values (#{equipmentType}, #{category}, #{subCategory}, #{deco1Grade}, #{deco1Rate}, #{deco2Grade}, #{deco2Rate}, #{grade}, #{statGrowth}, #{sellPrice}, #{maxSockets}, #{eqClass}, #{dropRate}, #{setKey}, #{image})
+	</insert>
+	
+	<update id="update" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipmentMeta">
+		update EquipMeta
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="equipmentType != null">equipmentType = #{equipmentType},</if>
+			<if test="category != null">category = #{category},</if>
+			<if test="subCategory != null">subCategory = #{subCategory},</if>
+			deco1Grade = #{deco1Grade},
+			deco1Rate = #{deco1Rate},
+			deco2Grade = #{deco2Grade},
+			deco2Rate = #{deco2Rate},
+			<if test="grade != null">grade = #{grade},</if>
+			<if test="statGrowth != null">statGrowth = #{statGrowth},</if>
+			<if test="sellPrice != null">sellPrice = #{sellPrice},</if>
+			<if test="maxSockets != null">maxSockets = #{maxSockets},</if>
+			<if test="eqClass != null">eqClass = #{eqClass},</if>
+			<if test="dropRate != null">dropRate = #{dropRate},</if>
+			<if test="setKey != null">setKey = #{setKey},</if>
+			<if test="image != null">image = #{image},</if>
+		</trim>	
+		where equipMetaKey = #{equipMetaKey}
+	</update>
+
+	<delete id="delete" parameterType="String">
+		delete em, esm
+			from EquipMeta em
+		LEFT OUTER JOIN EquipStatMeta esm
+			on em.equipMetaKey = esm.equipMetaKey
+		where em.equipMetaKey = #{id}
+	</delete>	
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipmentMeta">
+		select * from EquipMeta
+		order by equipMetaKey desc 
+		<if test="length &gt; 0">limit #{from}, #{length}</if>
+	</select>
+	
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipmentMeta">
+		/* search EquipmentMeta */
+		select em.*, enm.ko
+		from (((EquipMeta em left outer join EquipNameMeta enm on em.equipmentType = enm.equipmentType)
+			left outer join EquipStatMeta esm on em.equipMetaKey = esm.equipMetaKey)
+			left outer join EquipType et on em.equipmentType = et.typeCode)
+			left outer join EquipCategory ec on em.subCategory = ec.subCategoryCode
+		where 1=1
+		<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+				<choose>
+					<when test="model.groupOp == 'AND'">and </when>
+					<otherwise>or </otherwise>
+				</choose>
+				<choose>
+					<when test="rule.field == 'equipmentType'">em.</when>
+					<when test="rule.field == 'statType'">esm.</when>
+				</choose>
+				${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+       	</if>
+       	group by em.equipmentType
+       	<choose>
+			<when test="sidx != '' and sord != ''">
+				<choose>
+					<when test="sidx=='equipmentTypeName'">order by et.typeName ${sord}</when>
+					<when test="sidx=='equipmentType'">order by em.equipmentType ${sord}</when>					
+					<when test="sidx=='category'">order by ec.categoryName ${sord}</when>
+					<when test="sidx=='subCategory'">order by ec.subCategoryName ${sord}</when>
+					<otherwise>order by ${sidx} ${sord}</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				order by equipMetaKey desc 
+			</otherwise>
+		</choose>
+		<if test="length &gt; 0">limit #{from}, #{length}</if>
+	</select>
+	
+	<select id="size" resultType="int">
+		select count(*) from EquipMeta em
+	</select>		
+
+	<select id="getEquipCategoryList" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipType">
+		select 
+			categoryName, categoryCode
+		from EquipCategory
+		where codeLevel = '1'
+		group by categoryCode
+		order by categoryName asc
+	</select>
+
+	<select id="getEquipSubCategoryList" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipType">
+		select 
+			subCategoryName, subCategoryCode
+		from EquipCategory
+		where codeLevel = '2'
+		<if test="value != 0">and categoryCode = #{value}</if>
+		order by subCategoryName asc
+	</select>
+	
+	<select id="getEquipTypeList" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipType">
+		select 
+			et.typeName, et.typeCode, et.subCategoryCode, ec.categoryName
+		from EquipType et, EquipCategory ec
+		where et.subCategoryCode = ec.subCategoryCode
+		<if test="subCategory != 0 and subCategory != null">and et.subCategoryCode = #{subCategory}</if>
+		order by et.typeName asc
+	</select>
+	
+	<select id="getGemEquipTypeList" resultType="int">
+		select equipmentType from EquipMeta
+		where category = 6
+		and grade = #{grade}
+		order by rand()
+	</select>
+	
+	<select id="getNoGemEquipTypeList" resultType="int">
+		select equipmentType from EquipMeta
+		where category != 6
+		<if test="grade != null">and grade = #{grade}</if>
+		<if test="eqClass != null">and eqClass = #{eqClass}</if>
+		order by rand()
+	</select>
+	
+	<select id="getEquipGachaRateMetaList" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipGachaRateMeta">
+		select * from EquipGachaRateMeta
+		where itemKey = #{itemKey}
+		and rateType = #{rateType}
+	</select>
+	
+	<select id="getStatTypeList" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatType">
+		select statType, statType as code, statEngName, statEngName as name from EquipStatType
+	</select>	
+	
+	<select id="getAdminStatMetaList" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta" parameterType="map">
+		/* getAdminStatMetaList */
+		SELECT * FROM EquipStatMeta
+		WHERE equipMetaKey = #{model.equipMetaKey}
+       	<choose>
+			<when test="sidx != null and sord != null and sidx != '' and sord != ''">
+				order by ${sidx} ${sord}
+			</when>
+			<otherwise>
+				order by baseStat desc 
+			</otherwise>
+		</choose>
+	</select>
+	
+
+	<select id="getStatMetaList" parameterType="string" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		/* getStatMetaList */
+		SELECT
+			statMetaKey, statMetaKey, statType, minRange1, minRange2, maxRange1, maxRange2, statRateMin, statRateMax, durationMin, durationMax, rate, onlyFor, baseStat, setStat, gemStatType
+		FROM EquipStatMeta
+		WHERE equipMetaKey = #{equipMetaKey}
+	</select>
+
+	<select id="getDecoStatMetaList" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		/* getDecoStatMetaList */
+		SELECT
+			 grade, statType, decoCode, minRange1, minRange2, maxRange1, maxRange2, statRateMin, statRateMax, durationMin, durationMax, weight
+		FROM EquipDecoStatMeta
+		WHERE grade = #{grade}
+		<if test="exceptType != null">and statType != #{exceptType}</if>
+	</select>
+	
+	<select id="getChoiceDecoMeta" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipChoiceDecoMeta">
+		select maxSize, zero, one, two, three, four, five from EquipChoiceDecoMeta
+		order by metaKey desc
+		limit 1
+	</select>
+	
+	<select id="getEquipmentMeta" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipmentMeta" parameterType="com.thirtygames.zero.common.model.equipment.Equipment">
+	/* getEquipmentMeta */
+		select
+			equipMetaKey, equipmentType, category, subCategory, deco1Grade, deco1Rate, deco2Grade, deco2Rate, eqClass, grade, statGrowth, sellPrice, maxSockets, image
+		from EquipMeta
+		where equipmentType = #{equipmentType}
+		<if test="grade != null">and grade = #{grade}</if>
+	</select>	
+	 	
+	<select id="getStatMeta" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		select * from EquipStatMeta
+		where equipMetaKey = #{equipMetaKey}
+		and statType = #{statType}
+		limit 1
+	</select>
+	
+	<select id="getDecoStat" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		select * from EquipDecoStatMeta
+		where equipmentType = #{equipmentType}
+		and grade = #{grade}
+		and statType = #{statType}
+	</select>
+	
+	<insert id="saveStat" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		insert into EquipStatMeta (equipMetaKey, statType, minRange1, minRange2, maxRange1, maxRange2, statRateMin, statRateMax, durationMin, durationMax, rate, onlyFor, baseStat, gemStatType)
+			values (#{equipMetaKey}, #{statType}, #{minRange1}, #{minRange2}, #{maxRange1}, #{maxRange2}, #{statRateMin}, #{statRateMax}, #{durationMin}, #{durationMax}, #{rate}, #{onlyFor}, #{baseStat}, #{gemStatType})
+	</insert>
+	
+	<update id="updateStat" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		update EquipStatMeta
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="statType != null">statType = #{statType},</if>
+			<if test="grade != null">grade = #{grade},</if>
+			<if test="minRange1 != null">minRange1 = #{minRange1},</if>
+			<if test="minRange2 != null">minRange2 = #{minRange2},</if>
+			<if test="maxRange1 != null">maxRange1 = #{maxRange1},</if>
+			<if test="maxRange2 != null">maxRange2 = #{maxRange2},</if>
+			<if test="gemStatType != null">gemStatType = #{gemStatType},</if>
+			statRateMin = #{statRateMin},
+			statRateMax = #{statRateMax},
+			durationMin = #{durationMin},
+			durationMax = #{durationMax},
+			<if test="rate != null">rate = #{rate},</if>			
+			onlyFor = #{onlyFor},			
+			setStat = #{setStat},			
+			<if test="baseStat != null">baseStat = #{baseStat},</if>
+		</trim>	
+		where statMetaKey = #{statMetaKey}
+	</update>	
+	
+	<delete id="deleteStat" parameterType="String">
+		delete from EquipStatMeta
+		where statMetaKey = #{id}
+	</delete>	
+	
+	<insert id="saveDeco" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		insert into EquipDecoStatMeta (equipmentType, statType, grade, minRange1, minRange2, maxRange1, maxRange2, statRateMin, statRateMax, durationMin, durationMax, rate)
+		values (#{equipmentType}, #{statType}, #{grade}, #{minRange1}, #{minRange2}, #{maxRange1}, #{maxRange2}, #{statRateMin}, #{statRateMax}, #{durationMin}, #{durationMax}, #{rate})
+	</insert>
+	
+	<update id="updateDeco" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		update EquipDecoStatMeta
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="statType != null">statType = #{statType},</if>
+			<if test="grade != null">grade = #{grade},</if>
+			<if test="minRange1 != null">minRange1 = #{minRange1},</if>
+			<if test="minRange2 != null">minRange2 = #{minRange2},</if>
+			<if test="maxRange1 != null">maxRange1 = #{maxRange1},</if>
+			<if test="maxRange2 != null">maxRange2 = #{maxRange2},</if>
+			statRateMin = #{statRateMin},
+			statRateMax = #{statRateMax},
+			durationMin = #{durationMin},
+			durationMax = #{durationMax},			
+			<if test="weight != null">rate = #{weight},</if>
+			onlyFor = #{onlyFor},
+		</trim>	
+		where statMetaKey = #{statMetaKey}
+	</update>	
+	
+	<select id="getEquipmentName" parameterType="int" resultType="string">
+		select ko from EquipNameMeta 
+		where equipmentType = #{equipmentType}
+	</select>
+	
+	<select id="getStatEngName" parameterType="int" resultType="string">
+		select statEngName from EquipStatType 
+		where statType = #{type}
+	</select>
+	
+	<select id="getRandomMergedEquipmentType" parameterType="int" resultType="int">
+		/* getRandomMergedEquipmentType */
+		select equipmentType from EquipMeta
+		where grade = #{grade}
+		and eqClass = #{eqClass}
+		order by rand() limit 1
+	</select>
+	
+	
+	<select id="getGemStatTypeList" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipType">
+		select * from (
+			select categoryName, categoryCode from EquipCategory
+			where codeLevel = '1'
+			and categoryName != 'GEM'
+			group by categoryCode asc
+			union all 
+			select 'None' as categoryName, 0 as categoryCode from dual
+		) x
+		order by categoryCode asc
+	</select>
+	
+	<select id="getGemGradeUpEquipType" resultType="int">
+		select equipmentType from EquipMeta
+		where grade = #{grade} + 1
+		and subCategory = #{subCategory}
+		and category = 6
+		limit 1 
+	</select>
+	
+</mapper>

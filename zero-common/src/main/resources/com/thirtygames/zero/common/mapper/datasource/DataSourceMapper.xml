@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.datasource.DataSourceMapper">
+
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.datasource.Shard">
+		insert into Shard (memberNo, accountId, dataSourceType)
+		values (#{memberNo}, #{accountId}, #{dataSourceType})
+	</insert>
+
+	<select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.datasource.Shard">
+		select * from Shard 
+		where memberNo = #{memberNo}
+	</select>
+
+	<select id="getShardByAccountId" parameterType="String" resultType="com.thirtygames.zero.common.model.datasource.Shard">
+		select 
+			accountId, dataSourceType 
+		from Shard 
+		where accountId = #{accountId}
+	</select>
+	
+	<select id="getDataSourceType" parameterType="String" resultType="int">
+		select 
+			dataSourceType 
+		from Shard where accountId = #{id}
+	</select>
+	
+	<select id="recentDataSourceType" resultType="int">
+		select dataSourceType from Shard order by shardKey desc limit 1
+	</select>
+</mapper>

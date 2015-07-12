@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmMissionMetaMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta">
+		insert into MissionMeta (nameKey, missionId, missionType, iconType, startYmdt, dueDateYmdt, param1, param2, param3, goal, rewardType, reward)
+		values (#{nameKey}, #{missionId}, #{missionType}, #{iconType}, 
+			unix_timestamp(str_to_date(#{startYmdt}, '%Y%m%d%H%i%s')), unix_timestamp(str_to_date(#{dueDateYmdt}, '%Y%m%d%H%i%s')), 
+			#{param1}, #{param2}, #{param3}, #{goal}, #{rewardType}, #{reward})
+		on duplicate key update
+			nameKey = #{nameKey},
+			missionId = #{missionId},
+			missionType = #{missionType},
+			iconType = #{iconType},
+			startYmdt = unix_timestamp(str_to_date(rpad(#{startYmdt}, 14, '0'), '%Y%m%d%H%i%s')),
+			dueDateYmdt = unix_timestamp(str_to_date(rpad(#{dueDateYmdt}, 14, '0'), '%Y%m%d%H%i%s')),
+			param1 = #{param1},
+			param2 = #{param2},
+			param3 = #{param3},
+			goal = #{goal},
+			rewardType = #{rewardType},
+			reward = #{reward}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta">
+		delete from MissionMeta
+		where missionMetaKey = #{id}
+    </delete>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta">
+		update MissionMeta
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="missionId != null">missionId = #{missionId},</if>  
+        	<if test="missionType != null">missionType = #{missionType},</if>
+        	<if test="iconType != null">iconType = #{iconType},</if>  
+        	<if test="startYmdt != null">startYmdt = unix_timestamp(str_to_date(rpad(#{startYmdt}, 14, '0'), '%Y%m%d%H%i%s')),</if>  
+        	<if test="dueDateYmdt != null">dueDateYmdt = unix_timestamp(str_to_date(rpad(#{dueDateYmdt}, 14, '0'), '%Y%m%d%H%i%s')),</if>  
+        	<if test="param1 != null">param1 = #{param1},</if>  
+        	<if test="param2 != null">param2 = #{param2},</if>  
+        	<if test="param3 != null">param3 = #{param3},</if>  
+        	<if test="goal != null">goal = #{goal},</if>  
+        	<if test="rewardType != null">rewardType = #{rewardType},</if>  
+        	<if test="reward != null">reward = #{reward},</if>  
+        	<if test="nameKey != null">nameKey = #{nameKey},</if>  
+		</trim>
+		where missionMetaKey = #{missionMetaKey}
+	</update>
+    
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta" parameterType="map">
+		select 
+        	m.missionMetaKey, m.missionId, m.missionType, m.iconType, 
+        	from_unixtime(m.startYmdt, '%Y-%m-%d %H:%i:%s') as startYmdt, 
+        	from_unixtime(m.dueDateYmdt, '%Y-%m-%d %H:%i:%s') as dueDateYmdt, 
+        	m.param1, m.param2, m.param3, m.goal, m.rewardType, m.reward, m.modId, date_format(m.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt,
+        	m.nameKey, n.title_ko as titleKo, n.description_ko as descriptionKo
+        from MissionMeta m left outer join MissionName n on m.nameKey = n.nameKey
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and<if test="rule.field != 'nameKey'">m.</if><if test="rule.field == 'nameKey'">n.</if>${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='missionMetaKey'">order by m.missionMetaKey ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta" parameterType="map">
+		select 
+        	m.missionMetaKey, m.missionId, m.missionType, m.iconType, 
+        	from_unixtime(m.startYmdt, '%Y-%m-%d %H:%i:%s') as startYmdt, 
+        	from_unixtime(m.dueDateYmdt, '%Y-%m-%d %H:%i:%s') as dueDateYmdt, 
+        	m.param1, m.param2, m.param3, m.goal, m.rewardType, m.reward, m.modId, date_format(m.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt,
+        	m.nameKey, n.title_ko as titleKo, n.description_ko as descriptionKo
+        from MissionMeta m left outer join MissionName n on m.nameKey = n.nameKey
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and<if test="rule.field != 'nameKey'">m.</if><if test="rule.field == 'nameKey'">n.</if>${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta">
+        select 
+        	m.missionMetaKey, m.missionId, m.missionType, m.iconType, 
+        	from_unixtime(m.startYmdt, '%Y-%m-%d %H:%i:%s') as startYmdt, 
+        	from_unixtime(m.dueDateYmdt, '%Y-%m-%d %H:%i:%s') as dueDateYmdt, 
+        	m.param1, m.param2, m.param3, m.goal, m.rewardType, m.reward, m.modId, date_format(m.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt,
+        	m.nameKey, n.title_ko as titleKo, n.description_ko as descriptionKo
+        from MissionMeta m left outer join MissionName n on m.nameKey = n.nameKey
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta">
+        select count(*)
+        from MissionMeta
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and<if test="rule.field != 'nameKey'">m.</if><if test="rule.field == 'nameKey'">n.</if>${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

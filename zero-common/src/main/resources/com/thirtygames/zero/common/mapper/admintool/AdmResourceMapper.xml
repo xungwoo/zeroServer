@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmResourceMapper">
+	<update id="update" parameterType="com.thirtygames.zero.common.model.admintool.UserResource">
+    	update Resource
+	    	<trim prefix="set" suffixOverrides=",">
+	    		modYmdt = now(),
+	    		<if test="gold != null">gold = #{gold},</if>
+	    		<if test="cash != null">cash = #{cash},</if>
+	    		<if test="apMax != null">apMax = #{apMax},</if>
+	    		<if test="bpMax != null">bpMax = #{bpMax},</if>
+	    		<if test="apExtra != null">apExtra = #{apExtra},</if>
+	    		<if test="bpExtra != null">bpExtra = #{bpExtra},</if>
+	    		<if test="fp != null">fp = #{fp},</if>
+	    		<if test="unlockKey != null">unlockKey = #{unlockKey},</if>
+	    		<if test="equipLevelUpDrug != null">equipLevelUpDrug = #{equipLevelUpDrug},</if>
+	    		<if test="equipTicket != null">equipTicket = #{equipTicket},</if>
+	    		<if test="titleBundle1 != null">titleBundle1 = #{titleBundle1},</if>
+	    		<if test="titleBundle2 != null">titleBundle2 = #{titleBundle2},</if>
+	    		<if test="titleBundle3 != null">titleBundle3 = #{titleBundle3},</if>
+	    	</trim>
+    	where accountId = #{accountId}
+    </update>
+    
+	<update id="updateAddition" parameterType="com.thirtygames.zero.common.model.admintool.UserResource">
+		/* updateAddition */
+		update Resource
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+			<if test="gold != null and gold &gt; 0">gold = gold + #{gold},</if>
+			<if test="cash != null and cash &gt; 0">cash = cash + #{cash},</if>
+			<if test="unlockKey != null and unlockKey &gt; 0">unlockKey = unlockKey + #{unlockKey},</if>
+			<if test="apMax != null and apMax &gt; 0">apMax = apMax + #{apMax},</if>
+			<if test="bpMax != null and bpMax &gt; 0">bpMax = bpMax + #{bpMax},</if>
+			<if test="apExtra != null and apExtra &gt; 0">apExtra = apExtra + #{apExtra},</if>
+			<if test="bpExtra != null and bpExtra &gt; 0">bpExtra = bpExtra + #{bpExtra},</if>
+			<if test="fp != null and fp &gt; 0">fp = fp + #{fp},</if>
+    		<if test="titleBundle1 != null">titleBundle1 = titleBundle1|#{titleBundle1},</if>
+    		<if test="titleBundle2 != null">titleBundle2 = titleBundle2|#{titleBundle2},</if>
+    		<if test="titleBundle3 != null">titleBundle3 = titleBundle3|#{titleBundle3},</if>
+    		<if test="equipLevelUpDrug != null">equipLevelUpDrug = equipLevelUpDrug + #{equipLevelUpDrug},</if>
+    		<if test="equipTicket != null">equipTicket = equipTicket + #{equipTicket},</if>
+		</trim>
+		where accountId = #{accountId}
+	</update>    
+    
+    
+    <select id="search" resultType="com.thirtygames.zero.common.model.admintool.UserResource" parameterType="map">
+    	select
+       		a.memberNo, a.accountId, a.nickName, 
+       		r.resourceKey, r.accountId, r.apLastYmdt, r.apLastValue, r.apMax, r.apExtra, r.bpLastYmdt, r.bpLastValue, r.bpMax, r.bpExtra, r.fp, r.gold, r.cash, r.unlockKey, r.titleBundle1, r.titleBundle2, r.titleBundle3, r.equipLevelUpDrug, r.equipTicket, date_format(r.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, 
+       		from_unixtime(r.apLastYmdt, '%Y-%m-%d %H:%i:%s') apLastDate, from_unixtime(r.bpLastYmdt, '%Y-%m-%d %H:%i:%s') bpLastDate
+        from Account a, Resource r
+        <where>
+        	a.accountId = r.accountId
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and a.${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='accountId'">order by accountId ${sord}</when>
+						<when test="sidx=='nickName'">order by nickName ${sord}</when>					
+						<when test="sidx=='gold'">order by gold ${sord}</when>
+						<when test="sidx=='cash'">order by cash ${sord}</when>
+						<when test="sidx=='apLastDate'">order by apLastDate ${sord}</when>
+						<when test="sidx=='apLastValue'">order by apLastValue ${sord}</when>
+						<when test="sidx=='apMax'">order by apMax ${sord}</when>
+						<when test="sidx=='bpLastDate'">order by bpLastDate ${sord}</when>
+						<when test="sidx=='bpLastValue'">order by bpLastValue ${sord}</when>
+						<when test="sidx=='bpMax'">order by bpMax ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.UserResource" parameterType="map">
+        select
+       		a.memberNo, a.accountId, a.nickName, 
+       		r.resourceKey, r.accountId, r.apLastYmdt, r.apLastValue, r.apMax, r.apExtra, r.bpLastYmdt, r.bpLastValue, r.bpMax, r.bpExtra, r.fp, r.gold, r.cash, r.unlockKey, r.titleBundle1, r.titleBundle2, r.titleBundle3, r.equipLevelUpDrug, r.equipTicket, date_format(r.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, 
+       		from_unixtime(r.apLastYmdt, '%Y-%m-%d %H:%i:%s') apLastDate, from_unixtime(r.bpLastYmdt, '%Y-%m-%d %H:%i:%s') bpLastDate
+        from Account a, Resource r 
+        <where>
+        	a.accountId = r.accountId
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and a.${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+
+    <select id="size" resultType="int">
+        select count(*) from Account a, Resource r
+        <where>
+			a.accountId = r.accountId
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and a.${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	    </where>
+    </select>
+</mapper>

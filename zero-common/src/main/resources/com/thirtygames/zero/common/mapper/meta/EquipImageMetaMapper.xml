@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.EquipImageMetaMapper">
+	<resultMap id="equipMetaResult" type="com.thirtygames.zero.common.model.equipment.meta.EquipImageMeta">
+	  <id property="equipmentType" column="equipmentType"/>	  
+	  <result property="grade" column="grade"/>
+	  <result property="eqClass" column="eqClass"/>
+	  <result property="category" column="category"/>
+	  <result property="subCategory" column="subCategory"/>
+	  <result property="dropRate" column="dropRate"/>
+	  <result property="setKey" column="setKey"/>
+	  <result property="image" column="image"/>
+	  <result property="statGrowth" column="statGrowth"/>
+	  <result property="sellPrice" column="sellPrice"/>
+	  <result property="name" column="name"/>
+	  <collection property="stats" ofType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta" resultMap="equipStatMetaResult"/>
+	</resultMap>    
+
+	<resultMap id="equipStatMetaResult" type="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		<id property="statMetaKey" column="statMetaKey"/>
+		<result property="statType" column="statType"/>
+		<result property="minRange1" column="minRange1"/>
+		<result property="minRange2" column="minRange2"/>
+		<result property="maxRange1" column="maxRange1"/>
+		<result property="maxRange2" column="maxRange2"/>
+		<result property="durationMin" column="durationMin"/>
+		<result property="durationMax" column="durationMax"/>
+		<result property="rate" column="rate"/>
+		<result property="onlyFor" column="onlyFor"/>
+		<result property="setStat" column="setStat"/>
+		<result property="baseStat" column="baseStat"/>
+		<result property="gemStatType" column="gemStatType"/>
+	</resultMap>   
+
+	<select id="getGemMetaList" parameterType="string" resultMap="equipMetaResult">
+		select 
+			e.equipmentType, e.grade, e.eqClass, e.category, e.subCategory, e.dropRate, e.setKey, e.image, 
+			e.statGrowth, e.sellPrice,
+			<choose>
+				<when test="lang == 'ko'">n.ko</when>
+				<when test="lang == 'en'">n.en</when>				
+				<otherwise>n.en</otherwise>
+			</choose> as name, 
+			es.statType, es.minRange1, es.minRange2, es.maxRange1, es.maxRange2, es.durationMin, es.durationMax,
+			es.rate, es.onlyFor, es.setStat, es.baseStat, es.gemStatType
+		from (EquipMeta e inner join EquipStatMeta es on e.equipMetaKey = es.equipMetaKey) left outer join EquipNameMeta n on e.equipmentType = n.equipmentType
+		where e.isUse = 1 
+		and e.category = 6
+		order by e.equipmentType asc, FIELD( gemStatType, 2, 3, 1, 4, 5 )
+	</select>
+
+	<select id="getEquipMetaList" parameterType="string" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipImageMeta">
+		select 
+			e.equipmentType, e.grade, e.eqClass, e.category, e.subCategory, e.dropRate, e.setKey, e.image, 
+			e.statGrowth, e.sellPrice,
+			<choose>
+				<when test="lang == 'ko'">n.ko</when>
+				<when test="lang == 'en'">n.en</when>
+				<otherwise>n.en</otherwise>
+			</choose> as name
+		from EquipMeta e left outer join EquipNameMeta n on e.equipmentType = n.equipmentType
+		where e.isUse = 1 
+		order by e.equipmentType asc
+	</select>
+</mapper>

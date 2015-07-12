@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmStageMapper">
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.meta.Stage"
+        keyProperty="metaKey" keyColumn="metaKey">
+        insert into Stage (
+        	 stageKey, chapter, stage, clearMode, playMode, costAp, costBp,
+			 limitTime, goldScaleForEnemyKill, scene, bossSpriteName, unlockKeyDropRate, itemDropFairAdder,
+			 itemDropRate, itemGrade, itemGradeRange, bossItemDropRate, bossItem, bossItemCategory, bossItemGrade,
+			 bossCameraType, bossCameraTime, hiddenOpenRate, hiddenStageKey, chapterBossStage,
+			 enemyLvAdder, enemySkillAdder, enemyHpScaler, eventClosingDate, bossRaidMetaId, bossUnitLevelMin, bossUnitLevelMax, modYmdt, modId)
+        values (
+        	#{stageKey},#{chapter},#{stage},#{clearMode},#{playMode},#{costAp},#{costBp},
+			#{limitTime},#{goldScaleForEnemyKill},#{scene},#{bossSpriteName},#{unlockKeyDropRate},#{itemDropFairAdder},
+			#{itemDropRate},#{itemGrade},#{itemGradeRange},#{bossItemDropRate},#{bossItem},#{bossItemCategory},#{bossItemGrade},
+			#{bossCameraType},#{bossCameraTime},#{hiddenOpenRate},#{hiddenStageKey},#{chapterBossStage},
+			#{enemyLvAdder},#{enemySkillAdder},#{enemyHpScaler},#{eventClosingDate},#{bossRaidMetaId}, #{bossUnitLevelMin}, #{bossUnitLevelMax}, 
+			now(), #{modId}
+		)
+        on duplicate key update
+        	stageKey = #{stageKey}, 
+        	chapter = #{chapter},  
+        	stage = #{stage}, 
+        	clearMode = #{clearMode}, 
+        	playMode = #{playMode}, 
+        	costAp = #{costAp}, 
+        	costBp = #{costBp}, 
+        	limitTime = #{limitTime}, 
+        	goldScaleForEnemyKill = #{goldScaleForEnemyKill}, 
+        	scene = #{scene}, 
+        	bossSpriteName = #{bossSpriteName}, 
+        	unlockKeyDropRate = #{unlockKeyDropRate}, 
+        	itemDropFairAdder = #{itemDropFairAdder}, 
+        	itemDropRate = #{itemDropRate}, 
+        	itemGrade = #{itemGrade}, 
+        	itemGradeRange = #{itemGradeRange}, 
+        	bossItemDropRate = #{bossItemDropRate},
+        	bossItem = #{bossItem},
+        	bossItemCategory = #{bossItemCategory},
+        	bossItemGrade = #{bossItemGrade},
+        	bossCameraType = #{bossCameraType},
+        	bossCameraTime = #{bossCameraTime},
+        	hiddenOpenRate = #{hiddenOpenRate},
+        	hiddenStageKey = #{hiddenStageKey},
+        	chapterBossStage = #{chapterBossStage},
+        	enemyLvAdder = #{enemyLvAdder},
+        	enemySkillAdder = #{enemySkillAdder},
+        	enemyHpScaler = #{enemyHpScaler},
+        	eventClosingDate = #{eventClosingDate},
+        	bossRaidMetaId = #{bossRaidMetaId},
+        	bossUnitLevelMin = #{bossUnitLevelMin},
+        	bossUnitLevelMax = #{bossUnitLevelMax},
+        	modYmdt = now(),
+        	modId = #{modId}
+    </insert>
+    
+	<update id="update" parameterType="com.thirtygames.zero.common.model.meta.Stage">
+		update Stage
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+			bossRaidMetaId = #{bossRaidMetaId},
+        	<if test="stageKey != null">stageKey = #{stageKey},</if>   
+        	<if test="chapter != null">chapter = #{chapter},</if>  
+        	<if test="stage != null">stage = #{stage},</if>  
+        	<if test="clearMode != null">clearMode = #{clearMode},</if>
+        	<if test="playMode != null">playMode = #{playMode},</if>
+        	<if test="costAp != null">costAp = #{costAp},</if>  
+        	<if test="costBp != null">costBp = #{costBp},</if>  
+        	<if test="limitTime != null">limitTime = #{limitTime},</if>  
+        	<if test="goldScaleForEnemyKill != null">goldScaleForEnemyKill = #{goldScaleForEnemyKill},</if>  
+        	<if test="scene != null">scene = #{scene},</if>  
+        	<if test="bossSpriteName != null">bossSpriteName = #{bossSpriteName},</if>  
+        	<if test="unlockKeyDropRate != null">unlockKeyDropRate = #{unlockKeyDropRate},</if>  
+        	<if test="itemDropFairAdder != null">itemDropFairAdder = #{itemDropFairAdder},</if>  
+        	<if test="itemDropRate != null">itemDropRate = #{itemDropRate},</if>  
+        	<if test="itemGrade != null">itemGrade = #{itemGrade},</if>  
+        	<if test="itemGradeRange != null">itemGradeRange = #{itemGradeRange},</if>  
+        	<if test="bossItemDropRate != null">bossItemDropRate = #{bossItemDropRate},</if>  
+        	<if test="bossItem != null">bossItem = #{bossItem},</if>  
+        	<if test="bossItemCategory != null">bossItemCategory = #{bossItemCategory},</if>  
+        	<if test="bossItemGrade != null">bossItemGrade = #{bossItemGrade},</if>  
+        	<if test="bossCameraType != null">bossCameraType = #{bossCameraType},</if>  
+        	<if test="bossCameraTime != null">bossCameraTime = #{bossCameraTime},</if>  
+        	<if test="hiddenOpenRate != null">hiddenOpenRate = #{hiddenOpenRate},</if>  
+        	<if test="hiddenStageKey != null">hiddenStageKey = #{hiddenStageKey},</if>  
+        	<if test="chapterBossStage != null">chapterBossStage = #{chapterBossStage},</if>  
+        	<if test="enemyLvAdder != null">enemyLvAdder = #{enemyLvAdder},</if>  
+        	<if test="enemySkillAdder != null">enemySkillAdder = #{enemySkillAdder},</if>  
+        	<if test="enemyHpScaler != null">enemyHpScaler = #{enemyHpScaler},</if>  
+        	<if test="eventClosingDate != null">eventClosingDate = #{eventClosingDate},</if>  
+        	<if test="bossRaidMetaId != null">bossRaidMetaId = #{bossRaidMetaId},</if>  
+        	<if test="bossUnitLevelMin != null">bossUnitLevelMin = #{bossUnitLevelMin},</if>  
+        	<if test="bossUnitLevelMax != null">bossUnitLevelMax = #{bossUnitLevelMax},</if>  
+        	<if test="modId != null">modId = #{modId},</if>  
+		</trim>
+		where metaKey = #{metaKey}
+	</update>
+
+    <select id="get" parameterType="map" resultType="com.thirtygames.zero.common.model.meta.Stage">
+        select * from Stage where stageKey = #{id}
+    </select>
+
+    <select id="search" parameterType="com.thirtygames.zero.common.model.meta.Stage" resultType="com.thirtygames.zero.common.model.meta.Stage">
+        select * from Stage
+		<where>
+			1=1
+			<if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+       	</where>
+       	
+       	<if test="sidx != '' and sord != ''">
+			order by ${sidx} ${sord}
+		</if>
+			
+		<if test="length &gt; 0">limit #{from}, #{length}</if>
+    </select>
+    
+    <select id="excel" parameterType="com.thirtygames.zero.common.model.meta.Stage" resultType="com.thirtygames.zero.common.model.meta.Stage">
+        select * from Stage
+		<where>
+			1=1
+			<if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+       	</where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.meta.Stage">
+        select * from Stage limit #{from}, #{length}
+    </select>
+    
+    <update id="delete" parameterType="String">
+    	delete from Stage 
+    	where metaKey = #{id}
+    </update>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.meta.Stage">
+        select count(*) from Stage
+        <where>
+			1=1
+			<if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+       	</where>
+    </select>
+</mapper>

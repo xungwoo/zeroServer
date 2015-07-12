@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmEquipmentMapper">
+	<select id="get" resultType="com.thirtygames.zero.common.model.equipment.Equipment" parameterType="string">
+		select
+		 	e.*, unix_timestamp(genYmdt) as genYmdt
+		from Equipment e
+		where e.equipmentId = #{id}
+		and e.isDel = 0
+	</select>
+	
+	<select id="getList" resultType="com.thirtygames.zero.common.model.equipment.Equipment" parameterType="list">
+		select
+		 	equipmentId, equipmentType, category, subCategory, decoration1, decoration2, accountId, unitId, equipPosition, eqClass, grade, level, exp, totalExp, count,
+			openSockets, maxSockets, socket1, socket2, socket3, unix_timestamp(genYmdt) as genYmdt
+		from Equipment e
+		where e.equipmentId in
+			<foreach collection="list" item="id" index="index" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+		and e.isDel = 0
+	</select>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.equipment.Equipment" parameterType="map">
+		select 
+			equipmentId, equipmentType, category, subCategory, decoration1, decoration2, accountId, unitId, equipPosition, eqClass, grade, level, exp, totalExp, count,
+			openSockets, maxSockets, socket1, socket2, socket3, unix_timestamp(genYmdt) as genYmdt 
+		from Equipment
+		where isDel = 0
+       	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+       	</if>
+        <if test="model.accountId != null">and accountId = #{model.accountId}</if>
+        <choose>
+			<when test="sidx != '' and sord != ''">
+				<choose>
+					<when test="sidx=='equipmentId'">order by equipmentId ${sord}</when>
+					<when test="sidx=='equipmentType'">order by equipmentType ${sord}</when>					
+					<when test="sidx=='category'">order by category ${sord}</when>
+					<when test="sidx=='subCategory'">order by subCategory ${sord}</when>
+					<when test="sidx=='decoration1'">order by decoration1 ${sord}</when>
+					<when test="sidx=='decoration2'">order by decoration2 ${sord}</when>
+					<when test="sidx=='accountId'">order by accountId ${sord}</when>
+					<when test="sidx=='unitId'">order by unitId ${sord}</when>
+					<when test="sidx=='equipPosition'">order by equipPosition ${sord}</when>
+					<when test="sidx=='grade'">order by grade ${sord}</when>
+					<when test="sidx=='level'">order by level ${sord}</when>
+					<when test="sidx=='exp'">order by exp ${sord}</when>
+					<when test="sidx=='totalExp'">order by totalExp ${sord}</when>
+					<when test="sidx=='openSockets'">order by openSockets ${sord}</when>
+					<when test="sidx=='maxSockets'">order by maxSockets ${sord}</when>
+					<when test="sidx=='socket1'">order by socket1 ${sord}</when>
+					<when test="sidx=='socket2'">order by socket2 ${sord}</when>
+					<when test="sidx=='socket3'">order by socket3 ${sord}</when>
+					<when test="sidx=='genYmdt'">order by genYmdt ${sord}</when>
+					<otherwise>order by ${sidx} ${sord}</otherwise>
+				</choose>
+			</when>
+		</choose>
+		
+        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+	</select>
+	
+	<select id="excel" resultType="com.thirtygames.zero.common.model.equipment.Equipment" parameterType="com.thirtygames.zero.common.model.equipment.Equipment">
+		select 
+			equipmentId, equipmentType, category, subCategory, decoration1, decoration2, accountId, unitId, equipPosition, eqClass, grade, level, exp, totalExp, count,
+			openSockets, maxSockets, socket1, socket2, socket3, unix_timestamp(genYmdt) as genYmdt 
+		from Equipment
+		where isDel = 0
+       	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+       	</if>
+        <if test="model.accountId != null">and accountId = #{model.accountId}</if>
+	</select>
+
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.equipment.Equipment">
+		insert into Equipment (equipmentId, equipmentType, category, subCategory, decoration1, decoration2, accountId, unitId, equipPosition, eqClass, grade, level, count,
+			openSockets, maxSockets, socket1, socket2, socket3, genYmdt)
+		values (#{equipmentId}, #{equipmentType}, #{category}, #{subCategory}, #{decoration1}, #{decoration2}, #{accountId}, #{unitId}, #{equipPosition}, #{class}, #{grade}, #{level}, #{count},
+			#{openSockets}, #{maxSockets}, #{socket1}, #{socket2}, #{socket3}, now())
+	</insert>
+
+	<update id="update" parameterType="com.thirtygames.zero.common.model.equipment.Equipment">
+		update Equipment
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="unitId != null">unitId = #{unitId},</if>
+			<if test="equipPosition != null">equipPosition = #{equipPosition},</if>
+			<if test="grade != null">grade = #{grade},</if>
+			<if test="level != null">level = #{level},</if>
+			<if test="exp != null">exp = #{exp},</if>
+			<if test="totalExp != null">totalExp = #{totalExp},</if>
+			<if test="count != null">count = #{count},</if>
+			<if test="openSockets != null">openSockets = #{openSockets},</if>
+			<if test="socket1 != null">socket1 = #{socket1},</if>
+			<if test="socket2 != null">socket2 = #{socket2},</if>
+			<if test="socket3 != null">socket3 = #{socket3},</if>
+		</trim>
+		where equipmentId = #{equipmentId}
+	</update>
+	
+	<update id="delete" parameterType="string">
+		update Equipment
+		set isDel = 1
+		where equipmentId = #{id}
+	</update>	
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.Equipment">
+        select * from Equipment limit #{from}, #{length}
+    </select>
+
+	<select id="size" resultType="int">
+        select count(*) from Equipment
+        where isDel = 0
+        <if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+       	</if>
+    </select>
+    
+</mapper>

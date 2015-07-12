@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmShopItemMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminShopItem" keyColumn="itemKey" keyProperty="itemKey">
+		insert into ShopItem (productId, itemId, itemCategory, itemType, itemImageName, itemQuantity, itemQuantityBonus, bonusText, buyType, price, sort)
+		values (#{productId}, #{itemId}, #{itemCategory}, #{itemType}, #{itemImageName}, #{itemQuantity}, #{itemQuantityBonus}, #{bonusText}, #{buyType}, #{price}, #{sort})
+		on duplicate key update
+			productId = #{productId},
+			itemId = #{itemId},
+			itemCategory = #{itemCategory},
+			itemType = #{itemType},
+			itemImageName = #{itemImageName},
+			itemQuantity = #{itemQuantity},
+			itemQuantityBonus = #{itemQuantityBonus},
+			bonusText = #{bonusText},
+			buyType = #{buyType},
+			price = #{price},
+			sort = #{sort},
+			isDel = #{isDel}
+    </insert>
+	<insert id="saveName" parameterType="com.thirtygames.zero.common.model.admintool.AdminShopItem">
+		insert into ShopItemName (itemKey, itemName_ko, itemDesc_ko, itemName_en, itemDesc_en)
+		values (#{itemKey}, #{itemNameKo}, #{itemDescKo}, #{itemNameEn}, #{itemDescEn})
+		on duplicate key update
+			itemKey = #{itemKey},
+			itemName_ko = #{itemNameKo},
+			itemDesc_ko = #{itemDescKo},
+			itemName_en = #{itemNameEn},
+			itemDesc_en = #{itemDescEn}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.admintool.AdminShopItem">
+		delete from ShopItem
+		where itemKey = #{id}
+    </delete>
+
+	<delete id="deleteName" parameterType="com.thirtygames.zero.common.model.admintool.AdminShopItem">
+		delete from ShopItemName
+		where itemKey = #{id}
+    </delete>
+
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminShopItem">
+		update ShopItem
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="productId != null">productId = #{productId},</if>  
+        	<if test="itemId != null">itemId = #{itemId},</if>
+        	<if test="itemCategory != null">itemCategory = #{itemCategory},</if>  
+        	<if test="itemType != null">itemType = #{itemType},</if>  
+        	<if test="itemImageName != null">itemImageName = #{itemImageName},</if>  
+        	<if test="itemQuantity != null">itemQuantity = #{itemQuantity},</if>  
+        	<if test="itemQuantityBonus != null">itemQuantityBonus = #{itemQuantityBonus},</if>  
+        	<if test="bonusText != null">bonusText = #{bonusText},</if>  
+        	<if test="buyType != null">buyType = #{buyType},</if>  
+        	<if test="price != null">price = #{price},</if>  
+        	<if test="sort != null">sort = #{sort},</if>  
+        	<if test="isDel != null">isDel = #{isDel},</if>  
+        	<if test="repeatType != null">repeatType = #{repeatType},</if>  
+        	<if test="addRewardType1 != null">addRewardType1 = #{addRewardType1},</if>  
+        	<if test="addReward1 != null">addReward1 = #{addReward1},</if>  
+        	<if test="addRewardType2 != null">addRewardType2 = #{addRewardType2},</if>  
+        	<if test="addReward2 != null">addReward2 = #{addReward2},</if>  
+        	<if test="addRewardType3 != null">addRewardType3 = #{addRewardType3},</if>  
+        	<if test="addReward3 != null">addReward3 = #{addReward3},</if>  
+        	<if test="addRewardType4 != null">addRewardType4 = #{addRewardType4},</if>  
+        	<if test="addReward4 != null">addReward4 = #{addReward4},</if>  
+		</trim>
+		where itemKey = #{itemKey}
+	</update>
+    
+    <update id="updateName" parameterType="com.thirtygames.zero.common.model.admintool.AdminShopItem">
+		update ShopItemName
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="itemNameKo != null">itemName_ko = #{itemNameKo},</if>  
+        	<if test="itemDescKo != null">itemDesc_ko = #{itemDescKo},</if>
+        	<if test="itemNameEn != null">itemName_en = #{itemNameEn},</if>  
+        	<if test="itemDescEn != null">itemDesc_en = #{itemDescEn},</if>  
+		</trim>
+		where itemKey = #{itemKey}
+	</update>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminShopItem" parameterType="map">
+    	select
+			s.itemKey, s.productId, s.itemId, s.itemCategory, s.itemType, s.repeatType,
+    		s.addRewardType1, s.addReward1, s.addRewardType2, s.addReward2, s.addRewardType3, s.addReward3, s.addRewardType4, s.addReward4, 
+    		s.itemImageName, s.itemQuantity, s.itemQuantityBonus, s.bonusText, s.buyType, s.price, s.sort, s.isDel, date_format(s.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, s.modId,
+    		n.itemName_ko, n.itemDesc_ko, n.itemName_en, n.itemDesc_en
+        from ShopItem s, ShopItemName n 
+        <where>
+        	s.itemKey = n.itemKey
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and
+		           	<choose>
+		           		<when test="rule.field = 'itemNameKo'">n.itemName_ko</when>
+		           		<when test="rule.field = 'itemDescKo'">n.itemDesc_ko</when>
+		           		<when test="rule.field = 'itemNameEn'">n.itemName_en</when>
+		           		<when test="rule.field = 'itemDescEn'">n.itemDesc_en</when>
+		           		<otherwise>s.${rule.field}</otherwise>
+		           	</choose>
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='itemNameKo'">order by n.itemNameKo ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminShopItem" parameterType="map">
+    	select
+			s.itemKey, s.productId, s.itemId, s.itemCategory, s.itemType, s.repeatType,
+    		s.addRewardType1, s.addReward1, s.addRewardType2, s.addReward2, s.addRewardType3, s.addReward3, s.addRewardType4, s.addReward4, 
+    		s.itemImageName, s.itemQuantity, s.itemQuantityBonus, s.bonusText, s.buyType, s.price, s.sort, s.isDel, date_format(s.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, s.modId,
+    		n.itemName_ko, n.itemDesc_ko, n.itemName_en, n.itemDesc_en
+        from ShopItem s, ShopItemName n 
+        <where>
+        	s.itemKey = n.itemKey
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and
+		           	<choose>
+		           		<when test="rule.field = 'itemNameKo'">n.itemName_ko</when>
+		           		<when test="rule.field = 'itemDescKo'">n.itemDesc_ko</when>
+		           		<when test="rule.field = 'itemNameEn'">n.itemName_en</when>
+		           		<when test="rule.field = 'itemDescEn'">n.itemDesc_en</when>
+		           		<otherwise>s.${rule.field}</otherwise>
+		           	</choose>
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminShopItem">
+        select 
+			s.itemKey, s.productId, s.itemId, s.itemCategory, s.itemType, s.repeatType,
+    		s.addRewardType1, s.addReward1, s.addRewardType2, s.addReward2, s.addRewardType3, s.addReward3, s.addRewardType4, s.addReward4, 
+    		s.itemImageName, s.itemQuantity, s.itemQuantityBonus, s.bonusText, s.buyType, s.price, s.sort, s.isDel, date_format(s.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, s.modId,
+    		n.itemName_ko, n.itemDesc_ko, n.itemName_en, n.itemDesc_en
+        from ShopItem s, ShopItemName n 
+        where s.itemKey = n.itemKey
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminShopItem">
+        select count(*)
+        from ShopItem s, ShopItemName n 
+       	where s.itemKey = n.itemKey
+        <if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and
+	           	<choose>
+	           		<when test="rule.field = 'itemNameKo'">n.itemName_ko</when>
+	           		<when test="rule.field = 'itemDescKo'">n.itemDesc_ko</when>
+	           		<when test="rule.field = 'itemNameEn'">n.itemName_en</when>
+	           		<when test="rule.field = 'itemDescEn'">n.itemDesc_en</when>
+	           		<otherwise>s.${rule.field}</otherwise>
+	           	</choose>
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+       	</if>
+    </select>
+</mapper>

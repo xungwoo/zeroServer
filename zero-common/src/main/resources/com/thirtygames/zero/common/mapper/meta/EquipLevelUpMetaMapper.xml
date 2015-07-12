@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.EquipLevelUpMetaMapper">
+	
+	<select id="getByGradeAndLevel" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipLevelUpMeta">
+		select
+			metaKey, grade, level, rate, modYmdt, modId 
+		from EquipLevelUpMeta
+		where grade = #{grade}
+		and level = #{level}  
+	</select>
+	
+	<select id="range" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipLevelUpMeta">
+		select
+			metaKey, grade, level, rate, modYmdt, modId 
+		from EquipLevelUpMeta order by grade asc, level asc
+	</select>
+
+</mapper>

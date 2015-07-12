@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.BossRaidGuestMapper">
+
+    
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.BossRaid" keyColumn="accountId,bossRaidId" keyProperty="raidKey">
+        insert into BossRaidGuest (accountId, bossRaidMetaId, bossRaidId, foundAccountId, isPlay)
+        values (#{accountId}, #{bossRaidMetaId}, #{bossRaidId}, #{foundAccountId}, #{isPlay})
+        on duplicate key update
+        	accountId = #{accountId}, 
+        	bossRaidMetaId = #{bossRaidMetaId}, 
+        	bossRaidId = #{bossRaidId}, 
+        	foundAccountId = #{foundAccountId}, 
+        	isPlay = #{isPlay}
+    </insert>
+
+    <select id="get" resultType="com.thirtygames.zero.common.model.BossRaid">
+        select
+        	0 as isEvent, b.*
+        from BossRaidGuest b
+        where b.raidKey = #{id}
+    </select>    
+
+    <select id="getGuestRaidInfo" resultType="com.thirtygames.zero.common.model.BossRaid">
+    	/* getGuestRaidInfo */
+        select
+			0 as isEvent, b.*
+        from BossRaidGuest b
+        where b.bossRaidId = #{bossRaidId}
+        and b.accountId = #{accountId}
+    </select> 
+
+
+    <select id="getGuestResultList" resultType="com.thirtygames.zero.common.model.BossRaid">
+    	/* getGuestResultList */
+        select
+        	0 as isEvent, b.*
+        from BossRaidGuest b
+        where b.bossRaidId = #{id}
+    </select>
+
+
+    <select id="getNoRewardRaidIdList" resultType="string">
+    	/* getNoRewardRaidIdList */
+        select bossRaidId from BossRaidGuest
+        where accountId = #{accountId}
+        and isRewarded = 0
+    </select>
+																					
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.BossRaid">
+    	update BossRaidGuest
+		<trim prefix="set" suffixOverrides=",">
+    		<if test="damageSum != null">damageSum = damageSum + #{damageSum},</if>    	
+    		<if test="isPlay != null">isPlay = #{isPlay},</if>    	
+    		<if test="isClear != null">isClear = #{isClear},</if>    	
+    		<if test="isRewarded != null">isRewarded = #{isRewarded},</if>
+		</trim>    	
+	    where bossRaidId = #{bossRaidId}
+	    and accountId = #{accountId} 	
+    </update>  
+    
+    <update id="updateAllGuest" parameterType="com.thirtygames.zero.common.model.BossRaid">
+    	update BossRaidGuest
+		<trim prefix="set" suffixOverrides=",">
+    		<if test="damageSum != null">damageSum = damageSum + #{damageSum},</if>    	
+    		<if test="isPlay != null">isPlay = #{isPlay},</if>    	
+    		<if test="isClear != null">isClear = #{isClear},</if>    	
+    		<if test="isRewarded != null">isRewarded = #{isRewarded},</if>
+		</trim>    	
+	    where bossRaidId = #{bossRaidId}
+    </update>  
+    
+    <select id="getClearBossRaidMetaIds" resultType="string">
+        select
+        	bossRaidMetaId
+        from BossRaidGuest
+        where accountId = #{accountId}
+        and isClear = 1
+        group by bossRaidMetaId
+    </select>    
+    
+    <select id="countPlayingUser" resultType="int">
+        select count(*) from BossRaidGuest
+        where accountId = #{accountId}
+        and isPlay = 1
+    </select>    
+    
+    <select id="getGuestList" resultType="com.thirtygames.zero.common.model.BossRaid">
+        select a.accountId, a.memberNo, b.isPlay from BossRaidGuest b, Account a
+        where b.bossRaidId = #{id}
+        and b.accountId = a.accountId
+    </select>    
+    
+</mapper>

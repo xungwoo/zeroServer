@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmUnitLogMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.log.UnitLog">
+        insert into UnitLog (unitId, unitType, accountId, status, prevLevel, prevSkill0Lv, prevSkill1Lv, prevSkill2Lv, prevSkill3Lv, resultLevel)
+        values (#{unitId}, #{unitType}, #{accountId}, #{status}, #{prevLevel}, #{prevSkill0Lv}, #{prevSkill1Lv}, #{prevSkill2Lv}, #{prevSkill3Lv}, #{resultLevel}) 
+    </insert>
+
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.log.UnitLog">
+		select 
+			logKey,
+			unitId,
+			unitType,
+			accountId,
+			status,
+			resultLevel,
+			logYmdt
+		from UnitLog
+    	where 1 = 1
+    	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+      	</if>
+       <if test="length &gt; 0">limit #{from}, #{length}</if>
+	</select>	
+	
+	<select id="excel" parameterType="map" resultType="com.thirtygames.zero.common.model.log.UnitLog">
+		select 
+			logKey,
+			unitId,
+			unitType,
+			accountId,
+			status,
+			resultLevel,
+			logYmdt
+		from UnitLog
+    	where 1 = 1
+    	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+      	</if>
+	</select>	
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.log.UnitLog">
+        select * from UnitLog limit #{from}, #{length}
+    </select>
+    
+    <select id="size" parameterType="map" resultType="int">
+		select count(*) from UnitLog
+    	where 1 = 1
+    	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+       	</if>
+	</select>
+</mapper>

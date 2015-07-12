@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.ResourceMapper">
+	<update id="updateAddition" parameterType="com.thirtygames.zero.common.model.AccountResource">
+		/* updateAddition */
+		update Resource
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+			<if test="gold != null and gold &gt; 0">gold = gold + #{gold},</if>
+			<if test="cash != null and cash &gt; 0">cash = cash + #{cash},</if>
+			<if test="unlockKey != null and unlockKey &gt; 0">unlockKey = unlockKey + #{unlockKey},</if>
+			<if test="apMax != null and apMax &gt; 0">apMax = apMax + #{apMax},</if>
+			<if test="bpMax != null and bpMax &gt; 0">bpMax = bpMax + #{bpMax},</if>
+			<if test="apExtra != null and apExtra &gt; 0">apExtra = apExtra + #{apExtra},</if>
+			<if test="bpExtra != null and bpExtra &gt; 0">bpExtra = bpExtra + #{bpExtra},</if>
+			<if test="fp != null and fp &gt; 0">fp = fp + #{fp},</if>
+    		<if test="titleBundle1 != null">titleBundle1 = titleBundle1|#{titleBundle1},</if>
+    		<if test="titleBundle2 != null">titleBundle2 = titleBundle2|#{titleBundle2},</if>
+    		<if test="titleBundle3 != null">titleBundle3 = titleBundle3|#{titleBundle3},</if>
+    		<if test="equipLevelUpDrug != null">equipLevelUpDrug = equipLevelUpDrug + #{equipLevelUpDrug},</if>
+    		<if test="equipTicket != null">equipTicket = equipTicket + #{equipTicket},</if>
+		</trim>
+		where accountId = #{accountId}
+	</update>
+	
+	<update id="updateSubtraction" parameterType="com.thirtygames.zero.common.model.AccountResource">
+		/* updateSubtraction */
+		update Resource
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+			<if test="gold != null">gold = gold - #{gold},</if>
+			<if test="cash != null">cash = cash - #{cash},</if>
+			<if test="unlockKey != null">unlockKey = unlockKey - #{unlockKey},</if>
+			<if test="ap != null">
+				apLastYmdt = case
+					when apExtra &gt; 0
+					then if (apExtra &gt;= #{ap},
+						GREATEST(unix_timestamp() - #{apRechargeTime} * apMax, apLastYmdt),
+						GREATEST(unix_timestamp() - #{apRechargeTime} * apMax, apLastYmdt) + (#{apRechargeTime} * (#{ap} - apExtra)) )
+					else GREATEST(unix_timestamp() - #{apRechargeTime} * apMax, apLastYmdt) + (#{apRechargeTime} * #{ap})
+				end,
+				apExtra = if(apExtra &gt; 0 and apExtra &gt;= #{ap}, apExtra - #{ap}, 0),
+			</if>
+			<if test="bp != null">
+				bpLastYmdt = case
+					when bpExtra &gt; 0
+					then if (bpExtra &gt;= #{bp}, 
+						GREATEST(unix_timestamp() - (#{bpRechargeTime} * apMax), bpLastYmdt), 
+						GREATEST(unix_timestamp() - (#{bpRechargeTime} * apMax), bpLastYmdt) + (#{bpRechargeTime} * (#{bp} - bpExtra)))
+					else GREATEST(unix_timestamp() - (#{bpRechargeTime} * apMax), bpLastYmdt) + (#{bpRechargeTime} * #{bp})
+				end,
+				bpExtra = if(bpExtra &gt; 0 and bpExtra &gt;= #{bp}, bpExtra - #{bp}, 0),
+			</if>	
+			<if test="fp != null">fp = fp - #{fp},</if>
+    		<if test="equipLevelUpDrug != null">equipLevelUpDrug = equipLevelUpDrug - #{equipLevelUpDrug},</if>
+    		<if test="equipTicket != null">equipTicket = equipTicket - #{equipTicket},</if>
+    		
+		</trim>
+		where accountId = #{accountId}
+	</update>
+	
+	  <select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.AccountResource">
+        select 
+        	resourceKey, accountId, apLastYmdt, apLastValue, apMax, apExtra, bpLastYmdt, bpLastValue, bpMax, bpExtra, fp, gold, cash, unlockKey, titleBundle1, titleBundle2, titleBundle3, equipLevelUpDrug, equipTicket, modYmdt, unix_timestamp() as currentTimeStamp
+        from Resource 
+        where accountId = #{id}
+    </select>
+    
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.AccountResource"
+        keyProperty="accountId" keyColumn="accountId">
+        insert into Resource (accountId, apLastYmdt, apMax, apExtra, bpLastYmdt, bpMax, bpExtra, fp, gold, cash, unlockKey)
+        values (#{accountId}, unix_timestamp() - (#{apRechargeTime} * #{apMax}), #{apMax}, #{apExtra}, unix_timestamp() - (#{bpRechargeTime} * #{bpMax}), #{bpMax}, #{bpExtra}, #{fp}, #{gold}, #{cash}, #{unlockKey}) 
+        on duplicate key update
+        	accountId = #{accountId}, 
+        	apLastYmdt = unix_timestamp() - (#{apRechargeTime} * #{apMax}), 
+        	apMax = #{apMax}, 
+        	apExtra = #{apExtra}, 
+        	bpLastYmdt = unix_timestamp() - (#{bpRechargeTime} * #{bpMax}), 
+        	bpMax = #{bpMax}, 
+        	bpExtra = #{bpExtra}, 
+        	fp = #{fp}, 
+        	gold = #{gold}, 
+        	cash = #{cash},
+        	unlockKey = #{unlockKey}
+    </insert>
+    
+    
+</mapper>

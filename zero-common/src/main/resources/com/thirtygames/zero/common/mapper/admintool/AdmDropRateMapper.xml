@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmDropRateMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminEventDropRate" keyColumn="eventKey">
+		insert into EventDropRate (itemDropRateBoost, goldDropBoost, startDate, endDate, startTime, endTime, sunday, monday, tuesday, wednesday, thursday, friday, saturday)
+		values (#{itemDropRateBoost}, #{goldDropBoost}, #{startDate}, #{endDate}, #{startTime}, #{endTime}, #{sunday}, #{monday}, #{tuesday}, #{wednesday}, #{thursday}, #{friday}, #{saturday})
+		on duplicate key update
+			itemDropRateBoost = #{itemDropRateBoost},
+			goldDropBoost = #{goldDropBoost},
+			startDate = #{startDate},
+			endDate = #{endDate},
+			startTime = #{startTime},
+			endTime = #{endTime},
+			sunday = #{sunday},
+			monday = #{monday},
+			tuesday = #{tuesday},
+			wednesday = #{wednesday},
+			thursday = #{thursday},
+			friday = #{friday},
+			saturday = #{saturday}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.admintool.AdminEventDropRate">
+		delete from EventDropRate
+		where eventKey = #{id}
+    </delete>
+
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminEventDropRate">
+		update EventDropRate
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="itemDropRateBoost != null">itemDropRateBoost = #{itemDropRateBoost},</if>  
+        	<if test="goldDropBoost != null">goldDropBoost = #{goldDropBoost},</if>
+        	<if test="startDate != null">startDate = #{startDate},</if>  
+        	<if test="endDate != null">endDate = #{endDate},</if>  
+        	<if test="startTime != null">startTime = #{startTime},</if>  
+        	<if test="endTime != null">endTime = #{endTime},</if>  
+        	<if test="sunday != null">sunday = #{sunday},</if>  
+        	<if test="monday != null">monday = #{monday},</if>  
+        	<if test="tuesday != null">tuesday = #{tuesday},</if>  
+        	<if test="wednesday != null">wednesday = #{wednesday},</if>  
+        	<if test="thursday != null">thursday = #{thursday},</if>  
+        	<if test="friday != null">friday = #{friday},</if>  
+        	<if test="saturday != null">saturday = #{saturday},</if>  
+		</trim>
+		where eventKey = #{eventKey}
+	</update>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminEventDropRate" parameterType="map">
+    	select
+       		eventKey, itemDropRateBoost, goldDropBoost, startDate, endDate, startTime, endTime, sunday, monday, tuesday, wednesday, thursday, friday, saturday, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from EventDropRate 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='startDate'">order by startDate ${sord}</when>
+						<when test="sidx=='endDate'">order by endDate ${sord}</when>
+						<when test="sidx=='startTime'">order by startTime ${sord}</when>
+						<when test="sidx=='endTime'">order by endTime ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminEventDropRate" parameterType="map">
+    	select
+       		eventKey, itemDropRateBoost, goldDropBoost, startDate, endDate, startTime, endTime, sunday, monday, tuesday, wednesday, thursday, friday, saturday, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from EventDropRate 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminEventDropRate">
+        select 
+        	eventKey, itemDropRateBoost, goldDropBoost, startDate, endDate, startTime, endTime, sunday, monday, tuesday, wednesday, thursday, friday, saturday, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from EventDropRate 
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminEventDropRate">
+        select count(*)
+        from EventDropRate
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmCountryMapper">
+
+
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminCountry">
+		insert into Country (code, isLadderAI)
+		values (#{countryCode}, #{isLadderAI})
+		on duplicate key update
+			code = #{countryCode},
+			isLadderAI = #{isLadderAI}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.admintool.AdminCountry">
+		delete from Country
+		where code = #{id}
+    </delete>
+
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminCountry">
+		update Country
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+			 <if test="isLadderAI != null">isLadderAI = #{isLadderAI},</if>
+		</trim>
+		where code = #{countryCode}
+	</update>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminCountry" parameterType="map">
+    	select
+       		code as countryCode, isLadderAI, modYmdt, modId
+        from Country 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+			order by code desc
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminCountry">
+        select 
+       		code as countryCode, isLadderAI, modYmdt, modId
+        from Country 
+        order by code desc
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminCountry">
+        select count(*)
+        from Country
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.AccountHspMapper">
+    <select id="get" resultType="com.thirtygames.zero.common.model.Account">
+        select
+        	a.accountKey, a.memberNo, a.accountId, a.nickName, a.channelId, a.facebookId, a.channelType, a.channelToken, a.channelCertification, a.password, a.profileType, a.profileUrl, a.title, a.extraInventory, a.maxClearStage, a.maxClearMode, a.tutorial, a.authToken, a.authTokenValidYmdt, a.language, a.country, a.localTimeZone, a.isBlock, a.withdraw, a.sendLog, a.genYmdt, a.modYmdt, a.lastSyncYmdt, 
+        	r.resourceKey, r.accountId, r.apLastYmdt, r.apLastValue, r.apMax, r.apExtra, r.bpLastYmdt, r.bpLastValue, r.bpMax, r.bpExtra, r.fp, r.gold, r.cash, r.unlockKey, r.titleBundle1, r.titleBundle2, r.titleBundle3, r.equipLevelUpDrug, r.equipTicket, r.modYmdt, 
+        	l.leagueKey, l.accountId, l.league, l.resetDate, l.isRewarded, l.ladder, l.win, l.lose, l.isPrevWin, l.winningStreakCnt, l.winningStreakMax, l.lastGameTimeStamp, l.lastGameNo, l.modYmdt 
+        from Account a, Resource r left outer join Ladder l on r.accountId = l.accountId 
+        where a.memberNo = #{id}
+        and a.accountId = r.accountId
+    </select>
+</mapper>

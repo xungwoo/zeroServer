@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.StageMapper">
+    <insert id="saveStageClear" parameterType="com.thirtygames.zero.common.model.StageClear"
+        keyColumn="stageKey">
+        insert into StageClear (accountId, stageKey, clearMode, clearStep, clearProgress, exposedScenes)
+        values (#{accountId}, #{stageKey}, #{clearMode}, #{clearStep}, #{clearProgress}, #{exposedScenes})
+        on duplicate key update
+        	clearMode = if (#{clearMode} > clearMode, #{clearMode}, clearMode),
+        	clearStep = #{clearStep},
+        	clearProgress = #{clearProgress},
+        	exposedScenes = #{exposedScenes}
+    </insert>    
+    
+    <!-- AdminTool -->
+    <delete id="deleteAllStageClear" parameterType="string">
+    	/* deleteAllStageClear */
+    	delete from StageClear where accountId = #{id}
+    </delete>
+    
+    <select id="getClearStepList" parameterType="string" resultType="com.thirtygames.zero.common.model.StageClear">
+    	select
+    		clearKey, accountId, stageKey, clearMode, clearStep, clearProgress, exposedScenes, modYmdt 
+    	from StageClear
+    	where accountId = #{id}
+    	order by stageKey asc
+    </select>  
+    
+    <select id="getMaxClearStage" parameterType="string" resultType="com.thirtygames.zero.common.model.StageClear">
+    	select stageKey, substring_index(stageKey, '_', 1) as chapter, substring_index(stageKey, '_', -1) as stage, clearMode 
+    	from StageClear
+    	where accountId = #{id}
+    	and substring_index(stageKey, '_', 1) &lt;= 100
+    	order by clearMode desc, stageKey desc
+    	limit 1
+    </select> 
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.EquipCategoryMapper">
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipCategory">
+		SELECT 
+			ec.categoryKey, ec.codeLevel, ec.categoryCode, ec.categoryName, ec.subCategoryCode, ec.subCategoryName, ec.modYmdt, ec.modId
+		FROM EquipCategory ec
+		order by ec.subCategoryCode asc, ec.categoryCode asc
+		limit #{from}, #{length}
+	</select>
+	
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipCategory">
+		SELECT 
+			ec.categoryKey, ec.codeLevel, ec.categoryCode, ec.categoryName, ec.subCategoryCode, ec.subCategoryName, ec.modYmdt, ec.modId
+		FROM EquipCategory ec
+		where 1=1
+		<if test="model != null and model.codeLevel != null">
+			AND codeLevel = #{model.codeLevel}
+		</if>
+	</select>
+	
+	<select id="size" resultType="int">
+		select count(*) from EquipCategory
+	</select>
+
+	<select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipCategory">
+		select 
+			ec.categoryKey, ec.codeLevel, ec.categoryCode, ec.categoryName, ec.subCategoryCode, ec.subCategoryName, ec.modYmdt, ec.modId
+		from EquipCategory ec
+		where ec.categoryKey = #{id}
+	</select>
+	
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipCategory">
+		insert into EquipCategory (categoryKey, codeLevel, categoryCode, categoryName, subCategoryCode, subCategoryName)
+		values (#{categoryKey}, #{codeLevel}, #{categoryCode}, #{categoryName}, #{subCategoryCode}, #{subCategoryName})
+	</insert>
+	
+	<update id="update" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipCategory">
+		update EquipCategory
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="categoryName != null">categoryName = #{categoryName},</if>
+			<if test="subCategoryName != null">subCategoryName = #{subCategoryName},</if>
+		</trim>	
+		where categoryKey = #{categoryKey}
+	</update>
+	
+	<delete id="delete" parameterType="String">
+		delete from EquipCategory where categoryKey = #{id}
+	</delete>
+
+</mapper>

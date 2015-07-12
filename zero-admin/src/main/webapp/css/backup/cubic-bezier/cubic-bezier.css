@@ -1,0 +1,48 @@
+#library canvas {
+	display: block;
+	position: relative; 
+	left: 0;
+	border-radius: 5px;
+	margin: 7px;
+	width:70px;
+	height:70px;
+}
+
+#library .current { 
+	background: #f08;
+}
+
+#library {
+	margin-left:-7px;
+}
+
+#library > .item {
+	position: relative;
+	float: left;
+	color: #999;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+	
+}
+
+#library > a > canvas { 
+	background: #e5e5e5;
+}
+	
+#library > a:hover > canvas,
+#library > a:focus > canvas {
+	background: #ACD0D5;
+}
+	
+#library > .item > span {
+	display: block;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+#library > a:hover > span,
+#library > a:focus > span {
+	color: #568C93;
+}

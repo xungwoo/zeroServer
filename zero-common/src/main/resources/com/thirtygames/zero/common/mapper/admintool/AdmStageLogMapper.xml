@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmStageLogMapper">
+	<resultMap id="BaseResultMap" type="com.thirtygames.zero.common.model.log.StageLog" >
+		<result column="logKey" property="logKey" jdbcType="VARCHAR" />
+		<result column="accountId" property="accountId" jdbcType="VARCHAR" />
+		<result column="stageKey" property="stageKey" jdbcType="VARCHAR" />
+		<result column="deck" property="deck" jdbcType="VARCHAR" />
+		<result column="clearMode" property="clearMode" jdbcType="VARCHAR" />
+		<result column="clearProgress" property="clearProgress" jdbcType="VARCHAR" />
+		<result column="playTime" property="playTime" jdbcType="VARCHAR" />
+		<result column="gainGold" property="gainGold" jdbcType="VARCHAR" />
+		<result column="gainEquipments" property="gainEquipmentList" jdbcType="VARCHAR" typeHandler="com.thirtygames.zero.common.etc.handler.ListStringTypeHandler" />
+		<result column="isWin" property="isWin" jdbcType="VARCHAR" />
+		<result column="logYmdt" property="logYmdt" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="get" resultMap="BaseResultMap" parameterType="string">
+    	select
+       		logKey, accountId, stageKey, deck, clearMode, clearProgress, playTime, gainGold, gainEquipments, isWin, logYmdt
+        from StageLog
+        where logKey = #{id}
+    </select>
+
+	<select id="search" resultMap="BaseResultMap" parameterType="map">
+    	select
+       		logKey, accountId, stageKey, deck, clearMode, clearProgress, playTime, gainGold, gainEquipments, isWin, logYmdt
+        from StageLog
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	order by logKey desc
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+
+	<select id="excel" resultMap="BaseResultMap" parameterType="map">
+    	select
+       		logKey, accountId, stageKey, deck, clearMode, clearProgress, playTime, gainGold, gainEquipments, isWin, logYmdt
+        from StageLog
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	order by logKey desc
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.log.StageLog">
+        select 
+        	 logKey, accountId, stageKey, deck, clearMode, clearProgress, playTime, gainGold, gainEquipments, isWin, logYmdt
+        from StageLog
+        order by logKey desc
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.log.StageLog">
+        select count(*)
+        from StageLog 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

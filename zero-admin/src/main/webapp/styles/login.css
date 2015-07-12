@@ -1,0 +1,91 @@
+/*************************************
+GENERAL
+*************************************/
+body {
+	margin: 0;
+	padding: 0;
+	color: #333;
+	overflow-y: scroll;
+	text-rendering: optimizeLegibility;
+	background-color: #f7f7f7;
+}
+
+div#content {
+	margin: 100px auto 0 auto;
+	padding: 30px 30px 30px 30px;
+	background-color: #fff;
+	width: 400px;
+	/* box-shadow */
+	-moz-box-shadow: 0px 0px 6px #ccc;
+	-webkit-box-shadow: 0px 0px 6px #ccc;
+	box-shadow: 0px 0px 6px #ccc;
+	/* top corners */
+	-webkit-border-top-right-radius: 6px;
+	-webkit-border-top-left-radius: 6px;
+	-moz-border-radius-topright: 6px;
+	-moz-border-radius-topleft: 6px;
+	border-top-right-radius: 6px;
+	border-top-left-radius: 6px;
+	/* bottom corners */
+	-webkit-border-bottom-right-radius: 6px;
+	-webkit-border-bottom-left-radius: 6px;
+	-moz-border-radius-bottomright: 6px;
+	-moz-border-radius-bottomleft: 6px;
+	border-bottom-right-radius: 6px;
+	border-bottom-left-radius: 6px;
+}
+
+
+.login #loginMenu {
+	display: block
+}
+
+#loginMessage,#signupMessage {
+	padding-left: 15px;
+	margin-top: 30px
+}
+
+.aui-header-primary .aui-nav,.aui-header-secondary .aui-nav {
+	display: none
+}
+
+.login-section .aui fieldset,.signup-section .aui fieldset {
+	margin-top: 20px
+}
+
+.userpassword-section h2,.login-section h2,.signup-section h2 {
+	border-bottom: 1px solid #ddd;
+	color: #333;
+	padding-bottom: 10px;
+	margin-bottom: 20px
+}
+
+.login #main.aui-page-panel {
+	margin: 150px auto 0 auto;
+	min-height: 120px;
+	width: 500px;
+	padding: 30px;
+	box-shadow: 0 0 5px 1px #ddd;
+	border-radius: 5px;
+	overflow: auto
+}
+
+#captcha-reponse-label {
+	display: block;
+	position: relative;
+	padding-left: 20px
+}
+
+.reload {
+	width: 16px;
+	height: 16px;
+	position: absolute;
+	top: 22px;
+	left: 120px
+}
+
+.login .aui-message ul {
+	padding: 0;
+	list-style-type: none
+}
+

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmLadderMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.Ladder">
+        insert into Ladder (accountId, ladder, win, lose, winningStreakCnt)
+        values (#{accountId}, #{ladder}, #{win}, #{lose}, #{winningStreakCnt}) 
+    </insert>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.Ladder">
+		update Ladder
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="league != null">league = #{league},</if>  
+        	<if test="ladder != null">ladder = #{ladder},</if>
+        	<if test="win != null">win = #{win},</if>  
+        	<if test="lose != null">lose = #{lose},</if>  
+        	<if test="isPrevWin != null">isPrevWin = #{isPrevWin},</if>
+        	<if test="winningStreakCnt != null">winningStreakCnt = #{winningStreakCnt},</if>  
+        	<if test="winningStreakMax != null">winningStreakMax = #{winningStreakMax},</if>  
+        	<if test="lastGameNo != null">lastGameNo = #{lastGameNo},</if>  
+        	<if test="resetDate != null">resetDate = #{resetDate},</if>  
+		</trim>
+		where leagueKey = #{leagueKey}
+	</update>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.Ladder" parameterType="map">
+    	select
+       		l.leagueKey, l.accountId, l.league, l.ladder, l.win, l.lose, l.isPrevWin, l.winningStreakCnt, l.winningStreakMax, l.lastGameTimeStamp, l.lastGameNo, l.resetDate
+        from Ladder l
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='leagueKey'">order by leagueKey ${sord}</when>
+						<when test="sidx=='accountId'">order by accountId ${sord}</when>					
+						<when test="sidx=='league'">order by league ${sord}</when>
+						<when test="sidx=='ladder'">order by ladder ${sord}</when>
+						<when test="sidx=='win'">order by win ${sord}</when>
+						<when test="sidx=='lose'">order by lose ${sord}</when>
+						<when test="sidx=='isPrevWin'">order by isPrevWin ${sord}</when>
+						<when test="sidx=='winningStreakCnt'">order by winningStreakCnt ${sord}</when>
+						<when test="sidx=='winningStreakMax'">order by winningStreakMax ${sord}</when>
+						<when test="sidx=='lastGameTimeStamp'">order by lastGameTimeStamp ${sord}</when>
+						<when test="sidx=='lastGameNo'">order by lastGameNo ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.Ladder" parameterType="map">
+    	select
+       		l.leagueKey, l.accountId, l.league, l.ladder, l.win, l.lose, l.isPrevWin, l.winningStreakCnt, l.winningStreakMax, l.lastGameTimeStamp, l.lastGameNo, l.resetDate
+        from Ladder l
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.Ladder">
+        select * from Ladder limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.Ladder">
+        select count(*)
+        from Ladder l
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

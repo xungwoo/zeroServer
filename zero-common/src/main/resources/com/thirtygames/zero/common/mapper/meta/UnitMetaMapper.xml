@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.UnitMetaMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.meta.UnitMeta" keyColumn="skillType">
+        insert into UnitMeta (unitType, attackType, presentionType, unlockKey, levelMax, attackLv1, attackGrowth, spellLv1, spellGrowth, hpLv1, hpGrowth, hpRegen, mpLv1, mpGrowth, mpRegen, defensePhyLv1, defensePhyGrowth, defenseSpellLv1, defenseSpellGrowth, goldLv1, goldGrowth, moveSpeed, attackCoolTime, attackRange, criticalRate, criticalDamage, scale, power, mass, evo1LvJump, evo2LvJump, evo3LvJump, evo4LvJump, evo5LvJump, evo6LvJump, evo7LvJump, evo8LvJump, evo9LvJump, skill0Type, skill1Type, skill2Type, skill3Type, skill4Type, weapon1, weapon2, weapon3, weapon4, weapon5)
+        values (#{unitType}, #{attackType}, #{presentionType}, #{unlockKey}, #{levelMax}, #{attackLv1}, #{attackGrowth}, #{spellLv1}, #{spellGrowth}, #{hpLv1}, #{hpGrowth}, #{hpRegen}, #{mpLv1}, #{mpGrowth}, #{mpRegen}, #{defensePhyLv1}, #{defensePhyGrowth}, #{defenseSpellLv1}, #{defenseSpellGrowth}, #{goldLv1}, #{goldGrowth}, #{moveSpeed}, #{attackCoolTime}, #{attackRange}, #{criticalRate}, #{criticalDamage}, #{scale}, #{power}, #{mass}, #{evo1LvJump}, #{evo2LvJump}, #{evo3LvJump}, #{evo4LvJump}, #{evo5LvJump}, #{evo6LvJump}, #{evo7LvJump}, #{evo8LvJump}, #{evo9LvJump}, #{skill0Type}, #{skill1Type}, #{skill2Type}, #{skill3Type}, #{skill4Type}, #{weapon1}, #{weapon2}, #{weapon3}, #{weapon4}, #{weapon5}) 
+        on duplicate key update
+        	unitType = #{unitType}, 
+        	attackType = #{attackType}, 
+        	presentionType = #{presentionType}, 
+        	unlockKey = #{unlockKey}, 
+        	levelMax = #{levelMax}, 
+        	attackLv1 = #{attackLv1}, 
+        	attackGrowth = #{attackGrowth}, 
+        	spellLv1 = #{spellLv1}, 
+        	spellGrowth = #{spellGrowth}, 
+        	hpLv1 = #{hpLv1}, 
+        	hpGrowth = #{hpGrowth}, 
+        	hpRegen = #{hpRegen}, 
+        	mpLv1 = #{mpLv1}, 
+        	mpGrowth = #{mpGrowth}, 
+        	mpRegen = #{mpRegen}, 
+        	defensePhyLv1 = #{defensePhyLv1}, 
+        	defensePhyGrowth = #{defensePhyGrowth}, 
+        	defenseSpellLv1 = #{defenseSpellLv1}, 
+        	defenseSpellGrowth = #{defenseSpellGrowth}, 
+        	goldLv1 = #{goldLv1}, 
+        	goldGrowth = #{goldGrowth}, 
+        	moveSpeed = #{moveSpeed}, 
+        	attackCoolTime = #{attackCoolTime}, 
+        	attackRange = #{attackRange}, 
+        	criticalRate = #{criticalRate}, 
+        	criticalDamage = #{criticalDamage}, 
+        	scale = #{scale}, 
+        	power = #{power}, 
+        	mass = #{mass}, 
+        	evo1LvJump = #{evo1LvJump}, 
+        	evo2LvJump = #{evo2LvJump}, 
+        	evo3LvJump = #{evo3LvJump}, 
+        	evo4LvJump = #{evo4LvJump}, 
+        	evo5LvJump = #{evo5LvJump}, 
+        	evo6LvJump = #{evo6LvJump}, 
+        	evo7LvJump = #{evo7LvJump}, 
+        	evo8LvJump = #{evo8LvJump}, 
+        	evo9LvJump = #{evo9LvJump}, 
+        	skill0Type = #{skill0Type}, 
+        	skill1Type = #{skill1Type}, 
+        	skill2Type = #{skill2Type}, 
+        	skill3Type = #{skill3Type}, 
+        	skill4Type = #{skill4Type}, 
+        	weapon1 = #{weapon1}, 
+        	weapon2 = #{weapon2}, 
+        	weapon3 = #{weapon3}, 
+        	weapon4 = #{weapon4}, 
+        	weapon5 = #{weapon5}
+    </insert>
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.meta.UnitMeta">
+		select
+			unitType, attackType, presentionType, unlockKey, levelMax, attackLv1, attackGrowth, spellLv1, spellGrowth, hpLv1, hpGrowth, hpRegen, mpLv1, mpGrowth, mpRegen, defensePhyLv1, defensePhyGrowth, defenseSpellLv1, defenseSpellGrowth, goldLv1, goldGrowth, moveSpeed, attackCoolTime, attackRange, criticalRate, criticalDamage, scale, power, mass, evo1LvJump, evo2LvJump, evo3LvJump, evo4LvJump, evo5LvJump, evo6LvJump, evo7LvJump, evo8LvJump, evo9LvJump, skill0Type, skill1Type, skill2Type, skill3Type, skill4Type, weapon1, weapon2, weapon3, weapon4, weapon5, modId, modYmdt 
+		from UnitMeta
+	</select>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.SetupMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.Setup">
+        insert into Setup (accountId, graphic, profile, push, midnight, autoScreenOff, bgSound, effectSound)
+        values (#{accountId}, #{graphic}, #{profile}, #{push}, #{midnight}, #{autoScreenOff}, #{bgSound}, #{effectSound})
+        on duplicate key update
+        	accountId = #{accountId}, 
+        	graphic = #{graphic}, 
+        	profile = #{profile}, 
+        	push = #{push}, 
+        	midnight = #{midnight}, 
+        	autoScreenOff = #{autoScreenOff}, 
+        	bgSound = #{bgSound},
+        	effectSound = #{effectSound}
+    </insert>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.Setup">
+    	update Setup
+	    	<trim prefix="set" suffixOverrides=",">
+	    		<if test="graphic != null">graphic = #{graphic},</if>
+	    		<if test="profile != null">profile = #{profile},</if>
+	    		<if test="push != null">push = #{push},</if>
+	    		<if test="midnight != null">midnight = #{midnight},</if>
+	    		<if test="autoScreenOff != null">autoScreenOff = #{autoScreenOff},</if>
+	    		<if test="bgSound != null">bgSound = #{bgSound},</if>
+	    		<if test="effectSound != null">effectSound = #{effectSound},</if>
+	    	</trim>
+    	where accountId = #{accountId}
+    </update>
+
+    <select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.Setup">
+        select
+        	accountId, graphic, profile, push, midnight, autoScreenOff, bgSound, effectSound
+        from Setup 
+        where accountId = #{id}
+    </select>
+</mapper>

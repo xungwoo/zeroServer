@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.log.GemLogMapper">
+
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.equipment.EquipLog">
+		insert into EquipLog (equipmentId, accountId, equipmentType, subCategory, grade, status, installedEquipId, installedSocketNo, usedEqList)
+		values (#{equipmentId}, #{accountId}, #{equipmentType}, #{subCategory}, #{grade}, #{status}, #{installedEquipId}, #{installedSocketNo}, #{usedEqList})
+	</insert>
+</mapper>

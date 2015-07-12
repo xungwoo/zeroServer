@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmWellcomePresentMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminWellcomePresent" keyColumn="metaKey">
+		insert into WellcomePresent (minuteFromLastLogin, rewardType, reward, msg_ko, msg_en)
+		values (#{minuteFromLastLogin}, #{rewardType}, #{reward}, #{msgKo}, #{msgEn})
+		on duplicate key update
+			minuteFromLastLogin = #{minuteFromLastLogin},
+			rewardType = #{rewardType},
+			msg_ko = #{msgKo},
+			msg_en = #{msgEn}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.admintool.AdminWellcomePresent">
+		delete from WellcomePresent
+		where metaKey = #{id}
+    </delete>
+
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminWellcomePresent">
+		update WellcomePresent
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="minuteFromLastLogin != null">minuteFromLastLogin = #{minuteFromLastLogin},</if>  
+        	<if test="rewardType != null">rewardType = #{rewardType},</if>
+        	<if test="reward != null">reward = #{reward},</if>  
+        	<if test="msgKo != null">msg_ko = #{msgKo},</if>  
+        	<if test="msgEn != null">msg_en = #{msgEn},</if>  
+		</trim>
+		where metaKey = #{metaKey}
+	</update>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminWellcomePresent" parameterType="map">
+    	select
+       		metaKey, minuteFromLastLogin, rewardType, reward, msg_ko, msg_en, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from WellcomePresent 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='name'">order by name ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminWellcomePresent" parameterType="map">
+    	select
+       		metaKey, minuteFromLastLogin, rewardType, reward, msg_ko, msg_en, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from WellcomePresent 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminWellcomePresent">
+        select 
+        	metaKey, minuteFromLastLogin, rewardType, reward, msg_ko, msg_en, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from WellcomePresent 
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminWellcomePresent">
+        select count(*) from WellcomePresent
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

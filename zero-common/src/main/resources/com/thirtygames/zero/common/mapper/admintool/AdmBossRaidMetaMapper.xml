@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmBossRaidMetaMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminBossRaidMeta" keyColumn="metaKey" keyProperty="metaKey">
+		insert into BossRaidMeta (
+			bossRaidMetaId, playTime, bossUnitType, bossHpFirst, bossHpScaler, bossScale, bossDefensePhy, defensePhyScaler, bossDefenseSpell, defenseSpellScaler,
+			bossSkillLv0, bossSkillLv1, bossSkillLv2, bossImage, scene, texture0, texture1, texture2, 
+			minionUnitType, relativeMinionLevel, minionHpScale, minionScale, minionSkillLv0, minionSkillLv1, minionSkillLv2, 
+			minionSpawnNum, minionSpawnStart, minionSpawnInterval, fee, goldRewardFirst, goldRewardScaler, founderEquipCategory, gradeRatio, exposeRate)
+		values (
+			#{bossRaidMetaId}, #{playTime}, #{bossUnitType}, #{bossHpFirst}, #{bossHpScaler}, #{bossScale}, #{bossDefensePhy}, #{defensePhyScaler}, #{bossDefenseSpell}, #{defenseSpellScaler}, 
+			#{bossSkillLv0}, #{bossSkillLv1}, #{bossSkillLv2}, #{bossImage}, #{scene}, #{texture0}, #{texture1}, #{texture2}, 
+			#{minionUnitType}, #{relativeMinionLevel}, #{minionHpScale}, #{minionScale}, #{minionSkillLv0}, #{minionSkillLv1}, #{minionSkillLv2}, 
+			#{minionSpawnNum}, #{minionSpawnStart}, #{minionSpawnInterval}, #{fee}, #{goldRewardFirst}, #{goldRewardScaler}, #{founderEquipCategory}, #{gradeRatio}, #{exposeRate})
+		on duplicate key update
+			bossRaidMetaId = #{bossRaidMetaId},
+			playTime = #{playTime},
+			bossUnitType = #{bossUnitType},
+			bossHpFirst = #{bossHpFirst},
+			bossHpScaler = #{bossHpScaler},
+			bossScale = #{bossScale},
+			bossDefensePhy = #{bossDefensePhy},
+			defensePhyScaler = #{defensePhyScaler},
+			bossDefenseSpell = #{bossDefenseSpell},
+			defenseSpellScaler = #{defenseSpellScaler},
+			bossSkillLv0 = #{bossSkillLv0},
+			bossSkillLv1 = #{bossSkillLv1},
+			bossSkillLv2 = #{bossSkillLv2},
+			bossImage = #{bossImage},
+			scene = #{scene},
+			texture0 = #{texture0},
+			texture1 = #{texture1},
+			texture2 = #{texture2},
+			minionUnitType = #{minionUnitType},
+			relativeMinionLevel = #{relativeMinionLevel},
+			minionHpScale = #{minionHpScale},
+			minionScale = #{minionScale},
+			minionSkillLv0 = #{minionSkillLv0},
+			minionSkillLv1 = #{minionSkillLv1},
+			minionSkillLv2 = #{minionSkillLv2},
+			minionSpawnNum = #{minionSpawnNum},
+			minionSpawnStart = #{minionSpawnStart},
+			minionSpawnInterval = #{minionSpawnInterval},
+			fee = #{fee},
+			goldRewardFirst = #{goldRewardFirst},
+			goldRewardScaler = #{goldRewardScaler},
+			founderEquipCategory = #{founderEquipCategory},
+			gradeRatio = #{gradeRatio},
+			exposeRate = #{exposeRate}
+    </insert>
+    
+	<insert id="saveName" parameterType="com.thirtygames.zero.common.model.admintool.AdminBossRaidMeta" keyColumn="metaKey">
+		insert into BossRaidName (metaKey, title_ko, bossName_ko, title_en, bossName_en)
+		values (#{metaKey}, #{titleKo}, #{bossNameKo}, #{titleEn}, #{bossNameEn})
+		on duplicate key update
+			metaKey = #{metaKey},
+			title_ko = #{titleKo},
+			bossName_ko = #{bossNameKo},
+			title_en = #{titleEn},
+			bossName_en = #{bossNameEn}
+    </insert>
+
+	<delete id="delete">
+		delete from BossRaidMeta
+		where metaKey = #{id}
+    </delete>
+
+	<delete id="deleteName">
+		delete from BossRaidName
+		where nameKey = #{id}
+    </delete>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminBossRaidMeta">
+		update BossRaidMeta
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+			<if test="bossRaidMetaId != null">bossRaidMetaId = #{bossRaidMetaId},</if>
+			<if test="playTime != null">playTime = #{playTime},</if>
+			<if test="bossUnitType != null">bossUnitType = #{bossUnitType},</if>
+			<if test="bossHpFirst != null">bossHpFirst = #{bossHpFirst},</if>
+			<if test="bossHpScaler != null">bossHpScaler = #{bossHpScaler},</if>
+			<if test="bossScale != null">bossScale = #{bossScale},</if>
+			<if test="bossDefensePhy != null">bossDefensePhy = #{bossDefensePhy},</if>
+			<if test="defensePhyScaler != null">defensePhyScaler = #{defensePhyScaler},</if>
+			<if test="bossDefenseSpell != null">bossDefenseSpell = #{bossDefenseSpell},</if>
+			<if test="defenseSpellScaler != null">defenseSpellScaler = #{defenseSpellScaler},</if>
+			<if test="bossSkillLv0 != null">bossSkillLv0 = #{bossSkillLv0},</if>
+			<if test="bossSkillLv1 != null">bossSkillLv1 = #{bossSkillLv1},</if>
+			<if test="bossSkillLv2 != null">bossSkillLv2 = #{bossSkillLv2},</if>
+			<if test="bossImage != null">bossImage = #{bossImage},</if>
+			<if test="scene != null">scene = #{scene},</if>
+			<if test="texture0 != null">texture0 = #{texture0},</if>
+			<if test="texture1 != null">texture1 = #{texture1},</if>
+			<if test="texture2 != null">texture2 = #{texture2},</if>
+			<if test="minionUnitType != null">minionUnitType = #{minionUnitType},</if>
+			<if test="relativeMinionLevel != null">relativeMinionLevel = #{relativeMinionLevel},</if>
+			<if test="minionHpScale != null">minionHpScale = #{minionHpScale},</if>
+			<if test="minionScale != null">minionScale = #{minionScale},</if>
+			<if test="minionSkillLv0 != null">minionSkillLv0 = #{minionSkillLv0},</if>
+			<if test="minionSkillLv1 != null">minionSkillLv1 = #{minionSkillLv1},</if>
+			<if test="minionSkillLv2 != null">minionSkillLv2 = #{minionSkillLv2},</if>
+			<if test="minionSpawnNum != null">minionSpawnNum = #{minionSpawnNum},</if>
+			<if test="minionSpawnStart != null">minionSpawnStart = #{minionSpawnStart},</if>
+			<if test="minionSpawnInterval != null">minionSpawnInterval = #{minionSpawnInterval},</if>
+			<if test="fee != null">fee = #{fee},</if>
+			<if test="goldRewardFirst != null">goldRewardFirst = #{goldRewardFirst},</if>
+			<if test="goldRewardScaler != null">goldRewardScaler = #{goldRewardScaler},</if>
+			<if test="founderEquipCategory != null">founderEquipCategory = #{founderEquipCategory},</if>
+			<if test="gradeRatio != null">gradeRatio = #{gradeRatio},</if>
+			<if test="exposeRate != null">exposeRate = #{exposeRate},</if>
+		</trim>
+		where metaKey = #{metaKey}
+	</update>
+    
+    <update id="updateName" parameterType="com.thirtygames.zero.common.model.admintool.AdminBossRaidMeta">
+		update BossRaidName
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="titleKo != null">title_ko = #{titleKo},</if>  
+        	<if test="bossNameKo != null">bossName_ko = #{bossNameKo},</if>  
+        	<if test="titleEn != null">title_en = #{titleEn},</if>  
+        	<if test="bossNameEn != null">bossName_en = #{bossNameEn},</if>  
+		</trim>
+		where nameKey = #{nameKey}	
+	</update>
+    
+	
+	<select id="get" resultType="com.thirtygames.zero.common.model.admintool.AdminBossRaidMeta">
+		select 
+        	date_format(b.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, b.*,
+        	n.title_ko, n.bossName_ko, n.title_en, n.bossName_en
+        from BossRaidMeta b left outer join BossRaidName n on b.metaKey = n.metaKey
+        where b.bossRaidMetaId = #{id}
+    </select>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminBossRaidMeta" parameterType="map">
+		select 
+        	date_format(b.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, b.*,
+        	n.title_ko, n.bossName_ko, n.title_en, n.bossName_en
+        from BossRaidMeta b left outer join BossRaidName n on b.metaKey = n.metaKey
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and
+		           	<choose>
+		           		<when test="rule.field == 'titleKo'">n.</when>
+		           		<when test="rule.field == 'bossNameKo'">n.</when>
+		           		<when test="rule.field == 'titleEn'">n.</when>
+		           		<when test="rule.field == 'bossNameEn'">n.</when>
+		           		<otherwise>b.</otherwise>
+		           	</choose>
+		           	${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+			<choose>
+				<when test="sidx=='metaKey'">order by b.metaKey ${sord}</when>
+				<otherwise>
+					order by
+					 <choose>
+		           		<when test="rule.field == 'titleKo'">n.</when>
+		           		<when test="rule.field == 'bossNameKo'">n.</when>
+		           		<when test="rule.field == 'titleEn'">n.</when>
+		           		<when test="rule.field == 'bossNameEn'">n.</when>
+		           		<otherwise>b.</otherwise>
+		           	</choose>
+					${sidx} ${sord}
+				</otherwise>
+			</choose>	       	
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+	
+	<select id="range" resultType="com.thirtygames.zero.common.model.admintool.AdminBossRaidMeta" parameterType="map">
+		select 
+        	date_format(b.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, b.*,
+        	n.title_ko, n.bossName_ko, n.title_en, n.bossName_en
+        from BossRaidMeta b left outer join BossRaidName n on b.metaKey = n.metaKey
+        order by b.metaKey desc
+        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminBossRaidMeta" parameterType="map">
+		select 
+        	date_format(b.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, b.*,
+        	n.title_ko, n.bossName_ko, n.title_en, n.bossName_en
+        from BossRaidMeta b left outer join BossRaidName n on b.metaKey = n.metaKey
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and
+		           	<choose>
+		           		<when test="rule.field == 'titleKo'">n.</when>
+		           		<when test="rule.field == 'bossNameKo'">n.</when>
+		           		<when test="rule.field == 'titleEn'">n.</when>
+		           		<when test="rule.field == 'bossNameEn'">n.</when>
+		           		<otherwise>b.</otherwise>
+		           	</choose>
+		           	${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminBossRaidMeta">
+        select count(*)
+        from BossRaidMeta
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmAdminLogMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminLog">
+        insert into AdminLog (memo, type, dataKey, modId)
+        values (#{memo}, #{type}, #{dataKey}, #{modId}) 
+    </insert>
+    
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.admintool.AdminLog">
+		select 
+			logKey, memo, type, dataKey, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+		from AdminLog
+    	where 1 = 1
+    	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+      	</if>
+      	order by logKey desc
+       <if test="length &gt; 0">limit #{from}, #{length}</if>
+	</select>	
+	
+	<select id="excel" parameterType="map" resultType="com.thirtygames.zero.common.model.admintool.AdminLog">
+		select 
+			logKey, memo, type, dataKey, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+		from AdminLog
+    	where 1 = 1
+    	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+      	</if>
+	</select>	
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.log.UnitLog">
+		select 
+			logKey, memo, type, dataKey, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+		from AdminLog
+		order by logKey desc 
+		limit #{from}, #{length}
+    </select>
+    
+    <select id="size" parameterType="map" resultType="int">
+		select count(*) from AdminLog
+    	where 1 = 1
+    	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+       	</if>
+	</select>
+
+</mapper>

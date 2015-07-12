@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admindata.NoticeMapper">
+    
+    <select id="search" resultType="com.thirtygames.zero.common.model.admindata.Notice">
+    	select
+    		imgUrl, landingType, linkUrl 
+		from Notice 
+    	where isDel = 0
+    	and lang = #{model.lang}
+    	and expireYmdt &gt; now()
+		order by noticeKey desc
+    </select>
+</mapper>

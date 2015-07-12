@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.MissionMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.Mission" keyColumn="missionId">
+        insert into Mission (missionId, accountId, current, rewardDone)
+        values (#{missionId}, #{accountId}, #{current}, 0)
+        on duplicate key update
+        	current = current + #{current}
+    </insert>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.Mission">
+    	update Mission
+		<trim prefix="set" suffixOverrides=",">
+    		<if test="current != null">current = #{current},</if>    	
+    		<if test="rewardDone != null">rewardDone = #{rewardDone},</if>    	
+		</trim>    		
+    	where missionId = #{missionId}
+    	and accountId = #{accountId}
+    </update>
+	
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.Mission">
+		select
+			missionKey, missionId, accountId, current, rewardDone 
+		from Mission
+    	where accountId = #{model.accountId}
+    	<if test="model.missionId != null">and missionId = #{model.missionId}</if>
+    	order by missionKey asc
+	</select>	
+	
+	<select id="getMissionList" resultType="com.thirtygames.zero.common.model.Mission">
+		select
+			missionKey, missionId, accountId, current, rewardDone 
+		from Mission
+    	where accountId = #{accountId}
+    	order by missionKey asc
+	</select>	
+	
+	<select id="getByAccountId" resultType="com.thirtygames.zero.common.model.Mission">
+		select
+			missionKey, missionId, accountId, current, rewardDone 
+		from Mission
+		where accountId = #{accountId}
+		and missionId = #{id}
+	</select>
+
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.log.ShopItemLogMapper">
+    
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.log.ShopItemLog">
+    	insert into ShopItemLog(accountId, itemKey, itemId, productId, itemCategory, itemType, itemQuantity, itemQuantityBonus, buyType, price) 
+    	values(#{accountId}, #{itemKey}, #{itemId}, #{productId}, #{itemCategory}, #{itemType}, #{itemQuantity}, #{itemQuantityBonus}, #{buyType}, #{price}) 
+    </insert>
+    
+    <select id="search" resultType="com.thirtygames.zero.common.model.log.ShopItemLog" parameterType="com.thirtygames.zero.common.model.log.ShopItemLog">
+    	select * from ShopItemLog
+    	where accountId = #{model.accountId}
+    	<if test="model.itemKey != null">and itemKey = #{model.itemKey}</if>
+    	<if test="model.buyType != null">and buyType = #{model.buyType}</if>
+    </select>
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.StageEnemyMetaMapper">
+     <insert id="save" parameterType="com.thirtygames.zero.common.model.meta.StageEnemy"
+        keyProperty="enemyId" keyColumn="enemyId">
+        insert into StageEnemy (stageKey, turn, unitType, level, scale, hpScaler, boss, x, z, trapRadius, marker, enemyName, summoned, sight, skill0Lv, skill1Lv, skill2Lv, skill3Lv, skill4Lv, regiment, spawnEffect, corpsNo, corpsSize, corpsBegin, corpsEnd, corpsInterval, corpsRelative)
+        values (#{stageKey}, #{turn}, #{unitType}, #{level}, #{scale}, #{hpScaler}, #{boss}, #{x}, #{z}, #{trapRadius}, #{marker}, #{enemyName}, #{summoned}, #{sight}, #{skill0Lv}, #{skill1Lv}, #{skill2Lv}, #{skill3Lv}, #{skill4Lv}, #{regiment}, #{spawnEffect}, #{corpsNo}, #{corpsSize}, #{corpsBegin}, #{corpsEnd}, #{corpsInterval}, #{corpsRelative})
+		on duplicate key update        	
+			stageKey = #{stageKey},
+			turn = #{turn},
+			unitType = #{unitType},
+			level = #{level},
+			scale = #{scale},
+			hpScaler = #{hpScaler},
+			boss = #{boss},
+			x = #{x},
+			z = #{z},
+			trapRadius = #{trapRadius},
+			marker = #{marker},
+			enemyName = #{enemyName},
+			summoned = #{summoned},
+			sight = #{sight},
+			skill0Lv = #{skill0Lv},
+			skill1Lv = #{skill1Lv},
+			skill2Lv = #{skill2Lv},
+			skill3Lv = #{skill3Lv},
+			skill4Lv = #{skill4Lv},
+			regiment = #{regiment},
+			spawnEffect = #{spawnEffect},
+			corpsNo = #{corpsNo},
+			corpsSize = #{corpsSize},
+			corpsBegin = #{corpsBegin},
+			corpsEnd = #{corpsEnd},
+			corpsInterval = #{corpsInterval},
+			corpsRelative = #{corpsRelative}        	 
+    </insert>
+    
+    <select id="range" resultType="com.thirtygames.zero.common.model.meta.StageEnemy">
+    	select
+    		enemyId, stageKey, turn, unitType, level, scale, hpScaler, boss, x, z, trapRadius, marker, enemyName, summoned, sight, skill0Lv, skill1Lv, skill2Lv, skill3Lv, skill4Lv, regiment, spawnEffect, corpsNo, corpsSize, corpsBegin, corpsEnd, corpsInterval, corpsRelative, modYmdt, modId 
+    	from StageEnemy
+    	order by enemyId asc
+    </select>   
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.EquipChoiceDecoMetaMapper">
+	
+	<select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipChoiceDecoMeta">
+		select
+			metaKey, maxSize, zero, one, two, three, four, five, modYmdt, modId 
+		from EquipChoiceDecoMeta
+		order by metaKey desc
+		limit 1 
+	</select>
+	
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipChoiceDecoMeta"
+        keyProperty="metaKey" keyColumn="metaKey">
+        insert into EquipChoiceDecoMeta (maxSize, zero, one, two, three, four, five)
+        values (#{maxSize}, #{zero}, #{one}, #{two}, #{three}, #{four}, #{five}) 
+        on duplicate key update
+        	maxSize = #{maxSize}, 
+        	zero = #{zero}, 
+        	one = #{one}, 
+        	two = #{two}, 
+        	three = #{three},
+        	four = #{four}, 
+        	five = #{five}
+    </insert>	
+	
+</mapper>

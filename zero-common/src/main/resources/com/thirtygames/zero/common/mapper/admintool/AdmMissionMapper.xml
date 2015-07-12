@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmMissionMapper">
+
+    <update id="update" parameterType="com.thirtygames.zero.common.model.Mission">
+    	update Mission
+		<trim prefix="set" suffixOverrides=",">
+    		<if test="current != null">current = #{current},</if>    	
+    		<if test="rewardDone != null">rewardDone = #{rewardDone},</if>    	
+		</trim>    		
+    	where missionKey = #{missionKey}
+    </update>
+	
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.Mission">
+		select * from Mission
+    	where 1 = 1
+    	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+      	</if>
+      	
+      	<choose>
+			<when test="sidx != '' and sord != ''">
+				<choose>
+					<when test="sidx=='missionKey'">order by missionKey ${sord}</when>
+					<when test="sidx=='accountId'">order by accountId ${sord}</when>					
+					<when test="sidx=='missionId'">order by missionId ${sord}</when>
+					<when test="sidx=='current'">order by current ${sord}</when>
+					<when test="sidx=='rewardDone'">order by rewardDone ${sord}</when>
+					<otherwise>order by ${sidx} ${sord}</otherwise>
+				</choose>
+			</when>
+		</choose>
+		
+       <if test="length &gt; 0">limit #{from}, #{length}</if>
+	</select>	
+	
+	<select id="excel" parameterType="map" resultType="com.thirtygames.zero.common.model.Mission">
+		select * from Mission
+    	where 1 = 1
+    	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+      	</if>
+	</select>	
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.Mission">
+        select * from Mission limit #{from}, #{length}
+    </select>
+    
+    <select id="size" parameterType="map" resultType="int">
+		select count(*) from Mission
+    	where 1 = 1
+    	<if test="model.rules != null">			
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>
+       	</if>
+	</select>	
+	
+</mapper>

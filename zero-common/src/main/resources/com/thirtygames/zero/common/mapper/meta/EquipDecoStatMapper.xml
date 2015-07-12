@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.EquipDecoStatMapper">
+	<select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		select * from EquipDecoStatMeta
+		where statMetaKey = #{id}
+	</select>
+	
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		insert into EquipDecoStatMeta (statName, statType, decoCode, grade, minRange1, minRange2, maxRange1, maxRange2, weight, onlyFor)
+		values (#{statName}, #{statType}, #{decoCode}, #{grade}, #{minRange1}, #{minRange2}, #{maxRange1}, #{maxRange2}, #{weight}, #{onlyFor})
+	</insert>
+	
+	<update id="update" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		update EquipDecoStatMeta
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="statName != null">statName = #{statName},</if>
+			<if test="statType != null">statType = #{statType},</if>
+			<if test="decoCode != null">decoCode = #{decoCode},</if>
+			<if test="grade != null">grade = #{grade},</if>
+			<if test="minRange1 != null">minRange1 = #{minRange1},</if>
+			<if test="minRange2 != null">minRange2 = #{minRange2},</if>
+			<if test="maxRange1 != null">maxRange1 = #{maxRange1},</if>
+			<if test="maxRange2 != null">maxRange2 = #{maxRange2},</if>
+			<if test="statRateMin != null">statRateMin = #{statRateMin},</if>
+			<if test="statRateMax != null">statRateMax = #{statRateMax},</if>
+			<if test="durationMin != null">durationMin = #{durationMin},</if>
+			<if test="durationMax != null">durationMax = #{durationMax},</if>
+			<if test="weight != null">weight = #{weight},</if>
+			onlyFor = #{onlyFor},
+		</trim>	
+		where statMetaKey = #{statMetaKey}
+	</update>
+
+	<delete id="delete" parameterType="String">
+		delete from EquipDecoStatMeta
+		where statMetaKey = #{id}
+	</delete>
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		/* EquipDecoStat range */ 
+		select 
+			s.statMetaKey, s.statName, s.statType, s.decoCode, s.grade, s.minRange1, s.minRange2, s.maxRange1, s.maxRange2, s.statRateMin, s.statRateMax, s.durationMin, s.durationMax, s.weight, s.onlyFor, s.isUse, s.modYmdt, s.modId, 
+			t.statEngName 
+		from EquipDecoStatMeta s left outer join EquipStatType t on s.statType = t.statType
+		order by s.statMetaKey desc 
+		<if test="length &gt; 0">limit #{from}, #{length}</if>
+	</select>
+	
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatMeta">
+		/* EquipDecoStat search */
+		select 
+			s.statMetaKey, s.statName, s.statType, s.decoCode, s.grade, s.minRange1, s.minRange2, s.maxRange1, s.maxRange2, s.statRateMin, s.statRateMax, s.durationMin, s.durationMax, 
+			s.weight, s.onlyFor, s.isUse, s.modYmdt, s.modId, t.statEngName 
+		from EquipDecoStatMeta s left outer join EquipStatType t on s.statType = t.statType
+		where 1=1
+		<if test="model.rules != null">	
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+				<choose>
+					<when test="model.groupOp == 'AND'">and </when>
+					<otherwise>or </otherwise>
+				</choose>
+				<choose>
+					<when test="rule.field == 'statEngName'">t.</when>
+					<otherwise>s.</otherwise>
+				</choose>
+				${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = #{rule.data}</when>
+	           		<when test="rule.op == 'bw'"> like CONCAT(#{rule.data}, '%')</when>
+	           		<when test="rule.op == 'le'"> &lt;= #{rule.data}</when>
+	           		<when test="rule.op == 'ge'"> &gt;= #{rule.data}</when>
+	           	</choose> 
+	       	</foreach>
+       	</if>
+       	<choose>
+			<when test="sidx != '' and sord != ''">order by ${sidx} ${sord}</when>
+			<otherwise>order by s.statMetaKey desc</otherwise>
+		</choose>
+		<if test="length &gt; 0">limit #{from}, #{length}</if>
+	</select>
+	
+	<select id="size" parameterType="map" resultType="int">
+		select count(*) from EquipDecoStatMeta s left outer join EquipStatType t on s.statType = t.statType
+		where 1=1
+		<if test="model.rules != null">	
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+				<choose>
+					<when test="model.groupOp == 'AND'">and </when>
+					<otherwise>or </otherwise>
+				</choose>
+				<choose>
+					<when test="rule.field == 'statEngName'">t.</when>
+					<otherwise>s.</otherwise>
+				</choose>
+				${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = #{rule.data}</when>
+	           		<when test="rule.op == 'bw'"> like CONCAT(#{rule.data}, '%')</when>
+	           		<when test="rule.op == 'le'"> &lt;= #{rule.data}</when>
+	           		<when test="rule.op == 'ge'"> &gt;= #{rule.data}</when>
+	           	</choose> 
+	       	</foreach>
+       	</if>	
+	</select>	
+	
+</mapper>

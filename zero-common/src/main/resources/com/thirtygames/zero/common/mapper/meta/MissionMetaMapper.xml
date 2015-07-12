@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.MissionMetaMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.Mission" keyColumn="missionId">
+        insert into MissionMeta (missionId, nameKey, missionType, iconType, startYmdt, dueDateYmdt, param1, param2, param3, goal, rewardType, reward)
+        values (#{missionId}, #{nameKey}, #{missionType}, #{iconType}, #{startYmdt}, #{dueDateYmdt}, #{param1}, #{param2}, #{param3}, #{goal}, #{rewardType}, #{reward}) 
+        on duplicate key update
+        	missionId = #{missionId},        
+        	nameKey = #{nameKey},        
+        	missionType = #{missionType}, 
+        	iconType = #{iconType},
+        	startYmdt = #{startYmdt},
+        	dueDateYmdt = #{dueDateYmdt},
+        	param1 = #{param1}, 
+        	param2 = #{param2}, 
+			param3 = #{param3},
+			goal = #{goal},
+			rewardType = #{rewardType},
+			reward = #{reward}
+    </insert>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.Mission">
+		select
+			m.missionMetaKey, m.missionId, m.nameKey, m.missionType, m.iconType, m.startYmdt, m.dueDateYmdt,
+			(ABS(TIMESTAMPDIFF( HOUR , FROM_UNIXTIME( m.startYmdt ) , FROM_UNIXTIME( m.dueDateYmdt ) )) &lt; 24) AS isDaily,  
+			m.param1, m.param2, m.param3, m.goal, m.rewardType, m.reward, m.modYmdt, m.modId,
+			0 as current, 0 as rewardDone, if(m.dueDateYmdt &lt; UNIX_TIMESTAMP(), 1, 0) as isExpired,
+		 	<choose>
+				<when test="model.lang == 'ko'">n.title_ko</when>
+				<when test="model.lang == 'en'">n.title_en</when>				
+				<otherwise>n.title_en</otherwise>
+			</choose> as title, 
+		 	<choose>
+				<when test="model.lang == 'ko'">n.description_ko</when>
+				<when test="model.lang == 'en'">n.description_en</when>				
+				<otherwise>n.description_en</otherwise>
+			</choose> as description	
+		from MissionMeta m, MissionName n
+		<trim prefix="where" prefixOverrides="and ">
+			and m.nameKey = n.nameKey
+			and m.startYmdt &lt;= UNIX_TIMESTAMP() 
+			and m.dueDateYmdt &gt;= UNIX_TIMESTAMP()
+			<if test="model.isDaily != null">
+				<choose>
+					<when test="model.isDaily == true">and ABS(TIMESTAMPDIFF( HOUR , FROM_UNIXTIME( m.startYmdt ) , FROM_UNIXTIME( m.dueDateYmdt ) )) &lt;= 24</when>
+					<otherwise>and ABS(TIMESTAMPDIFF( HOUR , FROM_UNIXTIME( m.startYmdt ) , FROM_UNIXTIME( m.dueDateYmdt ) )) &gt; 24</otherwise>
+				</choose>
+			</if>
+		</trim> 
+		order by m.missionMetaKey asc
+	</select>
+	
+	
+	<select id="get" resultType="com.thirtygames.zero.common.model.Mission">
+		select
+			missionMetaKey, missionId, nameKey, missionType, iconType, startYmdt, dueDateYmdt,
+			(ABS(TIMESTAMPDIFF( HOUR , FROM_UNIXTIME( startYmdt ) , FROM_UNIXTIME( dueDateYmdt ) )) &lt; 24) AS isDaily, 
+			param1, param2, param3, goal, rewardType, reward, modYmdt, modId 
+		from MissionMeta 
+		where missionId = #{id}
+	</select>
+
+</mapper>

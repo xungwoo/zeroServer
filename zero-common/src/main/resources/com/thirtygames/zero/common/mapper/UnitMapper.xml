@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.UnitMapper">
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.Unit"
+        keyProperty="unitKey" keyColumn="unitKey">
+        insert into Unit (unitId, accountId, unitType, level, skill0Lv, skill1Lv, skill2Lv, skill3Lv, genYmdt)
+        values (#{unitId}, #{accountId}, #{unitType}, #{level}, #{skill0Lv}, #{skill1Lv}, #{skill2Lv}, #{skill3Lv}, now()) 
+    </insert>
+    
+	<update id="update" parameterType="com.thirtygames.zero.common.model.Unit">
+		update Unit
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="level != null">level = #{level},</if>
+			<if test="limitExceedTime != null">
+				<choose>
+					<when test="limitExceedTime &lt;= 0">limitExceedEndYmdt = 0,</when>
+					<otherwise>limitExceedEndYmdt = unix_timestamp() + #{limitExceedTime},</otherwise>
+				</choose>
+			</if>
+			<if test="skill0Lv != null">skill0Lv = #{skill0Lv},</if>
+			<if test="skill1Lv != null">skill1Lv = #{skill1Lv},</if>
+			<if test="skill2Lv != null">skill2Lv = #{skill2Lv},</if>
+			<if test="skill3Lv != null">skill3Lv = #{skill3Lv},</if>
+		</trim>
+		where unitId = #{unitId}
+	</update>    
+
+    <select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.Unit">
+        select 
+        	unitKey, unitId, accountId, unitType, level, limitExceedEndYmdt, skill0Lv, skill1Lv, skill2Lv, skill3Lv, genYmdt, modYmdt, isDel, 
+        	IFNULL( limitExceedEndYmdt - UNIX_TIMESTAMP( ) , 0 ) as remainderTime 
+        from Unit 
+        where unitId = #{id}
+    </select>
+
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.Unit">
+		select
+			unitKey, unitId, accountId, unitType, level, limitExceedEndYmdt, skill0Lv, skill1Lv, skill2Lv, skill3Lv, genYmdt, modYmdt, isDel 
+		from Unit
+		where accountId = #{model.accountId}
+		<if test="model.unitType != null">and unitType = #{model.unitType}</if>
+	</select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.Unit">
+        select
+        	unitKey, unitId, accountId, unitType, level, limitExceedEndYmdt, skill0Lv, skill1Lv, skill2Lv, skill3Lv, genYmdt, modYmdt, isDel 
+        from Unit limit #{from}, #{length}
+    </select>
+    
+    <delete id="delete" parameterType="String">
+        update Unit         
+        set isDel = 1 
+        where unitId = #{id}
+    </delete>
+
+	<resultMap id="unitResult" type="com.thirtygames.zero.common.model.Unit">
+	  <id property="unitId" column="unitId" />
+	  <result property="accountId" column="accountId"/>
+	  <result property="unitType" column="unitType"/>
+	  <result property="level" column="level"/>
+	  <result property="limitExceedEndYmdt" column="limitExceedEndYmdt"/>
+	  <result property="skill0Lv" column="skill0Lv"/>
+	  <result property="skill1Lv" column="skill1Lv"/>
+	  <result property="skill2Lv" column="skill2Lv"/>
+	  <result property="skill3Lv" column="skill3Lv"/>
+	  <collection property="equipments" ofType="com.thirtygames.zero.common.model.equipment.Equipment" resultMap="unitEquipmentResult"/>
+	</resultMap>
+	
+	<resultMap id="unitEquipmentResult" type="com.thirtygames.zero.common.model.equipment.Equipment">
+	  <id property="equipmentId" column="eq_equipmentId"/>	  
+	  <result property="equipmentType" column="eq_equipmentType"/>	  
+	  <result property="category" column="eq_category"/>
+	  <result property="decoration1" column="eq_decoration1"/>
+	  <result property="decoration2" column="eq_decoration2"/>
+	  <result property="equipPosition" column="eq_equipPosition"/>
+	  <result property="grade" column="eq_grade"/>
+	  <result property="level" column="eq_level"/>
+	  <result property="exp" column="eq_exp"/>
+	  <result property="totalExp" column="eq_totalExp"/>
+	  <result property="count" column="eq_count"/>
+	  <result property="openSockets" column="eq_openSockets"/>
+	  <result property="maxSockets" column="eq_maxSockets"/>
+	  <result property="socket1" column="eq_socket1"/>
+	  <result property="socket2" column="eq_socket2"/>
+	  <result property="socket3" column="eq_socket3"/>
+	  <result property="image" column="eq_image"/>
+	  <collection property="stats" ofType="com.thirtygames.zero.common.model.equipment.EquipmentStat" resultMap="equipmentStatResult"/>
+	</resultMap>    
+	
+	<resultMap id="equipmentStatResult" type="com.thirtygames.zero.common.model.equipment.EquipmentStat">
+		<id property="statKey" column="statKey"/>
+		<result property="type" column="type"/>
+		<result property="min" column="min"/>
+		<result property="max" column="max"/>
+		<result property="statRate" column="statRate"/>
+		<result property="duration" column="duration"/>
+		<result property="baseStat" column="baseStat"/>
+		<result property="setStat" column="setStat"/>
+		<result property="onlyFor" column="onlyFor"/>
+		<result property="gemStatType" column="gemStatType"/>
+	</resultMap>    
+    	  
+    <select id="getUnitEquipments" parameterType="String" resultMap="unitResult">
+		SELECT 
+			u.unitKey, u.unitId, u.accountId, u.unitType, u.level, u.limitExceedEndYmdt, u.skill0Lv, u.skill1Lv, u.skill2Lv, u.skill3Lv, u.genYmdt, u.modYmdt, u.isDel,
+			e.equipmentId as eq_equipmentId, e.equipmentType as eq_equipmentType, e.category as eq_category, e.decoration1 as eq_decoration1, e.decoration2 as eq_decoration2, 
+			e.equipPosition as eq_equipPosition, e.grade as eq_grade, e.level as eq_level, e.exp as eq_exp, e.totalExp as eq_totalEx,
+			e.count as eq_count, e.openSockets as eq_openSockets, e.maxSockets as eq_maxSockets, 
+			e.socket1 as eq_socket1, e.socket2 as eq_socket2, e.socket3 as eq_socket3,
+			es.statKey, es.type, es.min, es.max, es.statRate, es.duration, es.baseStat, es.setStat, es.onlyFor, es.gemStatType
+		FROM Unit u LEFT OUTER JOIN ( Equipment e INNER JOIN EquipmentStat es on e.equipmentId = es.equipmentId)  
+		ON ( u.unitId = e.unitId and e.isDel = 0 )
+		where u.unitId = #{id}		
+    </select>    
+    
+    <select id="getMultiUnitEquipments" resultMap="unitResult">
+        select 
+			u.unitKey, u.unitId, u.accountId, u.unitType, u.level, u.limitExceedEndYmdt, u.skill0Lv, u.skill1Lv, u.skill2Lv, u.skill3Lv, u.genYmdt, u.modYmdt, u.isDel,
+			e.equipmentId as eq_equipmentId, e.equipmentType as eq_equipmentType, e.category as eq_category, e.decoration1 as eq_decoration1, e.decoration2 as eq_decoration2, 
+			e.equipPosition as eq_equipPosition, e.grade as eq_grade, e.level as eq_level, e.exp as eq_exp, e.totalExp as eq_totalEx,
+			e.count as eq_count, e.openSockets as eq_openSockets, e.maxSockets as eq_maxSockets, 
+			e.socket1 as eq_socket1, e.socket2 as eq_socket2, e.socket3 as eq_socket3,
+			es.statKey, es.type, es.min, es.max, es.statRate, es.duration, es.baseStat, es.setStat, es.onlyFor, es.gemStatType
+		FROM Unit u LEFT OUTER JOIN ( Equipment e INNER JOIN EquipmentStat es on e.equipmentId = es.equipmentId)  
+		ON ( u.unitId = e.unitId and e.isDel = 0 )
+		where u.unitId in
+	        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+	            #{item}
+	        </foreach>	
+    </select>
+    
+    <select id="getEquipmentPoint" parameterType="string" resultType="int">
+		SELECT IFNULL( SUM( e.grade ) , 0 ) 
+		FROM Equipment e, Deck d 
+		WHERE e.accountId =  #{accountId}
+		AND e.accountId = d.accountId 
+		AND e.unitId = d.unitId    
+		and e.isDel = 0
+    </select>
+    
+    <select id="checkLimitExceedComplete" resultType="int">
+		select if( ifnull( limitExceedEndYmdt , 0) &gt; UNIX_TIMESTAMP( ), 0, 1 )
+ 		from Unit
+    	where unitId = #{unitId}
+    </select>
+    
+    <select id="getDeckUnitList" resultType="com.thirtygames.zero.common.model.Unit">
+    	select 
+    		unitKey, unitId, accountId, unitType, level, limitExceedEndYmdt, skill0Lv, skill1Lv, skill2Lv, skill3Lv, genYmdt, modYmdt, isDel, 
+    		concat(unitId, ":",  unitType, ":", level) as deckUnitTypeLevel 
+    	from Unit
+    	where unitId in
+	        <foreach collection="unitIdList" item="item" index="index" separator="," open="(" close=")">
+	            #{item}
+	        </foreach>
+    </select>
+      
+
+</mapper>

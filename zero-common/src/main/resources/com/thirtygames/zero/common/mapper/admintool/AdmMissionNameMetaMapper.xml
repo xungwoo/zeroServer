@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmMissionNameMetaMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta">
+		insert into MissionName (title_ko, description_ko, title_en, description_en)
+		values (#{titleKo}, #{descriptionKo}, #{titleEn}, #{descriptionEn})
+		on duplicate key update
+			title_ko = #{titleKo},
+			description_ko = #{descriptionKo},
+			title_en = #{titleEn},
+			description_en = #{descriptionEn}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta">
+		delete from MissionName
+		where nameKey = #{id}
+    </delete>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta">
+		update MissionName
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="titleKo != null">title_ko = #{titleKo},</if>  
+        	<if test="descriptionKo != null">description_ko = #{descriptionKo},</if>
+        	<if test="titleEn != null">title_en = #{titleEn},</if>  
+        	<if test="descriptionEn != null">description_en = #{descriptionEn},</if>  
+		</trim>
+		where nameKey = #{nameKey}
+	</update>
+    
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta" parameterType="map">
+		select 
+        	nameKey, title_ko, description_ko, title_en, description_en, modId, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt
+        from MissionName
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'bw'"> like </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	<choose>
+		           		<when test="rule.op == 'bw'">concat(#{rule.data}, '%')</when>
+		           		<otherwise>#{rule.data}</otherwise>
+		           	</choose> 
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='titleKo'">order by title_ko ${sord}</when>
+						<when test="sidx=='descriptionKo'">order by description_ko ${sord}</when>
+						<when test="sidx=='titleEn'">order by title_en ${sord}</when>
+						<when test="sidx=='descriptionEn'">order by description_en ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta" parameterType="map">
+		select 
+        	nameKey, title_ko, description_ko, title_en, description_en, modId, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt
+        from MissionName
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'bw'"> like </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	<choose>
+		           		<when test="rule.op == 'bw'">concat(#{rule.data}, '%')</when>
+		           		<otherwise>#{rule.data}</otherwise>
+		           	</choose> 
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta">
+		select 
+        	nameKey, title_ko, description_ko, title_en, description_en, modId, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt
+        from MissionName
+        <if test="length &gt; 0">limit #{from}, #{length}</if>
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminMissionMeta">
+        select count(*)
+        from MissionName
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'bw'"> like </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	<choose>
+		           		<when test="rule.op == 'bw'">concat(#{rule.data}, '%')</when>
+		           		<otherwise>#{rule.data}</otherwise>
+		           	</choose> 
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

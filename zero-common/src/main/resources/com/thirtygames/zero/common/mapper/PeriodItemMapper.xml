@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.PeriodItemMapper">
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.PeriodItem" keyColumn="accountId">
+        insert into PeriodItem (accountId, metaItemKey, repeatType, startYmdt, endYmdt)
+        values (#{accountId}, #{metaItemKey}, #{repeatType}, unix_timestamp(#{startYmd}), unix_timestamp(#{endYmd}))
+        on duplicate key update
+        	accountId = #{accountId},
+        	metaItemKey = #{metaItemKey},
+        	repeatType = #{repeatType},
+        	startYmdt = unix_timestamp(#{startYmd}),
+        	endYmdt = unix_timestamp(#{endYmd})
+    </insert>
+    
+    <select id="search" resultType="com.thirtygames.zero.common.model.PeriodItem">
+        select
+        	itemKey, accountId, metaItemKey, repeatType, startYmdt, endYmdt, buyYmdt 
+        from PeriodItem 
+        where accountId = #{model.accountId}
+        and endYmdt &gt; unix_timestamp()
+    </select>    
+</mapper>

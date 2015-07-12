@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.index.FriendMapper">
+
+    <insert id="addFriendRelation" parameterType="com.thirtygames.zero.common.model.Friend"  keyColumn="friendRelationKey">
+        insert into FriendRelation (friendRelationKey, accountId, friendMemberNo, isFacebookFriend) 
+        values (#{friendRelationKey}, #{accountId}, #{friendMemberNo}, #{isFacebookFriend}) 
+        on duplicate key update
+        	isDel = '0'
+    </insert>
+
+    <insert id="addListFriendRelation" parameterType="com.thirtygames.zero.common.model.Friend"  keyColumn="friendRelationKey">
+        insert into FriendRelation (friendRelationKey, accountId, friendMemberNo, isFacebookFriend) 
+        values (#{friendRelationKey}, #{accountId}, #{friendMemberNo}, #{isFacebookFriend}) 
+        on duplicate key update
+        	<if test="isRestoreDeleted == true">isDel = '0',</if>
+        	isFacebookFriend = #{isFacebookFriend}
+    </insert>
+    
+    <update id="updateLastHelpTime">
+    	update FriendRelation
+    		set lastHelpYmdt = unix_timestamp()
+    	where accountId = #{accountId} 
+    	and friendMemberNo = #{friendMemberNo}
+    </update>
+    
+    <update id="updateLastPresentTime">
+    	update FriendRelation
+    		set lastPresentYmdt = unix_timestamp()
+    	where accountId = #{accountId} 
+    	and friendMemberNo = #{friendMemberNo}
+    </update>
+    
+    <select id="getCurrentTimeStamp" resultType="int">
+    	select unix_timestamp()
+    </select>
+    
+    <select id="getFriendRelation" resultType="com.thirtygames.zero.common.model.Friend">
+    	select 
+    		f.*, TIMESTAMPDIFF(MINUTE, f.addedYmdt, now()) as limitDeleteMinute 
+    	from FriendRelation f
+    	<trim prefix="where" prefixOverrides="and ">
+    		<if test="friendMemberNo != null">and f.friendMemberNo = #{friendMemberNo}</if>
+    		<if test="accountId != null">and f.accountId = #{accountId}</if>
+    		<if test="isDel != null">and f.isDel = #{isDel}</if>
+    	</trim>
+    </select>
+    
+    <delete id="deleteFriend" parameterType="com.thirtygames.zero.common.model.Friend">
+        update FriendRelation
+        set isDel = 1
+        where accountId = #{accountId}
+        and friendMemberNo = #{friendMemberNo}
+    </delete>
+    
+    <select id="getFriendMemberNoList" resultType="com.thirtygames.zero.common.model.Friend" parameterType="com.thirtygames.zero.common.model.Friend">
+    	/* getFriendMemberNoList */
+		SELECT 
+			fr.friendMemberNo, fr.lastHelpYmdt, fr.lastPresentYmdt, fr.isFacebookFriend, unix_timestamp(fr.addedYmdt) as addedYmdt
+		FROM FriendRelation fr
+		LEFT JOIN Account a ON fr.friendMemberNo = a.memberNo AND a.memberNo IS NULL 
+		WHERE fr.accountId = #{id}
+		AND fr.isDel =0
+    </select>
+    
+    <select id="getFriendList" resultType="com.thirtygames.zero.common.model.Friend" parameterType="string">
+    	/* getFriendList */
+        select	
+        	a.accountId as friendId, a.title, a.maxClearStage, a.maxClearMode, a.castlePoint, a.castleLastClearFloor, a.memberNo, a.nickName, a.country, a.facebookId,
+        	if(s.profile=1, a.profileUrl, null) as profileUrl, 
+        	l.league, l.ladder, l.win, l.lose, l.winningStreakCnt, l.winningStreakMax,
+        	fr.lastHelpYmdt, fr.isFacebookFriend, fr.lastPresentYmdt, unix_timestamp(fr.addedYmdt) as addedYmdt, 
+        	d.deckUnitTypeLevelStr as deck
+        from FriendRelation fr, Ladder l, DeckInfo d, Account a, Setup s
+		where fr.accountId = #{id}
+		and fr.friendMemberNo = a.memberNo
+		and fr.isDel = 0
+		and a.accountId = l.accountId
+		and a.accountId = d.accountId
+		and a.accountId = s.accountId
+		group by a.accountId
+    </select>
+    
+    <select id="getFriendListByMemberNoList"  resultType="com.thirtygames.zero.common.model.Friend" parameterType="string">
+    	/* getFriendListByMemberNoList */
+		select	
+        	a.accountId as friendId, a.title, a.maxClearStage, a.maxClearMode, a.castlePoint, a.castleLastClearFloor, a.memberNo, a.nickName, a.country, a.facebookId,
+        	if(s.profile=1, a.profileUrl, null) as profileUrl, 
+        	l.league, l.ladder, l.win, l.lose, l.winningStreakCnt, l.winningStreakMax,
+        	d.deckUnitTypeLevelStr as deck
+ 		from Ladder l, DeckInfo d, Account a, Setup s
+		where a.memberNo in 
+			<foreach item="item" index="index" collection="memberNoList" open="(" separator="," close=")">
+	        	#{item.friendMemberNo}
+	  		</foreach>
+		and a.accountId = l.accountId
+		and a.accountId = d.accountId
+		and a.accountId = s.accountId
+		group by a.accountId    	
+    </select>
+    
+    <select id="getFriendAccount" resultType="com.thirtygames.zero.common.model.Friend">
+		select 
+			a.accountId as friendId, a.title, a.maxClearStage, a.maxClearMode, a.castlePoint, a.castleLastClearFloor, a.memberNo, a.nickName, a.country, a.facebookId,
+			if(s.profile=1, a.profileUrl, null) as profileUrl, 
+			l.league, l.ladder, l.win, l.lose, l.winningStreakCnt, l.winningStreakMax, 
+			d.deckUnitTypeLevelStr as deck
+		from Ladder l, DeckInfo d, Account a, Setup s
+		where a.accountId = #{friendId}
+		and a.accountId = l.accountId
+		and a.accountId = d.accountId
+		and a.accountId = s.accountId
+    </select>
+    
+    <select id="getFriendMemberNoSet" resultType="long" parameterType="com.thirtygames.zero.common.model.Friend">
+    	select 
+    		friendMemberNo
+    	from FriendRelation
+    	where accountId = #{accountId}
+    	and isDel = 0
+    	<if test="friendMemberNo != null">
+    		and friendMemberNo = #{friendMemberNo}
+    	</if>
+    </select>
+    
+    <select id="searchByNickName"  parameterType="map" resultType="com.thirtygames.zero.common.model.Friend">
+    	select 
+    		a.memberNo, a.accountId as friendId, a.title, a.maxClearStage, a.maxClearMode, a.castlePoint, a.castleLastClearFloor, a.nickName, a.country, a.facebookId, 
+			if(s.profile=1, a.profileUrl, null) as profileUrl, 
+    		l.league, l.ladder, l.win, l.lose, l.winningStreakCnt, l.winningStreakMax, 
+    		d.deckUnitTypeLevelStr as deck
+    	from Ladder l, DeckInfo d, Account a, Setup s
+    	where a.nickName like concat(#{nickName}, '%')
+    	and a.accountId = l.accountId
+    	and a.accountId = d.accountId
+    	and a.accountId = s.accountId
+    	group by a.accountId
+	    <if test="length &gt; 0">limit #{from}, #{length}</if>
+    </select>
+    
+    <select id="getFriendByAccountId"  parameterType="map" resultType="com.thirtygames.zero.common.model.Friend">
+    	select 
+    		a.memberNo, a.accountId as friendId, a.title, a.maxClearStage, a.maxClearMode, a.castlePoint, a.castleLastClearFloor, a.nickName, a.country, a.facebookId,
+			if(s.profile=1, a.profileUrl, null) as profileUrl, 
+    		l.league, l.ladder, l.win, l.lose, l.winningStreakCnt, l.winningStreakMax, 
+    		d.deckUnitTypeLevelStr as deck
+    	from Ladder l, DeckInfo d, Account a, Setup s
+    	where a.accountId = #{accountId}
+    	and a.accountId = l.accountId
+    	and a.accountId = d.accountId
+    	and a.accountId = s.accountId
+    </select>
+    
+    <select id="recommendationList" parameterType="map" resultType="com.thirtygames.zero.common.model.Friend">
+		select 
+			a.memberNo, a.accountId as friendId, a.title, a.maxClearStage, a.maxClearMode, a.castlePoint, a.castleLastClearFloor, a.nickName, a.country, a.facebookId,
+			if(s.profile=1, a.profileUrl, null) as profileUrl,  
+			l.league, l.ladder, l.win, l.lose, l.winningStreakCnt, l.winningStreakMax, 
+			d.deckUnitTypeLevelStr as deck
+		from Ladder l, Setup s, DeckInfo d, Account a
+        left join FriendRelation fr on a.memberNo = fr.friendMemberNo and fr.isDel = 0 and fr.accountId = #{accountId}
+		where fr.friendMemberNo is null
+		and a.accountId = l.accountId
+		and a.accountId = d.accountId
+		and a.accountId = s.accountId
+		and a.accountId != #{accountId}
+		group by a.accountId
+		order by rand()
+    	<choose>
+    		<when test="length &gt; 0 and length &lt;= 20">limit #{from}, #{length}</when>
+    		<otherwise>limit 0, 20</otherwise>
+    	</choose>
+    </select>
+    
+    
+    <select id="matchingAI" parameterType="com.thirtygames.zero.common.model.params.MatchingAI" resultType="com.thirtygames.zero.common.model.Friend">
+    	select x.* from (
+			select 
+				a.memberNo, a.accountId as friendId, a.title, a.maxClearStage, a.maxClearMode, a.castlePoint, a.castleLastClearFloor, a.nickName, a.country, a.facebookId,
+				if(s.profile=1, a.profileUrl, null) as profileUrl, 
+				l.league, l.ladder, l.win, l.lose, l.winningStreakCnt, l.winningStreakMax, l.resetDate,
+				d.deckUnitTypeLevelStr as deck
+			from Ladder l, Account a, DeckInfo d, Setup s
+			where a.accountId = d.accountId 
+			and a.accountId = l.accountId
+			and a.accountId = s.accountId
+			and a.accountId != #{accountId}
+			and l.league = #{league}
+			and d.totalLevelSum + d.equipmentPoint &gt;= #{minTotalLevelSum} 
+			and d.totalLevelSum + d.equipmentPoint &lt;= #{maxTotalLevelSum}
+			order by l.ladder desc
+			limit 10
+		) x
+		order by rand()
+		limit 1
+    </select>
+    
+    
+    <!-- not used -->
+    <update id="updateFriend" parameterType="com.thirtygames.zero.common.model.Friend">
+    	update FriendAccount
+	    	<trim prefix="set" suffixOverrides=",">
+	    		<if test="deck != null"> deck = #{deck}, </if>
+	    		<if test="maxClearStage != null"> maxClearStage = #{maxClearStage},</if>
+	    		<if test="maxClearMode != null"> maxClearMode = #{maxClearMode},</if>
+	    		<if test="league != null"> league = #{league},</if>
+	    		<if test="ladder != null"> ladder = #{ladder},</if>
+	    		<if test="win != null"> win = #{win},</if>
+	    		<if test="lose != null"> lose = #{lose},</if>
+	    		<if test="winningStreakCnt != null"> winningStreakCnt = #{winningStreakCnt},</if>
+	    		<if test="winningStreakMax != null"> winningStreakMax = #{winningStreakMax},</if>
+	    		<if test="nickName != null"> nickName = #{nickName},</if>
+	    		<if test="profileUrl != null"> profileUrl = #{profileUrl},</if>
+	    		<if test="title != null"> title = #{title},</if>
+	    	</trim>
+    	where friendId = #{friendId}
+    </update>    
+    
+    <delete id="removeRelations" parameterType="long">
+    	delete from FriendRelation where friendMemberNo = #{memberNo}
+    </delete>
+    
+    
+    <select id="getDiffMinuteLastPresent" resultType="int">
+            select IFNULL(TIMESTAMPDIFF(MINUTE, FROM_UNIXTIME( lastPresentYmdt ) , now()), 2000)  from FriendRelation
+        where accountId = #{accountId}
+        and friendMemberNo = #{friendMemberNo}
+    </select>
+    
+    
+    
+   
+</mapper>

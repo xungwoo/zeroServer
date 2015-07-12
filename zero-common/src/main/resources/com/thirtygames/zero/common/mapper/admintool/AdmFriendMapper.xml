@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmFriendMapper">
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminFriend" parameterType="map">
+    	select
+       		fa.friendAccountKey, fa.friendId, fa.deck, fa.maxClearStage, fa.league, fa.ladder, fa.win, fa.lose, fa.winningStreakCnt, fa.winningStreakMax, fa.title from FriendAccount fa, Shard s
+        <where>
+        	fa.friendId = s.accountId
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminFriend" parameterType="map">
+    	select
+       		fa.friendAccountKey, fa.friendId, fa.deck, fa.maxClearStage, fa.league, fa.ladder, fa.win, fa.lose, fa.winningStreakCnt, fa.winningStreakMax, fa.title
+        from FriendAccount fa, Shard s
+        <where>
+        	fa.friendId = s.accountId
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminFriend">
+        select * from FriendAccount limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminFriend">
+        select count(*)
+        from FriendRelation fr, Account a, Ladder l
+		where fr.accountId = #{model.accountId}
+		and fr.friendMemberNo = a.memberNo
+		and a.accountId = l.accountId
+		and fr.isDel = 0
+    </select>
+    
+    <select id="getFriendList" resultType="com.thirtygames.zero.common.model.admintool.AdminFriend" parameterType="string">
+    	/* getFriendList */
+        select	
+        	fr.friendRelationKey, fr.accountId as accountId, a.accountId as friendId, a.title, a.maxClearStage, a.maxClearMode, a.memberNo, a.nickName, 
+        	if(s.profile=1, a.profileUrl, null) as profileUrl, 
+        	l.league, l.ladder, l.win, l.lose, l.winningStreakCnt, l.winningStreakMax,
+        	fr.friendRelationKey, fr.friendMemberNo, fr.lastHelpYmdt, fr.isFacebookFriend, fr.lastPresentYmdt, fr.addedYmdt, 
+        	d.deckUnitTypeLevelStr as deck
+        from FriendRelation fr, Ladder l, DeckInfo d, Account a, Setup s
+		where fr.accountId = #{id}
+		and fr.friendMemberNo = a.memberNo
+		and fr.isDel = 0
+		and a.accountId = l.accountId
+		and a.accountId = d.accountId
+		and a.accountId = s.accountId
+		group by a.accountId
+    </select>
+    
+    <select id="getFriendListByMemberNoList"  resultType="com.thirtygames.zero.common.model.admintool.AdminFriend" parameterType="string">
+    	/* getFriendListByMemberNoList */
+		select	
+        	a.accountId as friendId, a.title, a.maxClearStage, a.maxClearMode, a.memberNo, a.nickName, 
+        	if(s.profile=1, a.profileUrl, null) as profileUrl, 
+        	l.league, l.ladder, l.win, l.lose, l.winningStreakCnt, l.winningStreakMax,
+        	d.deckUnitTypeLevelStr as deck
+ 		from Ladder l, DeckInfo d, Account a, Setup s
+		where a.memberNo in 
+			<foreach item="item" index="index" collection="memberNoList" open="(" separator="," close=")">
+	        	#{item.friendMemberNo}
+	  		</foreach>
+		and a.accountId = l.accountId
+		and a.accountId = d.accountId
+		and a.accountId = s.accountId
+		group by a.accountId    	
+    </select>   
+    
+    <select id="getFriendMemberNoList" resultType="com.thirtygames.zero.common.model.admintool.AdminFriend" parameterType="com.thirtygames.zero.common.model.admintool.AdminFriend">
+    	/* getFriendMemberNoList */
+		SELECT 
+			fr.friendRelationKey, fr.accountId, fr.friendMemberNo, fr.lastHelpYmdt, fr.isFacebookFriend, fr.lastPresentYmdt, fr.addedYmdt
+		FROM FriendRelation fr
+		LEFT JOIN Account a ON fr.friendMemberNo = a.memberNo AND a.memberNo IS NULL 
+		WHERE fr.accountId = #{id}
+		AND fr.isDel =0
+    </select>    
+    
+    <delete id="delete">
+    	delete from FriendRelation
+    	where friendRelationKey = #{id}
+    </delete> 
+</mapper>

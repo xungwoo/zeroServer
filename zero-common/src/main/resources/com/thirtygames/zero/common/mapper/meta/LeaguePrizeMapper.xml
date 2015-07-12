@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.LeaguePrizeMapper">
+
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.meta.LeaguePrize" keyColumn="prizeId">
+		insert into LeaguePrize (prizeId, league, prizeType, prizeValueMin, prizeValueMax, rewardType, reward)
+		values (#{prizeId}, #{league}, #{prizeType}, #{prizeValueMin}, #{prizeValueMax}, #{rewardType}, #{reward})
+		on duplicate key update
+        	league = #{league}, 
+        	prizeType = #{prizeType}, 
+        	prizeValueMin = #{prizeValueMin}, 
+        	prizeValueMax = #{prizeValueMax}, 
+        	rewardType = #{rewardType}, 
+        	reward = #{reward}
+	</insert>
+    
+    
+    <select id="range" resultType="com.thirtygames.zero.common.model.meta.LeaguePrize">
+    	select
+    		prizeId, league, prizeType, prizeValueMin, prizeValueMax, rewardType, reward, modYmdt, modId 
+    	from LeaguePrize
+    	order by prizeId asc
+    </select>
+    
+    <select id="getPrizeByRank" resultType="com.thirtygames.zero.common.model.meta.LeaguePrize">
+    	select
+    		prizeId, league, prizeType, prizeValueMin, prizeValueMax, rewardType, reward, modYmdt, modId 
+    	from LeaguePrize
+    	where league = #{league}
+    	and ((
+    		prizeType = 0 and prizeValueMin &lt;= #{rank} and prizeValueMax &gt;= #{rank}
+    	) or (
+    		prizeType = 1 and prizeValueMin &lt;= #{per} and prizeValueMax &gt;= #{per}
+    	))
+    	order by prizeType asc
+    	limit 1
+    </select>
+</mapper>

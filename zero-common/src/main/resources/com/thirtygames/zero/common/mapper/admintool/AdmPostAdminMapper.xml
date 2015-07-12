@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmPostAdminMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminPost" keyColumn="postAdminKey">
+        insert into PostAdmin (postType, lang, text, rewardType, reward, startYmdt, expireYmdt)
+        values (0, #{lang}, #{text}, #{rewardType}, #{reward}, str_to_date(#{startYmdt}, '%Y%m%d%H%i%s'), str_to_date(#{expireYmdt}, '%Y%m%d%H%i%s')) 
+        on duplicate key update
+        	postType = 0, 
+        	lang = #{lang},
+        	text = #{text},
+        	rewardType = #{rewardType}, 
+        	reward = #{reward},
+			startYmdt = str_to_date(#{startYmdt}, '%Y%m%d%H%i%s'),
+			expireYmdt = str_to_date(#{expireYmdt}, '%Y%m%d%H%i%s')
+    </insert>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminPost">
+    	update PostAdmin
+	    	<trim prefix="set" suffixOverrides=",">
+				<if test="lang != null">lang = #{lang},</if>	    		
+				<if test="text != null">text = #{text},</if>	    		
+				<if test="rewardType != null">rewardType = #{rewardType},</if>	    		
+				<if test="reward != null">reward = #{reward},</if>	    		
+				<if test="startYmdt != null">startYmdt = str_to_date(#{startYmdt}, '%Y%m%d%H%i%s'),</if>	    		
+				<if test="expireYmdt != null">expireYmdt = str_to_date(#{expireYmdt}, '%Y%m%d%H%i%s'),</if>	    		
+	    	</trim>
+    	where postAdminKey = #{postAdminKey}
+    </update>
+
+    <select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.admintool.AdminPost">
+        select 
+        	 postAdminKey, postType, lang, text, rewardType, reward,
+        	 date_format(startYmdt, '%Y-%m-%d %H:%i:%s') as startYmdt,
+        	date_format(expireYmdt, '%Y-%m-%d %H:%i:%s') as expireYmdt, 
+        	 date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt , modId
+        from PostAdmin 
+        where postAdminKey = #{id}
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminPost">
+        select
+        	postAdminKey, postType, lang, text, rewardType, reward,
+        	 date_format(startYmdt, '%Y-%m-%d %H:%i:%s') as startYmdt,
+        	date_format(expireYmdt, '%Y-%m-%d %H:%i:%s') as expireYmdt, 
+        	 date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt , modId
+        from PostAdmin 
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminPost" parameterType="map">
+    	select
+    		postAdminKey, postType, lang, text, rewardType, reward,
+        	 date_format(startYmdt, '%Y-%m-%d %H:%i:%s') as startYmdt,
+        	date_format(expireYmdt, '%Y-%m-%d %H:%i:%s') as expireYmdt, 
+			date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt , modId
+    	from PostAdmin
+        <if test="model.rules != null">			
+        	<trim prefix="where" prefixOverrides="and">
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+        	</trim>
+	    </if>
+	    <if test="length &gt; 0">limit #{from}, #{length}</if>	
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminPost" parameterType="map">
+        select
+        	postAdminKey, postType, lang, text, rewardType, reward,
+        	 date_format(startYmdt, '%Y-%m-%d %H:%i:%s') as startYmdt,
+        	date_format(expireYmdt, '%Y-%m-%d %H:%i:%s') as expireYmdt, 
+        	date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt , modId
+        from PostAdmin
+        <if test="model.rules != null">			
+        	<trim prefix="where" prefixOverrides="and">
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+        	</trim>
+	    </if>
+    </select>
+    
+    <delete id="delete" parameterType="String">
+        delete from PostAdmin where postAdminKey = #{id}
+    </delete>
+
+    <select id="size" resultType="int">
+        select count(*) from PostAdmin
+        <if test="model.rules != null">			
+        	<trim prefix="where" prefixOverrides="and">
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+        	</trim>
+	    </if>
+    </select>
+</mapper>

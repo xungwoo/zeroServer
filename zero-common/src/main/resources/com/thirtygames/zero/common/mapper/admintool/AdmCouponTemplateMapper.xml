@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmCouponTemplateMapper">
+
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.CouponTemplate">
+		insert into CouponTemplate (prefix, couponType, rewardType1, reward1, rewardType2, reward2, rewardType3, reward3, rewardType4, reward4, rewardType5, reward5)
+		values (#{prefix}, #{couponType}, #{rewardType1}, #{reward1}, #{rewardType2}, #{reward2}, #{rewardType3}, #{reward3}, #{rewardType4}, #{reward4}, #{rewardType5}, #{reward5})
+		on duplicate key update
+			prefix = #{prefix},
+			couponType = #{couponType},
+			rewardType1 = #{rewardType1},
+			reward1 = #{reward1},
+			rewardType2 = #{rewardType2},
+			reward2 = #{reward2},
+			rewardType3 = #{rewardType3},
+			reward3 = #{reward3},
+			rewardType4 = #{rewardType4},
+			reward4 = #{reward4},
+			rewardType5 = #{rewardType5},
+			reward5 = #{reward5}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.admintool.CouponTemplate">
+		delete from CouponTemplate
+		where tmplKey = #{id}
+    </delete>
+
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.CouponTemplate">
+		update CouponTemplate
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="prefix != null">prefix = #{prefix},</if>  
+        	<if test="couponType != null">couponType = #{couponType},</if>
+        	<if test="rewardType1 != null">rewardType1 = #{rewardType1},</if>  
+        	<if test="reward1 != null">reward1 = #{reward1},</if>  
+        	<if test="rewardType2 != null">rewardType2 = #{rewardType2},</if>  
+        	<if test="reward2 != null">reward2 = #{reward2},</if>  
+        	<if test="rewardType3 != null">rewardType3 = #{rewardType3},</if>  
+        	<if test="reward3 != null">reward3 = #{reward3},</if>  
+        	<if test="rewardType4 != null">rewardType4 = #{rewardType4},</if>  
+        	<if test="reward4 != null">reward4 = #{reward4},</if>  
+        	<if test="rewardType5 != null">rewardType5 = #{rewardType5},</if>  
+        	<if test="reward5 != null">reward5 = #{reward5},</if>  
+		</trim>
+		where tmplKey = #{tmplKey}
+	</update>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.CouponTemplate" parameterType="map">
+    	select 
+			ct.tmplKey, ct.prefix, ct.couponType, ct.rewardType1, ct.reward1, ct.rewardType2, ct.reward2, ct.rewardType3, ct.reward3, ct.rewardType4, ct.reward4, ct.rewardType5, ct.reward5, ct.genYmdt, 
+			exists( select 1 from Coupon c where ct.prefix = left(c.couponId, 2) limit 1) as isPub
+		from CouponTemplate ct 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and <if test="rule.field != 'isPub'">ct.</if>${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='prefix'">order by prefix ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.CouponTemplate" parameterType="map">
+    	select 
+			ct.tmplKey, ct.prefix, ct.couponType, ct.rewardType1, ct.reward1, ct.rewardType2, ct.reward2, ct.rewardType3, ct.reward3, ct.rewardType4, ct.reward4, ct.rewardType5, ct.reward5, ct.genYmdt, 
+			exists( select 1 from Coupon c where ct.prefix = left(c.couponId, 2) limit 1) as isPub
+		from CouponTemplate ct 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and <if test="rule.field != 'isPub'">ct.</if>${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.CouponTemplate">
+    	select 
+			ct.tmplKey, ct.prefix, ct.couponType, ct.rewardType1, ct.reward1, ct.rewardType2, ct.reward2, ct.rewardType3, ct.reward3, ct.rewardType4, ct.reward4, ct.rewardType5, ct.reward5, ct.genYmdt, 
+			exists( select 1 from Coupon c where ct.prefix = left(c.couponId, 2) limit 1) as isPub
+		from CouponTemplate ct 
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.CouponTemplate">
+        select count(*)
+        from CouponTemplate
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and <if test="rule.field != 'isPub'">ct.</if>${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

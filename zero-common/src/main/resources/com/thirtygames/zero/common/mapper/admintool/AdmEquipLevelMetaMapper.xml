@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmEquipLevelMetaMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminEquipLevelMeta">
+		insert into EquipLevelMeta (`firstLevelUpExp` ,  `levelUpExpScale` ,  `consumeExpRate` ,  `firstLevelUpCost` ,  `levelUpCostScale` ,  `level10ExpScale` ,  `level10CostScale` ,  
+        	`normal` ,  `magic` ,  `rare` ,  `unique` ,  `set` ,  `equipLevelUpDrugRate` , `equipLevelUpDrugMax`)
+		values (#{firstLevelUpExp}, #{levelUpExpScale}, #{consumeExpRate}, #{firstLevelUpCost}, #{levelUpCostScale}, #{level10ExpScale}, #{level10CostScale}, #{normal}, #{magic}, #{rare}, #{unique}, #{set}, #{equipLevelUpDrugRate}, #{equipLevelUpDrugMax})
+		on duplicate key update
+			firstLevelUpExp = #{firstLevelUpExp},
+			levelUpExpScale = #{levelUpExpScale},
+			consumeExpRate = #{consumeExpRate},
+			firstLevelUpCost = #{firstLevelUpCost},
+			levelUpCostScale = #{levelUpCostScale},
+			level10ExpScale = #{level10ExpScale},
+			level10CostScale = #{level10CostScale},
+			normal = #{normal},
+			magic = #{magic},
+			rare = #{rare},
+			`unique` = #{unique},
+			`set` = #{set},
+			equipLevelUpDrugRate = #{equipLevelUpDrugRate},
+			equipLevelUpDrugMax = #{equipLevelUpDrugMax}
+    </insert>
+    
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.admintool.AdminEquipLevelMeta">
+		delete from EquipLevelMeta
+		where levelMetaKey = #{id}
+    </delete>
+
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminEquipLevelMeta">
+		update EquipLevelMeta
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="firstLevelUpExp != null">firstLevelUpExp = #{firstLevelUpExp},</if>  
+        	<if test="levelUpExpScale != null">levelUpExpScale = #{levelUpExpScale},</if>
+        	<if test="consumeExpRate != null">consumeExpRate = #{consumeExpRate},</if>  
+        	<if test="firstLevelUpCost != null">firstLevelUpCost = #{firstLevelUpCost},</if>  
+        	<if test="levelUpCostScale != null">levelUpCostScale = #{levelUpCostScale},</if>  
+        	<if test="level10ExpScale != null">level10ExpScale = #{level10ExpScale},</if>  
+        	<if test="level10CostScale != null">level10CostScale = #{level10CostScale},</if>  
+        	<if test="normal != null">normal = #{normal},</if>  
+        	<if test="magic != null">magic = #{magic},</if>  
+        	<if test="rare != null">rare = #{rare},</if>  
+        	<if test="unique != null">`unique` = #{unique},</if>  
+        	<if test="set != null">`set` = #{set},</if>  
+        	<if test="equipLevelUpDrugRate != null">equipLevelUpDrugRate = #{equipLevelUpDrugRate},</if>  
+        	<if test="equipLevelUpDrugMax != null">equipLevelUpDrugMax = #{equipLevelUpDrugMax},</if>  
+		</trim>
+		where levelMetaKey = #{levelMetaKey}
+	</update>
+    
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminEquipLevelMeta" parameterType="map">
+		select 
+        	`levelMetaKey` ,  `firstLevelUpExp` ,  `levelUpExpScale` ,  `consumeExpRate` ,  `firstLevelUpCost` ,  `levelUpCostScale` ,  `level10ExpScale` ,  `level10CostScale` ,  
+        	`normal` ,  `magic` ,  `rare` ,  `unique` ,  `set` ,  `equipLevelUpDrugRate` , `equipLevelUpDrugMax` ,  date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt ,  `modId`
+        from EquipLevelMeta
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminEquipLevelMeta">
+		select 
+        	`levelMetaKey` ,  `firstLevelUpExp` ,  `levelUpExpScale` ,  `consumeExpRate` ,  `firstLevelUpCost` ,  `levelUpCostScale` ,  `level10ExpScale` ,  `level10CostScale` ,  
+        	`normal` ,  `magic` ,  `rare` ,  `unique` ,  `set` ,  `equipLevelUpDrugRate` , `equipLevelUpDrugMax` ,  date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt ,  `modId`
+        from EquipLevelMeta
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminEquipLevelMeta">
+        select count(*)
+        from EquipLevelMeta
+    </select>
+</mapper>

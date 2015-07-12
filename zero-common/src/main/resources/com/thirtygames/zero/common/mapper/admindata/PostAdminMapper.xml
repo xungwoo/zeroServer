@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admindata.PostAdminMapper">
+    
+    <select id="get" resultType="com.thirtygames.zero.common.model.Post">
+    	select
+			postAdminKey, postType, rewardType, reward, unix_timestamp(startYmdt) as startYmdt, unix_timestamp(expireYmdt) as expireYmdt    	 
+    	from PostAdmin 
+		where unix_timestamp(startYmdt) &lt;= unix_timestamp() 
+    	and unix_timestamp(expireYmdt) &gt;= unix_timestamp()
+    	and postAdminKey = #{id}
+    </select>
+    
+    <select id="search" resultType="com.thirtygames.zero.common.model.Post">
+    	select 
+    		postAdminKey, postType, lang, text, rewardType, reward, unix_timestamp(startYmdt) as startYmdt, unix_timestamp(expireYmdt) as expireYmdt 
+    	from PostAdmin 
+    	where unix_timestamp(startYmdt) &lt;= unix_timestamp() 
+    	and unix_timestamp(expireYmdt) &gt;= unix_timestamp()
+    	and lang = #{model.lang}
+		order by expireYmdt asc
+        <if test="length &gt; 0">limit #{from}, #{length}</if>     	
+    </select>    
+    
+</mapper>

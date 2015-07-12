@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admindata.EventDropRateMapper">
+    
+    <select id="localEventDropRateList" resultType="com.thirtygames.zero.common.model.admindata.EventDropRate">
+    	select 
+    		*,
+    		( unix_timestamp(concat(from_unixtime(unix_timestamp(utc_timestamp) + #{localTimeZone}, '%Y%m%d'), startTime)) - 32400 + #{localTimeZone} ) as localStartTime,
+			( unix_timestamp(concat(from_unixtime(unix_timestamp(utc_timestamp) + #{localTimeZone}, '%Y%m%d'), endTime)) - 32400 + #{localTimeZone} ) as localEndTime,
+			DAYOFWEEK(from_unixtime(unix_timestamp(utc_timestamp) + #{localTimeZone})) as dayWeek
+    	from EventDropRate
+    	where 1=1
+		and startDate &lt;= from_unixtime(unix_timestamp(utc_timestamp) + #{localTimeZone}, '%Y%m%d')
+		and endDate &gt;= from_unixtime(unix_timestamp(utc_timestamp) + #{localTimeZone}, '%Y%m%d')
+		and startTime &lt;= from_unixtime(unix_timestamp(utc_timestamp) + #{localTimeZone}, '%H%i%s')
+		and endTime &gt;= from_unixtime(unix_timestamp(utc_timestamp) + #{localTimeZone}, '%H%i%s')
+    </select>
+</mapper>

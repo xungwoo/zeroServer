@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admindata.CouponMapper">
+    
+    <select id="range" resultType="com.thirtygames.zero.common.model.Coupon">
+    	select
+    		couponKey, couponId, couponType, allowDuplicate, bundleCode,
+    		rewardType1, reward1, rewardType2, reward2, rewardType3, reward3, rewardType4, reward4, rewardType5, reward5, 
+    		rewardDone, expireYmd, accountId, genYmdt, useYmdt 
+    	from Coupon 
+    	where (expireYmd = 0 or unix_timestamp(expireYmd) &gt;= unix_timestamp())
+    	and rewardDone = 0
+		order by expireYmd asc
+        <if test="length &gt; 0">limit #{from}, #{length}</if>     	
+    </select>
+    
+    <select id="get" resultType="com.thirtygames.zero.common.model.Coupon">
+    	select
+    		couponKey, couponId, couponType, allowDuplicate, bundleCode,
+    		rewardType1, reward1, rewardType2, reward2, rewardType3, reward3, rewardType4, reward4, rewardType5, reward5, 
+    		rewardDone, expireYmd, accountId, genYmdt, useYmdt, 
+    		(expireYmd != 0 and unix_timestamp(expireYmd) &lt; unix_timestamp()) as isExpired 
+    	from Coupon 
+    	where couponId = #{id}
+    </select>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.Coupon">
+    	update Coupon
+	    	<trim prefix="set" suffixOverrides=",">
+	        	<if test="accountId != null"> accountId = #{accountId}, </if> 
+	        	<if test="rewardDone != null"> 
+	        		rewardDone = #{rewardDone},
+	        		useYmdt = now(), 
+	        	</if> 
+	    	</trim>
+	    where couponId = #{couponId}    	
+    </update>
+</mapper>

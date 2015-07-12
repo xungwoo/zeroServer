@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.GemMergeMetaMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.meta.GemMerge" keyColumn="grade">
+        insert into GemMerge (grade, gold, empty1Cash, empty2Cash)
+        values (#{grade}, #{gold}, #{empty1Cash}, #{empty2Cash}) 
+        on duplicate key update
+        	grade = #{grade}, 
+        	gold = #{gold}, 
+        	empty1Cash = #{empty1Cash}, 
+        	empty2Cash = #{empty2Cash}
+    </insert>
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.meta.GemMerge">
+		select
+			grade, gold, empty1Cash, empty2Cash, modYmdt, modId 
+		from GemMerge
+	</select>
+
+</mapper>

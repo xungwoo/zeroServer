@@ -1,0 +1,4 @@
+.downarrow { padding-left: 20px; background: url(../images/bg_fluction.gif) 8px -18px no-repeat; color:blue; }
+.noarrow { padding-left: 20px; background: url(../images/bg_fluction.gif) 8px -43px no-repeat; }
+.uparrow { padding-left: 20px; background: url(../images/bg_fluction.gif) 8px 5px no-repeat;  color:red;}
+.new { width:20px; padding-left:10x; font-wieght:bold; font-size:6px; color:red; }

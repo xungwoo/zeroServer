@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.log.CouponLogMapper">
+    
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.log.CouponLog" keyColumn="couponKey">
+    	insert into CouponLog (
+    		couponId, couponType, bundleCode, accountId,
+    		rewardType1, reward1, rewardType2, reward2, rewardType3, reward3, rewardType4, reward4, rewardType5, reward5, 
+    		genYmdt, expireYmd
+		) 
+    	values(
+    		#{couponId}, #{couponType}, #{bundleCode}, #{accountId}, 
+    		#{rewardType1}, #{reward1}, #{rewardType2}, #{reward2}, #{rewardType3}, #{reward3}, #{rewardType4}, #{reward4}, #{rewardType5}, #{reward5}, 
+    		#{genYmdt}, #{expireYmd}) 
+    </insert>
+    
+    <select id="isUsedCoupon" resultType="boolean">
+    	select ifnull(max(1), 0) from CouponLog 
+    	where couponId = #{couponId}
+    	and accountId = #{accountId}
+    </select>
+    
+    <select id="isUsedBundleCode" resultType="boolean">
+    	select ifnull(max(1), 0) from CouponLog 
+    	where bundleCode = #{bundleCode}
+    	and accountId = #{accountId}
+    </select>
+</mapper>

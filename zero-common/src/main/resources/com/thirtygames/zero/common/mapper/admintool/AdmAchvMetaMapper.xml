@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmAchvMetaMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminAchvMeta" keyColumn="achievementId,step" keyProperty="achievementId,step">
+		insert into AchievementMeta (achievementId, step, isLastStep, missionType, param1, param2, param3, goal, rewardType, reward)
+		values (#{achievementId}, #{step}, #{isLastStep}, #{missionType}, #{param1}, #{param2}, #{param3}, #{goal}, #{rewardType}, #{reward})
+		on duplicate key update
+			achievementId = #{achievementId},
+			step = #{step},
+			isLastStep = #{isLastStep},
+			missionType = #{missionType},
+			param1 = #{param1},
+			param2 = #{param2},
+			param3 = #{param3},
+			goal = #{goal},
+			rewardType = #{rewardType},
+			reward = #{reward}
+    </insert>
+    
+	<insert id="saveName" parameterType="com.thirtygames.zero.common.model.admintool.AdminAchvMeta" keyColumn="achievementId,step">
+		insert into AchievementName (achievementId, step, title_ko, description_ko, title_en, description_en)
+		values (#{achievementId}, #{step}, #{titleKo}, #{descriptionKo}, #{titleEn}, #{descriptionEn})
+		on duplicate key update
+			achievementId = #{achievementId},
+			step = #{step},
+			title_ko = #{titleKo},
+			description_ko = #{descriptionKo},
+			title_en = #{titleEn},
+			description_en = #{descriptionEn}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.admintool.AdminAchvMeta">
+		delete from AchievementMeta
+		where achvMetaKey = #{id}
+    </delete>
+
+	<delete id="deleteName" parameterType="com.thirtygames.zero.common.model.admintool.AdminAchvMeta">
+		delete from AchievementName
+		where achievementId = #{id}
+    </delete>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminAchvMeta">
+		update AchievementMeta
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="achievementId != null">achievementId = #{achievementId},</if>  
+        	<if test="step != null">step = #{step},</if>
+        	<if test="isLastStep != null">isLastStep = #{isLastStep},</if>  
+        	<if test="missionType != null">missionType = #{missionType},</if>  
+        	<if test="param1 != null">param1 = #{param1},</if>  
+        	<if test="param2 != null">param2 = #{param2},</if>  
+        	<if test="param3 != null">param3 = #{param3},</if>  
+        	<if test="goal != null">goal = #{goal},</if>  
+        	<if test="rewardType != null">rewardType = #{rewardType},</if>  
+        	<if test="reward != null">reward = #{reward},</if>  
+		</trim>
+		where achvMetaKey = #{achvMetaKey}
+	</update>
+    
+    <update id="updateName" parameterType="com.thirtygames.zero.common.model.admintool.AdminAchvMeta">
+		update AchievementName
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="titleKo != null">title_ko = #{titleKo},</if>  
+        	<if test="descriptionKo != null">description_ko = #{descriptionKo},</if>  
+        	<if test="titleEn != null">title_en = #{titleEn},</if>  
+        	<if test="descriptionEn != null">description_en = #{descriptionEn},</if>  
+		</trim>
+		where achievementId = #{achievementId}	
+		and step = #{step}	
+	</update>
+    
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminAchvMeta" parameterType="map">
+		select 
+        	a.achvMetaKey, a.achievementId, a.step, a.isLastStep, a.missionType, a.param1, a.param2, a.param3, a.goal, a.rewardType, a.reward, date_format(a.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, a.modId,
+        	n.title_ko, n.description_ko, n.title_en, n.description_en
+        from AchievementMeta a left outer join AchievementName n on a.achievementId = n.achievementId and a.step = n.step
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and
+		           	<choose>
+		           		<when test="rule.field != 'titleKo'">n.</when>
+		           		<when test="rule.field != 'descriptionKo'">n.</when>
+		           		<when test="rule.field != 'titleEn'">n.</when>
+		           		<when test="rule.field != 'descriptionEn'">n.</when>
+		           		<otherwise>a.</otherwise>
+		           	</choose>
+		           	${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='achievementId'">order by a.achievementId ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminAchvMeta" parameterType="map">
+		select 
+        	a.achvMetaKey, a.achievementId, a.step, a.isLastStep, a.missionType, a.param1, a.param2, a.param3, a.goal, a.rewardType, a.reward, date_format(a.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, a.modId,
+        	n.title_ko, n.description_ko, n.title_en, n.description_en
+        from AchievementMeta a left outer join AchievementName n on a.achievementId = n.achievementId and a.step = n.step
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and
+		           	<choose>
+		           		<when test="rule.field != 'titleKo'">n.</when>
+		           		<when test="rule.field != 'descriptionKo'">n.</when>
+		           		<when test="rule.field != 'titleEn'">n.</when>
+		           		<when test="rule.field != 'descriptionEn'">n.</when>
+		           		<otherwise>a.</otherwise>
+		           	</choose>
+		           	${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminAchvMeta">
+		select 
+        	a.achvMetaKey, a.achievementId, a.step, a.isLastStep, a.missionType, a.param1, a.param2, a.param3, a.goal, a.rewardType, a.reward, date_format(a.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, a.modId,
+        	n.title_ko, n.description_ko, n.title_en, n.description_en
+        from AchievementMeta m left outer join AchievementName n on a.achievementId = n.achievementId and a.step = n.step
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminAchvMeta">
+        select count(*)
+        from AchievementMeta
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

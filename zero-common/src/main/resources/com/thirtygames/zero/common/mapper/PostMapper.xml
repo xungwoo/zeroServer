@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.PostMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.Post">
+        insert into PostUser (
+			<trim suffixOverrides=",">
+        	postAdminKey, postType, accountId, text, lang, fromAccountId, fromNickName, fromProfileUrl, fromLeague, rewardType, reward, rewardDone, startYmdt, expireYmdt,
+				<if test="availableReply != null">availableReply,</if>
+			</trim>
+        )
+        values (
+        	<trim suffixOverrides=",">
+        	#{postAdminKey}, #{postType}, #{accountId}, #{text}, #{lang}, #{fromAccountId}, #{fromNickName}, #{fromProfileUrl}, #{fromLeague}, #{rewardType}, #{reward}, #{rewardDone}, now(), date_add(now(), interval +7 day),
+				<if test="availableReply != null">#{availableReply},</if>
+			</trim>        
+        ) 
+    </insert>
+
+    <insert id="saveExpireOneDay" parameterType="com.thirtygames.zero.common.model.Post">
+        insert into PostUser (
+			<trim suffixOverrides=",">
+        	postAdminKey, postType, accountId, text, lang, fromAccountId, fromNickName, fromProfileUrl, fromLeague, rewardType, reward, rewardDone, startYmdt, expireYmdt,
+				<if test="availableReply != null">availableReply,</if>
+			</trim>
+        )
+        values (
+        	<trim suffixOverrides=",">
+        	#{postAdminKey}, #{postType}, #{accountId}, #{text}, #{lang}, #{fromAccountId}, #{fromNickName}, #{fromProfileUrl}, #{fromLeague}, #{rewardType}, #{reward}, #{rewardDone}, now(), date_add(now(), interval +1 day),
+				<if test="availableReply != null">#{availableReply},</if>
+			</trim>        
+        ) 
+    </insert>
+
+    <insert id="sendPostWithDate" parameterType="com.thirtygames.zero.common.model.Post">
+        insert into PostUser (postAdminKey, postType, accountId, text, lang, fromAccountId, fromNickName, fromProfileUrl, fromLeague, rewardType, reward, rewardDone, startYmdt, expireYmdt)
+        values (#{postAdminKey}, #{postType}, #{accountId}, #{text}, #{lang}, #{fromAccountId}, #{fromNickName}, #{fromProfileUrl}, #{fromLeague}, #{rewardType}, #{reward}, #{rewardDone}, 
+        STR_TO_DATE(#{startYmd}, "%Y%m%d"), STR_TO_DATE(#{expireYmd}, "%Y%m%d")) 
+    </insert>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.Post">
+    	update PostUser
+    	<trim prefix="set" suffixOverrides=",">
+    		<if test="rewardDone != null">rewardDone = #{rewardDone},</if>
+    	</trim>
+    	where accountId = #{accountId}
+    	and postKey = #{postKey}    		
+    </update>
+    
+    <select id="search" resultType="com.thirtygames.zero.common.model.Post">
+    	/* search Post */
+    	select
+    		postKey, postAdminKey, postType, accountId, text, lang, fromAccountId, fromNickName, fromProfileUrl, fromLeague, 
+    		rewardType, reward, rewardDone, availableReply,
+    		unix_timestamp(startYmdt) as startYmdt, unix_timestamp(expireYmdt) as expireYmdt, genYmdt 
+    	from PostUser 
+    	where accountId = #{model.accountId}
+    	and unix_timestamp(startYmdt) &lt;= unix_timestamp()
+    	and unix_timestamp(expireYmdt) &gt;= unix_timestamp()
+    	<if test="model.postType != null">and postType = #{model.postType}</if>
+    	<if test="model.postKey != null">and postKey = #{model.postKey}</if>
+    	<if test="model.postAdminKey != null">and postAdminKey = #{model.postAdminKey}</if>
+    	<if test="model.rewardDone != null">and rewardDone = #{model.rewardDone}</if>
+    	order by expireYmdt asc
+        <if test="length &gt; 0">limit #{from}, #{length}</if>
+    </select>
+    
+    <select id="get" resultType="com.thirtygames.zero.common.model.Post">
+    	select
+    		postKey, postAdminKey, postType, accountId, text, lang, fromAccountId, fromNickName, fromProfileUrl, fromLeague, 
+    		rewardType, reward, rewardDone, availableReply, 
+    		unix_timestamp(startYmdt) as startYmdt, unix_timestamp(expireYmdt) as expireYmdt, genYmdt 
+    	from PostUser 
+    	where postKey = #{id}
+    </select>
+    
+    <select id="countHelpPost" resultType="int">
+    	/* countHelpPost */
+    	select
+    		count(*) 
+    	from PostUser 
+    	where accountId = #{accountId}
+    	and rewardDone = 0
+    	and rewardType = 5
+    	and reward = 20
+    	and availableReply = 0
+    	and unix_timestamp(expireYmdt) &gt;= unix_timestamp()
+    </select>
+    
+</mapper>

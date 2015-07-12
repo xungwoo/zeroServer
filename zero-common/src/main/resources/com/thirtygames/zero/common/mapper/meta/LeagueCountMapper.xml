@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.LeagueCountMapper">
+
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.meta.LeagueCount" keyColumn="league">
+		insert into LeagueCount (league, resetDate, count)
+		values (#{league}, #{resetDate}, 1)
+		on duplicate key update
+			count = count + 1
+	</insert>
+	    
+    <select id="get" resultType="com.thirtygames.zero.common.model.meta.LeagueCount">
+		select resetDate, league, count from LeagueCount
+    	where resetDate = ( select max(resetDate) from LeagueCount)
+    	and league = #{id}    	
+    </select>
+	    
+    <select id="search" resultType="com.thirtygames.zero.common.model.meta.LeagueCount">
+    	select max(resetDate), league, count from LeagueCount
+    	where league = #{model.league}
+    </select>
+    
+    <select id="getPrevLeagueCount" resultType="com.thirtygames.zero.common.model.meta.LeagueCount">
+    	select league, count, resetDate from LeagueCount
+    	where league = #{league}
+    	and resetDate = date_format( DATE_ADD(STR_TO_DATE(#{resetDate}, '%Y%m%d'), INTERVAL -1 WEEK) , '%Y%m%d')
+    </select>
+    
+    <select id="getMaxResetDate" resultType="map">
+    	SELECT 
+    		MAX( resetDate ) AS currentResetDate, 
+    		date_format( DATE_ADD( STR_TO_DATE(MAX( resetDate ), '%Y%m%d') , INTERVAL 1 WEEK ), '%Y%m%d' ) AS nextResetDate
+		FROM LeagueCount
+    </select>
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.DeckMapper">
+	<insert id="create">
+		CREATE TABLE IF NOT EXISTS Deck (
+			deckKey int(10) unsigned NOT NULL AUTO_INCREMENT,
+			accountId char(36) COLLATE utf8_unicode_ci NOT NULL,
+			teamId tinyint(3) unsigned NOT NULL,
+			positionId tinyint(3) unsigned NOT NULL,
+			unitId char(36) COLLATE utf8_unicode_ci NOT NULL,
+			PRIMARY KEY (deckKey),
+			KEY indexAccountId (accountId)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+	</insert>
+
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.Deck" keyColumn="accountId">
+		INSERT INTO Deck (accountId, teamId, positionId, unitId)
+		values (#{accountId}, #{teamId}, #{positionId}, #{unitId})
+		on duplicate key update
+			accountId = #{accountId},
+			teamId = #{teamId},
+			positionId = #{positionId},
+			unitId = #{unitId}
+	</insert>
+	
+	<update id="update" parameterType="com.thirtygames.zero.common.model.Deck">
+		update Deck
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="unitId != null">unitId = #{unitId}</if>
+		</trim>
+		where accountId = #{accountId}
+		and teamId = #{teamId}
+		and positionId = #{positionId}
+	</update>
+	
+	<update id="excludeUnit" parameterType="string">
+		update Deck
+		set unitId = ''
+		where unitId = #{unitId} 
+	</update>
+	
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.Deck">
+		select 
+			deckKey, accountId, teamId, positionId, unitId, modYmdt 
+		from Deck 
+		where accountId = #{model.accountId}
+		<if test="model.teamId != null">
+			and teamId = #{model.teamId}
+		</if>
+		order by teamId asc, positionId asc
+	</select>
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.Deck">
+        select 
+        	deckKey, accountId, teamId, positionId, unitId, modYmdt
+        from Deck limit #{from}, #{length}
+    </select>
+
+	<select id="size" resultType="int">
+        select count(*) from Deck
+    </select>
+    
+    <select id="getDeckUnitStrList" parameterType="string" resultType="string">
+    	select 
+    		concat(u.unitId, ":",  u.unitType, ":", u.level)
+    	from Deck d, Unit u
+    	where d.unitId = u.unitId
+    	and d.accountId = #{id}
+    </select>
+    
+    <select id="getDeckUnitList" parameterType="string" resultType="com.thirtygames.zero.common.model.Deck">
+    	select 
+    		concat(u.unitId, ":",  u.unitType, ":", u.level) as deckUnitTypeLevel, 
+    		u.level, u.skill0Lv, u.skill1Lv, u.skill2Lv, u.skill3Lv, 
+    		d.accountId, d.teamId, d.positionId, d.unitId
+    	from Deck d, Unit u
+    	where d.unitId = u.unitId
+    	and d.accountId = u.accountId
+    	and d.accountId = #{id}
+    </select>    
+</mapper>

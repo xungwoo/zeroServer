@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.EquipTypeMapper">
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipType">
+		SELECT 
+			et.typeKey, et.typeName, et.typeCode, et.subCategoryCode, et.modYmdt, et.modId, ec.categoryName, ( 
+			SELECT count(*) FROM EquipMeta m
+			WHERE m.equipmentType = et.typeCode
+		) AS hasMeta
+		FROM EquipType et, EquipCategory ec
+		where et.subCategoryCode = ec.subCategoryCode
+		order by et.subCategoryCode asc, et.typeCode asc
+		limit #{from}, #{length}
+	</select>
+	
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipType">
+		SELECT 
+			et.typeKey, et.typeName, et.typeCode, et.subCategoryCode, et.modYmdt, et.modId, ec.categoryName, ( 
+			SELECT count(*) FROM EquipMeta m
+			WHERE m.equipmentType = et.typeCode
+		) AS hasMeta
+		FROM EquipType et, EquipCategory ec
+		where et.subCategoryCode = ec.subCategoryCode
+		<if test="model.rules != null">
+			<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+	           	and ${rule.field}
+	           	<choose>
+	           		<when test="rule.op == 'eq'"> = </when>
+	           		<when test="rule.op == 'le'"> &lt;= </when>
+	           		<when test="rule.op == 'ge'"> &gt;= </when>
+	           	</choose> 
+	           	#{rule.data}
+	       	</foreach>		
+       	</if>
+		<if test="sidx != '' and sord != ''">
+			<choose>
+				<when test="sidx=='equipmentType'">order by et.typeName ${sord}</when>
+				<when test="sidx=='category'">order by ec.categoryName ${sord}</when>
+				<otherwise>order by ${sidx} ${sord}</otherwise>
+			</choose>
+		</if>
+		<if test="length &gt; 0">limit #{from}, #{length}</if>
+	</select>
+	
+	<select id="size" resultType="int">
+		select count(*) from EquipType
+	</select>
+
+	<select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipType">
+		select 
+			et.typeName, et.typeCode, et.subCategoryCode, ec.categoryName
+		from EquipType et, EquipCategory ec
+		where et.typeKey = #{id}
+	</select>
+	
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipType">
+		insert into EquipType (typeName, typeCode, subCategoryCode)
+		values (#{typeName}, #{typeCode}, #{subCategoryCode})
+	</insert>
+	
+	<update id="update" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipType">
+		update EquipType
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="typeName != null">typeName = #{typeName},</if>
+			<if test="typeCode != null">typeCode = #{typeCode},</if>
+			<if test="subCategoryCode != null">subCategoryCode = #{subCategoryCode},</if>
+		</trim>	
+		where typeKey = #{typeKey}
+	</update>
+	
+	<delete id="delete" parameterType="String">
+		delete from EquipType where typeKey = #{id}
+	</delete>
+
+</mapper>

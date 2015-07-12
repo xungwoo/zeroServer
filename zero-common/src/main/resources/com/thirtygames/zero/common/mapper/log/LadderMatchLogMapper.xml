@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.log.LadderMatchLogMapper">
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.LadderMatch">
+        insert into LadderMatchLog (league, resetDate, roomNo, gameNo, accountId, opponentId, opDeck, opNickName, opTitle, myLadderPoint, opLadderPoint, isWin, playTime, winnerPoint, looserPoint, isAI)
+        values (#{league}, #{resetDate}, #{roomNo}, #{gameNo}, #{accountId}, #{opponentId}, #{opDeck}, #{opNickName}, #{opTitle}, #{myLadderPoint}, #{opLadderPoint}, #{isWin}, #{playTime}, #{winnerPoint}, #{looserPoint}, #{isAI}) 
+    </insert>
+    
+    <select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.LadderMatch">
+    	select * from LadderMatchLog
+    	where accountId = #{model.accountId}
+    	<if test="model.resetDate != null">and resetDate = #{model.resetDate}</if>
+    	<if test="model.league != null">and league = #{model.league}</if>
+    	order by logKey desc
+    	<if test="model.length &gt; 0">limit #{model.from}, #{model.length}</if>
+    </select>
+    
+</mapper>

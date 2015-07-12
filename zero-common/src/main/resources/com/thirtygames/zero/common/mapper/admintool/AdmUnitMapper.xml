@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmUnitMapper">
+    <insert id="create" >
+		create table if not exists Unit (
+			unitId varchar(255) COLLATE utf8_unicode_ci not null,
+			accountId varchar(255) COLLATE utf8_unicode_ci not null,
+			unitType int(5) NOT NULL DEFAULT '0',
+			level int NOT NULL DEFAULT '0',
+			skill0Lv int NOT NULL DEFAULT '0',
+			skill1Lv int NOT NULL DEFAULT '0',
+			skill2Lv int NOT NULL DEFAULT '0',
+			skill3Lv int NOT NULL DEFAULT '0',
+			primary key (unitId),
+			foreign key(accountId) references Account(accountId)
+			on delete cascade
+			on update cascade
+		) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+    </insert>
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminUnit"
+        keyProperty="unitKey" keyColumn="unitKey">
+        insert into Unit (unitId, accountId, unitType, level, skill0Lv, skill1Lv, skill2Lv, skill3Lv, genYmdt)
+        values (#{unitId}, #{accountId}, #{unitType}, #{level}, #{skill0Lv}, #{skill1Lv}, #{skill2Lv}, #{skill3Lv}, now()) 
+    </insert>
+    
+	<update id="updateByUnitId" parameterType="com.thirtygames.zero.common.model.admintool.AdminUnit">
+		update Unit
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="level != null">level = #{level},</if>
+			<if test="limitExceedEndYmdt != null">limitExceedEndYmdt = #{limitExceedEndYmdt},</if>
+			<if test="skill0Lv != null">skill0Lv = #{skill0Lv},</if>
+			<if test="skill1Lv != null">skill1Lv = #{skill1Lv},</if>
+			<if test="skill2Lv != null">skill2Lv = #{skill2Lv},</if>
+			<if test="skill3Lv != null">skill3Lv = #{skill3Lv},</if>
+		</trim>
+		where unitId = #{unitId}
+	</update>    
+    
+	<update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminUnit">
+		update Unit
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="level != null">level = #{level},</if>
+			<if test="limitExceedEndYmdt != null">limitExceedEndYmdt = #{limitExceedEndYmdt},</if>
+			<if test="skill0Lv != null">skill0Lv = #{skill0Lv},</if>
+			<if test="skill1Lv != null">skill1Lv = #{skill1Lv},</if>
+			<if test="skill2Lv != null">skill2Lv = #{skill2Lv},</if>
+			<if test="skill3Lv != null">skill3Lv = #{skill3Lv},</if>
+		</trim>
+		where unitKey = #{unitKey}
+	</update>    
+
+    <select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.admintool.AdminUnit">
+        select
+        	unitKey, unitId, accountId, unitType, level, if(limitExceedEndYmdt=0, 0, DATE_FORMAT( FROM_UNIXTIME( limitExceedEndYmdt ) ,  '%Y%m%d %H%i%s' )) AS limitExceedEndYmdt, skill0Lv, skill1Lv, skill2Lv, skill3Lv, genYmdt, date_format(modYmdt, '%Y%m%d%H%i%s') as modYmdt, isDel 
+        from Unit where unitKey = #{unitKey}
+    </select>
+
+    <select id="getByUnitId" parameterType="String" resultType="com.thirtygames.zero.common.model.admintool.AdminUnit">
+        select
+        	unitKey, unitId, accountId, unitType, level, if(limitExceedEndYmdt=0, 0, DATE_FORMAT( FROM_UNIXTIME( limitExceedEndYmdt ) ,  '%Y%m%d %H%i%s' )) AS limitExceedEndYmdt, skill0Lv, skill1Lv, skill2Lv, skill3Lv, genYmdt, date_format(modYmdt, '%Y%m%d%H%i%s') as modYmdt, isDel 
+        from Unit where unitId = #{unitId}
+    </select>
+
+	<select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.admintool.AdminUnit">
+		select
+			unitKey, unitId, accountId, unitType, level, if(limitExceedEndYmdt=0, 0, DATE_FORMAT( FROM_UNIXTIME( limitExceedEndYmdt ) ,  '%Y%m%d %H%i%s' )) AS limitExceedEndYmdt, skill0Lv, skill1Lv, skill2Lv, skill3Lv, genYmdt, date_format(modYmdt, '%Y%m%d%H%i%s') as modYmdt, isDel 
+		from Unit
+		<where>
+        	1=1
+        	<if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	        <if test="model.accountId != null">and accountId = #{model.accountId}</if>
+	        
+	        <choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='unitKey'">order by unitKey ${sord}</when>
+						<when test="sidx=='unitId'">order by unitId ${sord}</when>					
+						<when test="sidx=='accountId'">order by accountId ${sord}</when>
+						<when test="sidx=='unitType'">order by unitType ${sord}</when>
+						<when test="sidx=='level'">order by level ${sord}</when>
+						<when test="sidx=='limitExceedEndYmdt'">order by limitExceedEndYmdt ${sord}</when>
+						<when test="sidx=='skill0Lv'">order by skill0Lv ${sord}</when>
+						<when test="sidx=='skill1Lv'">order by skill1Lv ${sord}</when>
+						<when test="sidx=='skill2Lv'">order by skill2Lv ${sord}</when>
+						<when test="sidx=='skill3Lv'">order by skill3Lv ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+	</select>
+	
+	<select id="excel" parameterType="map" resultType="com.thirtygames.zero.common.model.admintool.AdminUnit">
+		select
+			unitKey, unitId, accountId, unitType, level, if(limitExceedEndYmdt=0, 0, DATE_FORMAT( FROM_UNIXTIME( limitExceedEndYmdt ) ,  '%Y%m%d %H%i%s' )) AS limitExceedEndYmdt, skill0Lv, skill1Lv, skill2Lv, skill3Lv, genYmdt, date_format(modYmdt, '%Y%m%d%H%i%s') as modYmdt, isDel 
+		from Unit
+		<where>
+        	1=1
+        	<if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	        <if test="model.accountId != null">and accountId = #{model.accountId}</if>
+        </where>
+	</select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminUnit">
+        select
+        	unitKey, unitId, accountId, unitType, level, if(limitExceedEndYmdt=0, 0, DATE_FORMAT( FROM_UNIXTIME( limitExceedEndYmdt ) ,  '%Y%m%d %H%i%s' )) AS limitExceedEndYmdt, 
+        	skill0Lv, skill1Lv, skill2Lv, skill3Lv, genYmdt, date_format(modYmdt, '%Y%m%d%H%i%s') as modYmdt, isDel 
+        from Unit limit #{from}, #{length}
+    </select>
+    
+    <delete id="delete" parameterType="String">
+        update Unit         
+        set isDel = 1 
+        where unitKey = #{unitKey}
+    </delete>
+
+	<select id="size" resultType="int">
+        select count(*) from Unit
+        <where>
+			1=1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	    </where>
+    </select>
+</mapper>

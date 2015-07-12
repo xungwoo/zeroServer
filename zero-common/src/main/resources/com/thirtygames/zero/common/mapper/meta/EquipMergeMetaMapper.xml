@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.EquipMergeMetaMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipMergeMeta" keyColumn="class1">
+        insert into EquipMergeMeta (class1,class2,normalRate,magicRate,rareRate,uniqueRate,setRate)
+        values (#{class1}, #{class2}, #{normalRate}, #{magicRate}, #{rareRate}, #{uniqueRate}, #{setRate}) 
+        on duplicate key update
+        	class1 = #{class1}, 
+        	class2 = #{class2}, 
+        	normalRate = #{normalRate}, 
+        	magicRate = #{magicRate}, 
+        	rareRate = #{rareRate},
+        	uniqueRate = #{uniqueRate}, 
+        	setRate = #{setRate} 
+    </insert>
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipMergeMeta">
+		select
+			mergeMetaKey, class1, class2, normalRate, magicRate, rareRate, uniqueRate, setRate, modYmdt, modId 
+		from EquipMergeMeta
+	</select>
+	
+	
+	<select id="getEquipMergeMeta" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipMergeMeta" parameterType="map">
+		select
+			mergeMetaKey, class1, class2, normalRate, magicRate, rareRate, uniqueRate, setRate, modYmdt, modId 
+		from EquipMergeMeta
+		where (class1 = #{eqClass1} and class2 = #{eqClass2}) 
+		or (class1 = #{eqClass2} and class2 = #{eqClass1})
+	</select>	
+
+</mapper>

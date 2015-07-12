@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.StageMetaMapper">
+     <insert id="save" parameterType="com.thirtygames.zero.common.model.meta.Stage"
+        keyColumn="stageKey">
+        insert into Stage (
+        	stageKey,
+			<trim suffixOverrides=",">
+				<if test="chapter != null">chapter,</if>
+				<if test="stage != null">stage,</if>
+				<if test="clearMode != null">clearMode,</if>
+				<if test="playMode != null">playMode,</if>
+				<if test="costAp != null">costAp,</if>
+				<if test="costBp != null">costBp,</if>
+				<if test="limitTime != null">limitTime,</if>
+				<if test="goldScaleForEnemyKill != null">goldScaleForEnemyKill,</if>
+				<if test="scene != null">scene,</if>
+				<if test="bossSpriteName != null">bossSpriteName,</if>
+				<if test="unlockKeyDropRate != null">unlockKeyDropRate,</if>
+				<if test="itemDropFairAdder != null">itemDropFairAdder,</if>
+				<if test="itemDropRate != null">itemDropRate,</if>
+				<if test="itemGrade != null">itemGrade,</if>
+				<if test="itemGradeRange != null">itemGradeRange,</if>
+				<if test="bossItemDropRate != null">bossItemDropRate,</if>
+				<if test="bossItem != null">bossItem,</if>
+				<if test="bossItemCategory != null">bossItemCategory,</if>
+				<if test="bossItemGrade != null">bossItemGrade,</if>
+				<if test="bossCameraType != null">bossCameraType,</if>
+				<if test="bossCameraTime != null">bossCameraTime,</if>
+				<if test="hiddenOpenRate != null">hiddenOpenRate,</if>		
+				<if test="hiddenStageKey != null">hiddenStageKey,</if>
+				<if test="chapterBossStage != null">chapterBossStage,</if>	
+				<if test="enemyLvAdder != null">enemyLvAdder,</if>
+				<if test="enemySkillAdder != null">enemySkillAdder,</if>		
+				<if test="enemyHpScaler != null">enemyHpScaler,</if>
+				<if test="bossRaidMetaId != null">bossRaidMetaId,</if>		
+				<if test="bossUnitLevelMin != null">bossUnitLevelMin,</if>
+				<if test="bossUnitLevelMax != null">bossUnitLevelMax,</if>
+			</trim>
+		) values (
+	        #{stageKey},
+			<trim suffixOverrides=",">
+				<if test="chapter != null">#{chapter},</if>
+				<if test="stage != null">#{stage},</if>
+				<if test="clearMode != null">#{clearMode},</if>
+				<if test="playMode != null">#{playMode},</if>
+				<if test="costAp != null">#{costAp},</if>
+				<if test="costBp != null">#{costBp},</if>
+				<if test="limitTime != null">#{limitTime},</if>
+				<if test="goldScaleForEnemyKill != null">#{goldScaleForEnemyKill},</if>
+				<if test="scene != null">#{scene},</if>
+				<if test="bossSpriteName != null">#{bossSpriteName},</if>
+				<if test="unlockKeyDropRate != null">#{unlockKeyDropRate},</if>
+				<if test="itemDropFairAdder != null">#{itemDropFairAdder},</if>
+				<if test="itemDropRate != null">#{itemDropRate},</if>
+				<if test="itemGrade != null">#{itemGrade},</if>
+				<if test="itemGradeRange != null">#{itemGradeRange},</if>
+				<if test="bossItemDropRate != null">#{bossItemDropRate},</if>
+				<if test="bossItem != null">#{bossItem},</if>
+				<if test="bossItemCategory != null">#{bossItemCategory},</if>
+				<if test="bossItemGrade != null">#{bossItemGrade},</if>
+				<if test="bossCameraType != null">#{bossCameraType},</if>
+				<if test="bossCameraTime != null">#{bossCameraTime},</if>
+				<if test="hiddenOpenRate != null">#{hiddenOpenRate},</if>		
+				<if test="hiddenStageKey != null">#{hiddenStageKey},</if>
+				<if test="chapterBossStage != null">#{chapterBossStage},</if>	
+				<if test="enemyLvAdder != null">#{enemyLvAdder},</if>
+				<if test="enemySkillAdder != null">#{enemySkillAdder},</if>		
+				<if test="enemyHpScaler != null">#{enemyHpScaler},</if>
+				<if test="bossRaidMetaId != null">#{bossRaidMetaId},</if>		
+				<if test="bossUnitLevelMin != null">#{bossUnitLevelMin},</if>
+				<if test="bossUnitLevelMax != null">#{bossUnitLevelMax},</if>				
+			</trim>        
+		 )
+		<trim prefix="on duplicate key update" suffixOverrides=",">
+			stageKey = #{stageKey},
+			<if test="chapter != null">chapter = #{chapter},</if>
+			<if test="stage != null">stage = #{stage},</if>
+			<if test="clearMode != null">clearMode = #{clearMode},</if>
+			<if test="playMode != null">playMode = #{playMode},</if>
+			<if test="costAp != null">costAp = #{costAp},</if>
+			<if test="costBp != null">costBp = #{costBp},</if>
+			<if test="limitTime != null">limitTime = #{limitTime},</if>
+			<if test="goldScaleForEnemyKill != null">goldScaleForEnemyKill = #{goldScaleForEnemyKill},</if>
+			<if test="scene != null">scene = #{scene},</if>
+			<if test="bossSpriteName != null">bossSpriteName = #{bossSpriteName},</if>
+			<if test="unlockKeyDropRate != null">unlockKeyDropRate = #{unlockKeyDropRate},</if>
+			<if test="itemDropFairAdder != null">itemDropFairAdder = #{itemDropFairAdder},</if>
+			<if test="itemDropRate != null">itemDropRate = #{itemDropRate},</if>
+			<if test="itemGrade != null">itemGrade = #{itemGrade},</if>
+			<if test="itemGradeRange != null">itemGradeRange = #{itemGradeRange},</if>
+			<if test="bossItemDropRate != null">bossItemDropRate = #{bossItemDropRate},</if>
+			<if test="bossItem != null">bossItem = #{bossItem},</if>
+			<if test="bossItemCategory != null">bossItemCategory = #{bossItemCategory},</if>
+			<if test="bossItemGrade != null">bossItemGrade = #{bossItemGrade},</if>
+			<if test="bossCameraType != null">bossCameraType = #{bossCameraType},</if>
+			<if test="bossCameraTime != null">bossCameraTime = #{bossCameraTime},</if>
+			<if test="hiddenOpenRate != null">hiddenOpenRate = #{hiddenOpenRate},</if>		
+			<if test="hiddenStageKey != null">hiddenStageKey = #{hiddenStageKey},</if>
+			<if test="chapterBossStage != null">chapterBossStage = #{chapterBossStage},</if>	
+			<if test="enemyLvAdder != null">enemyLvAdder = #{enemyLvAdder},</if>
+			<if test="enemySkillAdder != null">enemySkillAdder = #{enemySkillAdder},</if>		
+			<if test="enemyHpScaler != null">enemyHpScaler = #{enemyHpScaler},</if>
+			<if test="bossRaidMetaId != null">bossRaidMetaId = #{bossRaidMetaId},</if>
+			<if test="bossUnitLevelMin != null">bossUnitLevelMin = #{bossUnitLevelMin},</if>
+			<if test="bossUnitLevelMax != null">bossUnitLevelMax = #{bossUnitLevelMax},</if>
+		</trim>	
+    </insert>
+    
+    <select id="get" parameterType="map" resultType="com.thirtygames.zero.common.model.meta.Stage">
+        select
+        	metaKey, stageKey, chapter, stage, clearMode, playMode, costAp, costBp, limitTime, goldScaleForEnemyKill, scene, bossSpriteName, unlockKeyDropRate, itemDropFairAdder, itemDropRate, itemGrade, itemGradeRange, bossItemDropRate, bossItem, bossItemCategory, bossItemGrade, bossCameraType, bossCameraTime, hiddenOpenRate, hiddenStageKey, chapterBossStage, enemyLvAdder, enemySkillAdder, enemyHpScaler, eventClosingDate,
+        	bossRaidMetaId, bossUnitLevelMin, bossUnitLevelMax, modYmdt, modId 
+        from Stage where stageKey = #{id}
+    </select>
+
+    <select id="search" parameterType="map" resultType="com.thirtygames.zero.common.model.meta.Stage">
+        select 
+			metaKey, stageKey, chapter, stage, clearMode, playMode, costAp, costBp, limitTime, goldScaleForEnemyKill, scene, bossSpriteName, unlockKeyDropRate, itemDropFairAdder, itemDropRate, itemGrade, itemGradeRange, bossItemDropRate, bossItem, bossItemCategory, bossItemGrade, bossCameraType, bossCameraTime, hiddenOpenRate, hiddenStageKey, chapterBossStage, enemyLvAdder, enemySkillAdder, enemyHpScaler, eventClosingDate,
+        	bossRaidMetaId, bossUnitLevelMin, bossUnitLevelMax, modYmdt, modId        
+        from Stage
+		<trim prefix="where" prefixOverrides="and ">
+			<if test="model.chapter != null">and chapter = #{model.chapter}</if>
+			<if test="model.stage != null">and stage = #{model.stage}</if>
+		</trim>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.meta.Stage">
+        select
+        	metaKey, stageKey, chapter, stage, clearMode, playMode, costAp, costBp, limitTime, goldScaleForEnemyKill, scene, bossSpriteName, unlockKeyDropRate, itemDropFairAdder, itemDropRate, itemGrade, itemGradeRange, bossItemDropRate, bossItem, bossItemCategory, bossItemGrade, bossCameraType, bossCameraTime, hiddenOpenRate, hiddenStageKey, chapterBossStage, enemyLvAdder, enemySkillAdder, enemyHpScaler, eventClosingDate,
+        	bossRaidMetaId, bossUnitLevelMin, bossUnitLevelMax, modYmdt, modId 
+        from Stage
+        order by chapter asc, stage asc
+        <if test="length &gt; 0">limit #{from}, #{length}</if> 
+    </select>
+    
+    <select id="selectChapterList" resultType="int">
+    	select distinct(chapter) from Stage
+    </select>
+    
+    <select id="getStageEnemyList" resultType="com.thirtygames.zero.common.model.meta.StageEnemy">
+    	select
+    	 	metaKey, stageKey, chapter, stage, clearMode, playMode, costAp, costBp, limitTime, goldScaleForEnemyKill, scene, bossSpriteName, unlockKeyDropRate, itemDropFairAdder, itemDropRate, itemGrade, itemGradeRange, bossItemDropRate, bossItem, bossItemCategory, bossItemGrade, bossCameraType, bossCameraTime, hiddenOpenRate, hiddenStageKey, chapterBossStage, enemyLvAdder, enemySkillAdder, enemyHpScaler, eventClosingDate,
+        	bossRaidMetaId, bossUnitLevelMin, bossUnitLevelMax, modYmdt, modId
+    	from StageEnemy
+    	order by stageKey asc
+    </select>   
+</mapper>

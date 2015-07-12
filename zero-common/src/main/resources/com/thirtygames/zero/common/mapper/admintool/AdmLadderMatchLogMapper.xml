@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmLadderMatchLogMapper">
+	<select id="search" resultType="com.thirtygames.zero.common.model.LadderMatch" parameterType="map">
+    	select
+       		lm.logKey, lm.league, lm.resetDate, lm.roomNo, lm.gameNo, lm.timeStamp, lm.accountId, lm.opponentId, lm.myLadderPoint, lm.opLadderPoint, 
+       		lm.isWin, lm.playTime, lm.winnerPoint, lm.looserPoint, lm.logYmdt
+        from LadderMatchLog lm
+        <where>
+        	accountId = #{model.accountId}
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	<if test="length &gt; 0">limit #{from}, #{length}</if>
+        </where>
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.LadderMatch">
+        select count(*)
+        from LadderMatchLog lm
+        <where>
+        	accountId = #{model.accountId}
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>  
+</mapper>

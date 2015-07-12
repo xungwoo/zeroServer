@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmLeagueMetaMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminLeagueMeta">
+		insert into LeagueMeta (metaKey, league, costBp, goldBonus4Regame, rewardType, rewardWinner, rewardLooser, leagueUp, leagueDown)
+		values (#{metaKey}, #{league}, #{costBp}, #{goldBonus4Regame}, #{rewardType}, #{rewardWinner}, #{rewardLooser}, #{leagueUp}, #{leagueDown})
+		on duplicate key update
+			metaKey = #{metaKey},
+			league = #{league},
+			costBp = #{costBp},
+			goldBonus4Regame = #{goldBonus4Regame},
+			rewardType = #{rewardType},
+			rewardWinner = #{rewardWinner},
+			rewardLooser = #{rewardLooser},
+			leagueUp = #{leagueUp},
+			leagueDown = #{leagueDown}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.admintool.AdminLeagueMeta">
+		delete from LeagueMeta
+		where metaKey = #{id}
+    </delete>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminLeagueMeta">
+		update LeagueMeta
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="league != null">league = #{league},</if>  
+        	<if test="costBp != null">costBp = #{costBp},</if>  
+        	<if test="goldBonus4Regame != null">goldBonus4Regame = #{goldBonus4Regame},</if>  
+        	<if test="rewardType != null">rewardType = #{rewardType},</if>  
+        	<if test="rewardWinner != null">rewardWinner = #{rewardWinner},</if>  
+        	<if test="rewardLooser != null">rewardLooser = #{rewardLooser},</if>  
+        	<if test="leagueUp != null">leagueUp = #{leagueUp},</if>  
+        	<if test="leagueDown != null">leagueDown = #{leagueDown},</if>  
+		</trim>
+		where metaKey = #{metaKey}
+	</update>
+    
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminLeagueMeta" parameterType="map">
+		select 
+        	metaKey, league, costBp, goldBonus4Regame, rewardType, rewardWinner, rewardLooser, leagueUp, leagueDown,
+        	modId, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt
+        from LeagueMeta
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+			<if test="sidx != '' and sord != ''">order by ${sidx} ${sord}</if>
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminLeagueMeta" parameterType="map">
+		select 
+        	metaKey, league, costBp, goldBonus4Regame, rewardType, rewardWinner, rewardLooser, leagueUp, leagueDown,
+        	modId, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt
+        from LeagueMeta
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admintool.AdminLeagueMeta">
+        select 
+			metaKey, league, costBp, goldBonus4Regame, rewardType, rewardWinner, rewardLooser, leagueUp, leagueDown,
+        	modId, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt
+        from LeagueMeta
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminLeagueMeta">
+        select count(*)
+        from LeagueMeta
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+
+
+
+
+</mapper>

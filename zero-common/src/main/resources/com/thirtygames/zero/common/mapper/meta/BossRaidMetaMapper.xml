@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.BossRaidMetaMapper">
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.BossRaid">
+		select
+ 		 	<choose>
+				<when test="model.lang == 'ko'">n.title_ko</when>
+				<when test="model.lang == 'en'">n.title_en</when>				
+				<otherwise>n.title_en</otherwise>
+			</choose> as titleForEvent, 
+		 	<choose>
+				<when test="model.lang == 'ko'">n.bossName_ko</when>
+				<when test="model.lang == 'en'">n.bossName_en</when>				
+				<otherwise>n.bossName_en</otherwise>
+			</choose> as bossName,
+			b.*
+		from BossRaidMeta b, BossRaidName n
+		where b.metaKey = n.metaKey
+	</select>
+	
+	<select id="getByLang" resultType="com.thirtygames.zero.common.model.BossRaid">
+		select
+ 		 	<choose>
+				<when test="lang == 'ko'">n.title_ko</when>
+				<when test="lang == 'en'">n.title_en</when>				
+				<otherwise>n.title_en</otherwise>
+			</choose> as titleForEvent, 
+		 	<choose>
+				<when test="lang == 'ko'">n.bossName_ko</when>
+				<when test="lang == 'en'">n.bossName_en</when>				
+				<otherwise>n.bossName_en</otherwise>
+			</choose> as bossName,		
+        	b.*
+		from BossRaidMeta b, BossRaidName n
+		where b.metaKey = n.metaKey
+		and b.bossRaidMetaId = #{bossRaidMetaId}
+	</select>
+	
+	<select id="get" resultType="com.thirtygames.zero.common.model.BossRaid">
+		select
+        	b.*
+		from BossRaidMeta b, BossRaidName n
+		where b.metaKey = n.metaKey
+		and b.bossRaidMetaId = #{id}
+	</select>
+	
+	<select id="getEventMeta" resultType="com.thirtygames.zero.common.model.BossRaid">
+		select
+        	b.*
+		from BossRaidEventMeta b, BossRaidEventName n
+		where b.metaKey = n.metaKey
+		and b.bossRaidMetaId = #{id}
+		and b.isUse = 1
+	</select>
+	
+	<select id="getEventMetaByLang" resultType="com.thirtygames.zero.common.model.BossRaid">
+		select
+ 		 	<choose>
+				<when test="lang == 'ko'">n.title_ko</when>
+				<when test="lang == 'en'">n.title_en</when>				
+				<otherwise>n.title_en</otherwise>
+			</choose> as titleForEvent, 
+		 	<choose>
+				<when test="lang == 'ko'">n.bossName_ko</when>
+				<when test="lang == 'en'">n.bossName_en</when>				
+				<otherwise>n.bossName_en</otherwise>
+			</choose> as bossName,		
+        	b.*
+		from BossRaidEventMeta b, BossRaidEventName n
+		where b.metaKey = n.metaKey
+		and b.bossRaidMetaId = #{bossRaidMetaId}
+		and b.isUse = 1
+	</select>
+	
+	<select id="getEventBossMetaListByLang" resultType="com.thirtygames.zero.common.model.BossRaid">
+		select
+ 		 	<choose>
+				<when test="lang == 'ko'">n.title_ko</when>
+				<when test="lang == 'en'">n.title_en</when>				
+				<otherwise>n.title_en</otherwise>
+			</choose> as titleForEvent, 
+		 	<choose>
+				<when test="lang == 'ko'">n.bossName_ko</when>
+				<when test="lang == 'en'">n.bossName_en</when>				
+				<otherwise>n.bossName_en</otherwise>
+			</choose> as bossName,				
+        	unix_timestamp(b.exposeStartYmdt) as exposeStartYmdt, 
+        	unix_timestamp(b.exposeEndYmdt) as exposeEndYmdt,
+        	b.*
+		from BossRaidEventMeta b, BossRaidEventName n
+		where b.metaKey = n.metaKey
+		and b.exposeStartYmdt &lt;= now()
+		and date_add(b.exposeEndYmdt, interval 1 day) &gt;= now()
+		and b.isUse = 1
+	</select>
+	
+	<select id="getEventBossRaidList" resultType="com.thirtygames.zero.common.model.BossRaid">
+		select
+        	unix_timestamp(b.exposeStartYmdt) as exposeStartYmdt, 
+        	unix_timestamp(b.exposeEndYmdt) as exposeEndYmdt,
+        	b.*
+		from BossRaidEventMeta b, BossRaidEventName n
+		where b.metaKey = n.metaKey
+		and b.exposeStartYmdt &lt;= now()
+		and b.exposeEndYmdt &gt;= now()	
+		<if test="bossRaidMetaIds != null and bossRaidMetaIds.size() > 0">
+			and b.bossRaidMetaId not in
+				<foreach item="item" index="index" collection="bossRaidMetaIds" open="(" separator="," close=")">
+		        	#{item}
+		  		</foreach>
+	  	</if>
+	</select>
+	
+	<select id="getEventBossList4Push" resultType="com.thirtygames.zero.common.model.BossRaid">
+		select
+ 		 	<choose>
+				<when test="lang == 'ko'">n.title_ko</when>
+				<when test="lang == 'en'">n.title_en</when>				
+				<otherwise>n.title_en</otherwise>
+			</choose> as titleForEvent, 
+		 	<choose>
+				<when test="lang == 'ko'">n.bossName_ko</when>
+				<when test="lang == 'en'">n.bossName_en</when>				
+				<otherwise>n.bossName_en</otherwise>
+			</choose> as bossName,			
+        	unix_timestamp(b.exposeStartYmdt) as exposeStartYmdt, 
+        	unix_timestamp(b.exposeEndYmdt) as exposeEndYmdt,
+        	b.*
+		from BossRaidEventMeta b, BossRaidEventName n
+		where b.metaKey = n.metaKey
+		and b.pushLogYmdt is null
+		and b.exposeStartYmdt &lt;= now()
+		and b.exposeEndYmdt &gt;= now()	
+	</select>
+	
+	
+	<update id="eventBossPushLog">
+		update BossRaidEventMeta
+		set pushLogYmdt = now()
+		where bossRaidMetaId = #{bossRaidMetaId}
+	</update>
+		
+</mapper>

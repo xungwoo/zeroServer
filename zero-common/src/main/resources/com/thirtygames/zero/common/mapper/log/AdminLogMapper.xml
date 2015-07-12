@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.log.AdminLogMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminLog">
+        insert into AdminLog (memo, type, dataKey, modId)
+        values (#{memo}, #{type}, #{dataKey}, #{modId}) 
+    </insert>
+    
+    <select id="search">
+    	select * from AdminLog 
+    </select>
+
+</mapper>

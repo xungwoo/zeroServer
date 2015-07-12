@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmCastleMetaMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admintool.AdminCastleMeta" keyColumn="metaKey" keyProperty="metaKey">
+		insert into CastleMeta (castleId, scene, title, floor, unitType, startingLevel, maxLevel, hpScaler, goldPerUnit, goldAdderPerLevel, equipDropRate, fee, unitCount, unitScale, unitLimit, spawnSpeed, visible)
+		values (#{castleId}, #{scene}, #{title}, #{floor}, #{unitType}, #{startingLevel}, #{maxLevel}, #{hpScaler}, #{goldPerUnit}, #{goldAdderPerLevel}, #{equipDropRate}, #{fee}, #{unitCount}, #{unitScale}, #{unitLimit}, #{spawnSpeed}, #{visible})
+		on duplicate key update
+			castleId = #{castleId}, 
+			scene = #{scene}, 
+			title = #{title}, 
+			floor = #{floor}, 
+			unitType = #{unitType}, 
+			startingLevel = #{startingLevel}, 
+			maxLevel = #{maxLevel}, 
+			hpScaler = #{hpScaler}, 
+			goldPerUnit = #{goldPerUnit}, 
+			goldAdderPerLevel = #{goldAdderPerLevel}, 
+			equipDropRate = #{equipDropRate}, 
+			fee = #{fee}, 
+			unitCount = #{unitCount}, 
+			unitScale = #{unitScale}, 
+			unitLimit = #{unitLimit}, 
+			spawnSpeed = #{spawnSpeed}, 
+			visible = #{visible}
+    </insert>
+
+	<delete id="delete">
+		delete from CastleMeta
+		where metaKey = #{id}
+    </delete>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admintool.AdminCastleMeta">
+		update CastleMeta
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="castleId != null">castleId = #{castleId},</if>  
+        	<if test="scene != null">scene = #{scene},</if>  
+        	<if test="title != null">title = #{title},</if>  
+        	<if test="floor != null">floor = #{floor},</if>  
+        	<if test="unitType != null">unitType = #{unitType},</if>  
+        	<if test="startingLevel != null">startingLevel = #{startingLevel},</if>  
+        	<if test="maxLevel != null">maxLevel = #{maxLevel},</if>  
+        	<if test="goldPerUnit != null">goldPerUnit = #{goldPerUnit},</if>  
+        	<if test="goldAdderPerLevel != null">goldAdderPerLevel = #{goldAdderPerLevel},</if>  
+        	<if test="equipDropRate != null">equipDropRate = #{equipDropRate},</if>  
+        	<if test="fee != null">fee = #{fee},</if>  
+        	<if test="unitCount != null">unitCount = #{unitCount},</if>  
+        	<if test="unitScale != null">unitScale = #{unitScale},</if>  
+        	<if test="unitLimit != null">unitLimit = #{unitLimit},</if>  
+        	<if test="spawnSpeed != null">spawnSpeed = #{spawnSpeed},</if>  
+        	<if test="visible != null">visible = #{visible},</if>  
+		</trim>
+		where metaKey = #{metaKey}
+	</update>
+    
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admintool.AdminCastleMeta" parameterType="map">
+		select 
+			date_format(c.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, c.modId, c.* 
+		from CastleMeta c
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and c.${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+			<if test="sidx != '' and sord != ''">order by c.${sidx} ${sord}</if>    	
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admintool.AdminCastleMeta" parameterType="map">
+		select 
+			date_format(c.modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, c.modId, c.* 
+		from CastleMeta c
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and c.${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admintool.AdminCastleMeta">
+        select count(*)
+        from CastleMeta
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

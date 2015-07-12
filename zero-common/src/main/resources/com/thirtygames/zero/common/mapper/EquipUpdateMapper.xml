@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.EquipUpdateMapper">
+
+	<select id="getTargetDecoStatList" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatUpdate" parameterType="int">
+		select 
+			a.accountId, e.equipmentId, es.type, es.minRandom, es.maxRandom, es.rateRandom, es.durRandom, left(e.decoration1, 1) as grade
+		from 
+		EquipmentStat es, Equipment e, Account a
+		where e.decoration1 in (100 + #{statType},200 + #{statType}, 300 + #{statType}, 400 + #{statType}, 500 + #{statType})
+		and es.equipmentId = e.equipmentId
+		and e.isDel = 0
+		and e.accountId = a.accountId
+		and a.channelId like 'fgt-%'
+		and es.type = #{statType}
+		union all
+		select 
+			a.accountId, e.equipmentId, es.type, es.minRandom, es.maxRandom, es.rateRandom, es.durRandom, left(e.decoration2, 1) as grade
+		from 
+		EquipmentStat es, Equipment e, Account a
+		where e.decoration2 in (100 + #{statType},200 + #{statType}, 300 + #{statType}, 400 + #{statType}, 500 + #{statType})
+		and es.equipmentId = e.equipmentId
+		and e.isDel = 0
+		and e.accountId = a.accountId
+		and a.channelId like 'fgt-%'
+		and es.type = #{statType}		
+	</select>
+
+	<select id="getTargetStatList" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatUpdate" parameterType="int">
+		select 
+			e.equipmentId, e.equipmentType, es.type, es.minRandom, es.maxRandom, es.rateRandom, es.durRandom
+		from 
+		EquipmentStat es, Equipment e
+		where es.equipmentId = e.equipmentId
+		and e.isDel = 0
+		AND e.equipmentType = #{equipmentType}	
+	</select>
+	
+	<select id="getUpdatedDecoStatMeta" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatUpdate" parameterType="int">
+		select
+			statMetaKey, statName, statType, decoCode, grade, minRange1, minRange2, maxRange1, maxRange2, statRateMin, statRateMax, durationMin, durationMax, weight, onlyFor, isUse, modYmdt, modId 
+		from EquipDecoStatMeta
+		where statType = #{statType}
+	</select>
+	
+	
+	<update id="updateEquipStat" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipStatUpdate">
+		update EquipmentStat
+		<trim prefix="set" suffixOverrides=",">
+			<if test="min != null and min &gt; 0">min = #{min},</if>
+			<if test="max != null and max &gt; 0">max = #{max},</if>
+			<if test="statRate != null and statRate &gt; 0">statRate = #{statRate},</if>
+			<if test="duration != null and duration &gt; 0">duration = #{duration},</if>
+		</trim>
+		where accountId = #{accountId}
+		and equipmentId = #{equipmentId}
+		and type = #{type}
+		<if test="equipmentType != null">equipmentType = #{equipmentType}</if>
+	</update>
+	
+	<select id="getUpdatedStatMeta" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipStatUpdate" parameterType="int">
+		select 
+			em.equipmentType, 
+			esm.statMetaKey, esm.equipMetaKey, esm.statType, esm.minRange1, esm.minRange2, esm.maxRange1, esm.maxRange2, esm.statRateMin, esm.statRateMax, esm.durationMin, esm.durationMax, esm.rate, esm.onlyFor, esm.setStat, esm.baseStat, esm.gemStatType, esm.modYmdt, esm.modId 
+		from EquipStatMeta esm, EquipMeta em
+		where esm.equipMetaKey = em.equipMetaKey
+		and em.equipmentType = #{statType}
+	</select>
+
+</mapper>

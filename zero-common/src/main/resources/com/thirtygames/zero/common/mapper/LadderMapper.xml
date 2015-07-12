@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.LadderMapper">
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.Ladder" keyColumn="accountId">
+        insert into Ladder (accountId, league, resetDate, ladder, win, lose, winningStreakCnt)
+        values (#{accountId}, #{league}, #{resetDate}, #{ladder}, #{win}, #{lose}, #{winningStreakCnt})
+        on duplicate key update
+        	accountId = #{accountId}, 
+        	league = #{league}, 
+        	resetDate = #{resetDate}, 
+        	ladder = #{ladder}, 
+        	win = #{win}, 
+        	lose = #{lose},
+        	isPrevWin = #{isPrevWin}, 
+        	winningStreakCnt = #{winningStreakCnt},
+        	winningStreakMax = #{winningStreakMax}
+    </insert>
+
+    <update id="update" parameterType="com.thirtygames.zero.common.model.Ladder">
+    	update Ladder
+	    	<trim prefix="set" suffixOverrides=",">
+	    		<if test="league != null">league = #{league},</if>
+	    		<if test="resetDate != null">resetDate = #{resetDate},</if>
+	    		<if test="ladder != null">ladder = if(ladder = 0, 0, #{ladder}), </if>
+	    		<choose>
+		    		<when test="isWin == true">
+		    			win = win + 1, 
+		    			isPrevWin = 1,
+		    			winningStreakCnt = if(isPrevWin = 1, winningStreakCnt + 1, 0),
+		    			winningStreakMax = if(winningStreakMax > winningStreakCnt, winningStreakMax, winningStreakCnt),
+		    		</when>
+		    		<otherwise>
+		    			lose = lose + 1,
+						isPrevWin = 0,
+						winningStreakCnt = 0,	    			
+		    		</otherwise>
+	    		</choose>
+	    		<if test="lastGameTimeStamp != null">lastGameTimeStamp = #{lastGameTimeStamp},</if>
+	    		<if test="lastGameNo != null">lastGameNo = #{lastGameNo},</if>
+	    	</trim>
+    	where accountId = #{accountId}
+    </update>
+
+    <select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.Ladder">
+        select
+        	resetDate, accountId, league, ladder, win, lose, winningStreakCnt, winningStreakMax, lastGameTimeStamp, lastGameNo
+        from Ladder
+        where accountId = #{id}
+    </select>
+
+    <select id="getLadderNoLock" parameterType="String" resultType="com.thirtygames.zero.common.model.Ladder">
+        select
+        	resetDate, accountId, league, ladder, win, lose, winningStreakCnt, winningStreakMax, lastGameTimeStamp, lastGameNo
+        from Ladder
+        where accountId = #{id}
+    </select>
+    
+    <select id="getAccountAndDeck" resultType="com.thirtygames.zero.common.model.Ladder">
+    	select 
+    		group_concat(concat(u.unitType, ":", u.level) SEPARATOR ',') as opDeck, a.nickName as opNickName, a.title as opTitle
+    	from Deck d, Unit u, Account a
+    	where d.unitId = u.unitId
+		and a.accountId = d.accountId
+    	and d.accountId = #{myId}
+    </select>    
+    
+    <select id="getResetDateInfo" resultType="com.thirtygames.zero.common.model.ResetDateInfo">
+    	SELECT
+    		DATE_FORMAT( NOW( ), '%Y%m%d') as currentDate, 
+    		DAYOFWEEK( NOW( ) ) AS dayOfWeek, 
+    		TIMESTAMPDIFF( SECOND , NOW( ), STR_TO_DATE( CONCAT( DATE_FORMAT( NOW( ) , '%Y%m%d' ) , #{resetTime} ) , '%Y%m%d%H%i%s' )) as diffByStandardTime
+    </select>    
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.CastleMetaMapper">
+	
+	<select id="range" resultType="com.thirtygames.zero.common.model.Castle">
+		select * from CastleMeta
+		where visible = 1
+	</select>
+	
+	<select id="get" resultType="com.thirtygames.zero.common.model.Castle">
+		select * from CastleMeta
+		where castleId = #{id}
+		and visible = 1
+	</select>
+		
+	<select id="search" resultType="com.thirtygames.zero.common.model.Castle">
+		select * from CastleMeta
+		where castleId = #{castleId}
+		and visible = 1
+	</select>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.EquipLevelMetaMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.equipment.meta.EquipLevelMeta" keyColumn="levelMetaKey">
+        insert into EquipMergeMeta (firstLevelUpExp, levelUpExpScale, consumeExpRate, normal, magic, rare, unique, set, equipLevelUpDrugRate, equipLevelUpDrugMax)
+        values (#{firstLevelUpExp}, #{levelUpExpScale}, #{consumeExpRate}, #{normal}, #{magic}, #{rare}, #{unique}, #{set}, #{equipLevelUpDrugRate}, #{equipLevelUpDrugMax}) 
+        on duplicate key update
+        	firstConsumeExp = #{firstConsumeExp}, 
+        	firstLevelUpExp = #{firstLevelUpExp}, 
+        	levelUpExpScale = #{levelUpExpScale}, 
+        	consumeExpRate = #{consumeExpRate}, 
+        	normal = #{normal},
+        	magic = #{magic}, 
+        	rare = #{rare}, 
+        	unique = #{unique}, 
+        	set = #{set},
+        	equipLevelUpDrugRate = #{equipLevelUpDrugRate},
+        	equipLevelUpDrugMax = #{equipLevelUpDrugMax}
+    </insert>
+	
+	<select id="get" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipLevelMeta">
+		select * from EquipLevelMeta 
+		order by levelMetaKey desc limit 1
+	</select>
+	
+	<select id="getWithStatGrowth" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipLevelMeta">
+		select 
+			elm.levelMetaKey, elm.firstLevelUpExp, elm.levelUpExpScale, elm.consumeExpRate, elm.firstLevelUpCost, elm.levelUpCostScale, elm.level10ExpScale, elm.level10CostScale, 
+			elm.normal, elm.magic, elm.rare, elm.unique, elm.set, elm.equipLevelUpDrugRate, elm.equipLevelUpDrugMax,  
+			em.statGrowth, em.sellPrice 
+		from EquipLevelMeta elm, EquipMeta em
+		where em.equipmentType = #{equipmentType} 
+		order by levelMetaKey desc limit 1
+	</select>
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.equipment.meta.EquipLevelMeta">
+		select * from EquipLevelMeta 
+		order by levelMetaKey desc 
+		limit 1
+	</select>
+
+</mapper>

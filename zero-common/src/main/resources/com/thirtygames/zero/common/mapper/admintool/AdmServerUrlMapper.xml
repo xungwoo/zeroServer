@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmServerUrlMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.meta.ServerInfo" keyColumn="serverKey">
+		insert into ServerInfo (url, name, description)
+		values (url, name, description})
+		on duplicate key update
+			url = #{url},
+			name = #{name},
+			description = #{description}
+    </insert>
+
+	<delete id="delete" parameterType="com.thirtygames.zero.common.model.meta.ServerInfo">
+		delete from ServerInfo
+		where serverKey = #{id}
+    </delete>
+
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.meta.ServerInfo">
+		update ServerInfo
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="url != null">url = #{url},</if>  
+        	<if test="name != null">name = #{name},</if>
+        	<if test="description != null">description = #{description},</if>  
+		</trim>
+		where serverKey = #{serverKey}
+	</update>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.meta.ServerInfo" parameterType="map">
+    	select
+       		url, name, description, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from ServerInfo 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='serverKey'">order by serverKey ${sord}</when>
+						<when test="sidx=='url'">order by url ${sord}</when>
+						<when test="sidx=='name'">order by name ${sord}</when>
+						<when test="sidx=='description'">order by description ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.meta.ServerInfo" parameterType="map">
+    	select
+       		url, name, description, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from ServerInfo 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.meta.ServerInfo">
+        select 
+        	url, name, description, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from ServerInfo 
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.meta.ServerInfo">
+        select count(*) from ServerInfo
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.MetaRevisionMapper">
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.meta.MetaRevision" keyColumn="metaName">
+        insert into MetaRevision (metaName, metaUrl, revision)
+        values (#{metaName}, #{metaUrl}, #{revision}) 
+        on duplicate key update
+        	metaName = #{metaName}, 
+        	metaUrl = #{metaUrl}, 
+        	revision = #{revision}
+    </insert>
+    
+    
+	<select id="range" resultType="com.thirtygames.zero.common.model.meta.MetaRevision">
+	 	select
+	 		metaName, revision 
+	 	from MetaRevision
+	</select>
+	
+	
+	<update id="update" parameterType="com.thirtygames.zero.common.model.meta.MetaRevision">
+		update MetaRevision
+		set revision = #{revision}
+		where metaName = #{metaName}
+	</update>
+
+</mapper>

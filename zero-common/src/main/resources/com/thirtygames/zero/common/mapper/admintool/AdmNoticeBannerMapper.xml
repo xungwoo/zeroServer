@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.AdmNoticeBannerMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.admindata.Notice" keyColumn="noticeKey">
+		insert into Notice (lang, imgUrl, landingType, linkUrl, isDel, expireYmdt)
+		values (#{lang}, #{imgUrl}, #{landingType}, #{linkUrl}, #{isDel}, STR_TO_DATE(concat(#{expireYmd}, #{expireHms}), '%Y%m%d%H%i%s'))
+		on duplicate key update
+			lang = #{lang},
+			imgUrl = #{imgUrl},
+			landingType = #{landingType},
+			linkUrl = #{linkUrl},
+			isDel = #{isDel},
+			expireYmdt = STR_TO_DATE(concat(#{expireYmd}, #{expireHms}), '%Y%m%d%H%i%s')
+    </insert>
+
+	<update id="delete" parameterType="com.thirtygames.zero.common.model.admindata.Notice">
+		delete from Notice
+		where noticeKey = #{id}
+    </update>
+    
+    <update id="update" parameterType="com.thirtygames.zero.common.model.admindata.Notice">
+		update Notice
+		<trim prefix="SET" suffixOverrides=",">
+			modYmdt = now(),
+        	<if test="lang != null">lang = #{lang},</if>  
+        	<if test="imgUrl != null">imgUrl = #{imgUrl},</if>
+        	<if test="landingType != null">landingType = #{landingType},</if>  
+        	<if test="linkUrl != null">linkUrl = #{linkUrl},</if>  
+        	<if test="isDel != null">isDel = #{isDel},</if>  
+        	<if test="expireYmd != null">expireYmdt = STR_TO_DATE(concat(#{expireYmd}, date_format(expireYmdt, '%H%i%s')), '%Y%m%d%H%i%s'),</if>  
+        	<if test="expireHms != null">expireYmdt = STR_TO_DATE(concat(date_format(expireYmdt, '%Y%m%d'), #{expireHms}), '%Y%m%d%H%i%s'),</if>  
+		</trim>
+		where noticeKey = #{noticeKey}
+	</update>
+	
+	<select id="search" resultType="com.thirtygames.zero.common.model.admindata.Notice" parameterType="map">
+    	select
+       		noticeKey, lang, imgUrl, landingType, linkUrl, isDel, date_format(expireYmdt, '%Y%m%d') as expireYmd, date_format(expireYmdt, '%H%i%s')as expireHms, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from Notice 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+	       	
+	       	<choose>
+				<when test="sidx != '' and sord != ''">
+					<choose>
+						<when test="sidx=='lang'">order by lang ${sord}</when>
+						<when test="sidx=='landingType'">order by landingType ${sord}</when>
+						<when test="sidx=='isDel'">order by isDel ${sord}</when>
+						<when test="sidx=='expireYmd'">order by expireYmdt ${sord}</when>
+						<when test="sidx=='modYmdt'">order by modYmdt ${sord}</when>
+						<otherwise>order by ${sidx} ${sord}</otherwise>
+					</choose>
+				</when>
+			</choose>
+			
+	        <if test="length &gt; 0">limit #{from}, #{length}</if>	
+        </where>
+    </select>
+    
+    <select id="excel" resultType="com.thirtygames.zero.common.model.admindata.Notice" parameterType="map">
+    	select
+       		noticeKey, lang, imgUrl, landingType, linkUrl, isDel, date_format(expireYmdt, '%Y%m%d') as expireYmd, date_format(expireYmdt, '%H%i%s')as expireHms, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from Notice 
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+    
+    <select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.admindata.Notice">
+        select 
+        	noticeKey, lang, imgUrl, landingType, linkUrl, isDel, date_format(expireYmdt, '%Y%m%d') as expireYmd, date_format(expireYmdt, '%H%i%s')as expireHms, date_format(modYmdt, '%Y-%m-%d %H:%i:%s') as modYmdt, modId
+        from Notice 
+        limit #{from}, #{length}
+    </select>
+    
+    <select id="size" resultType="int" parameterType="com.thirtygames.zero.common.model.admindata.Notice">
+        select count(*) from Notice
+        <where>
+        	1 = 1
+	        <if test="model.rules != null">			
+				<foreach collection="model.rules" item="rule" index="index" separator="" open="" close="">
+		           	and ${rule.field}
+		           	<choose>
+		           		<when test="rule.op == 'eq'"> = </when>
+		           		<when test="rule.op == 'le'"> &lt;= </when>
+		           		<when test="rule.op == 'ge'"> &gt;= </when>
+		           	</choose> 
+		           	#{rule.data}
+		       	</foreach>
+	       	</if>
+        </where>
+    </select>
+</mapper>

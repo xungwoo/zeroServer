@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.DeckInfoMapper">
+	<insert id="save" parameterType="com.thirtygames.zero.common.model.DeckInfo" keyColumn="accountId">
+		INSERT INTO DeckInfo (accountId, unitLevelSum, skillLevelSum, totalLevelSum, equipmentPoint, deckUnitTypeLevelStr)
+		values (#{accountId}, #{unitLevelSum}, #{skillLevelSum}, #{totalLevelSum}, #{equipmentPoint}, #{deckUnitTypeLevelStr})
+		on duplicate key update
+			accountId = #{accountId},
+			unitLevelSum = #{unitLevelSum},
+			skillLevelSum = #{skillLevelSum},
+			totalLevelSum = #{totalLevelSum},
+			equipmentPoint = #{equipmentPoint},
+			deckUnitTypeLevelStr = #{deckUnitTypeLevelStr}
+	</insert>
+	
+	<update id="update" parameterType="com.thirtygames.zero.common.model.DeckInfo">
+		update DeckInfo
+		<trim prefix="SET" suffixOverrides=",">
+			accountId = #{accountId},
+			<if test="unitLevelSum != null">unitLevelSum = #{unitLevelSum},</if>
+			<if test="skillLevelSum != null">skillLevelSum = #{skillLevelSum},</if>
+			<if test="totalLevelSum != null">totalLevelSum = #{totalLevelSum},</if>
+			<if test="equipmentPoint != null">equipmentPoint = #{equipmentPoint},</if>
+			<if test="deckUnitTypeLevelStr != null">deckUnitTypeLevelStr = #{deckUnitTypeLevelStr},</if>
+		</trim>
+		where accountId = #{accountId}
+	</update>
+	
+	<select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.DeckInfo">
+		select
+			infoKey, accountId, unitLevelSum, skillLevelSum, totalLevelSum, equipmentPoint, deckUnitTypeLevelStr, modYmdt 
+		from DeckInfo
+		where accountId = #{id}
+	</select>
+	
+	<select id="getWithAccount" parameterType="String" resultType="com.thirtygames.zero.common.model.DeckInfo">
+		select
+			d.infoKey, d.accountId, d.unitLevelSum, d.skillLevelSum, d.totalLevelSum, d.equipmentPoint, d.deckUnitTypeLevelStr, d.modYmdt,
+			a.title, a.nickName 
+		from DeckInfo d, Account a
+		where d.accountId = a.accountId
+		and d.accountId = #{accountId}
+		
+	</select>
+	
+	
+</mapper>

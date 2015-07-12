@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.meta.LoginRewardMetaMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.LoginReward" keyColumn="metaKey">
+        insert into LoginRewardMeta (rewardType1, rewardType2, rewardType3, rewardType4, rewardType5, rewardType6, rewardType7, reward1, reward2, reward3, reward4, reward5, reward6, reward7, doingEvent)
+        values (#{rewardType1}, #{rewardType2}, #{rewardType3}, #{rewardType4}, #{rewardType5}, #{rewardType6}, #{rewardType7}, #{reward1}, #{reward2}, #{reward3}, #{reward4}, #{reward5}, #{reward6}, #{reward7}, #{doingEvent}) 
+        on duplicate key update
+        	rewardType1 = #{rewardType1},
+        	rewardType2 = #{rewardType2},
+        	rewardType3 = #{rewardType3},
+        	rewardType4 = #{rewardType4},
+        	rewardType5 = #{rewardType5},
+        	rewardType6 = #{rewardType6},
+        	rewardType7 = #{rewardType7},
+			reward1 = #{reward1},
+			reward2 = #{reward2},
+			reward3 = #{reward3},
+			reward4 = #{reward4},
+			reward5 = #{reward5},
+			reward6 = #{reward6},
+			reward7 = #{reward7},
+			doingEvent = #{doingEvent}
+			
+    </insert>
+	
+	<select id="range" parameterType="int" resultType="com.thirtygames.zero.common.model.LoginReward">
+		select
+			rewardType1, rewardType2, rewardType3, rewardType4, rewardType5, rewardType6, rewardType7, reward1, reward2, reward3, reward4, reward5, reward6, reward7, doingEvent  
+		from LoginRewardMeta
+		order by metaKey desc
+		limit 1
+	</select>
+	
+	<select id="get" resultType="com.thirtygames.zero.common.model.LoginReward">
+		select
+			rewardType1, rewardType2, rewardType3, rewardType4, rewardType5, rewardType6, rewardType7, reward1, reward2, reward3, reward4, reward5, reward6, reward7, doingEvent  
+		from LoginRewardMeta
+		order by metaKey desc
+		limit 1
+	</select>
+	
+	<select id="getLoginReward" resultType="com.thirtygames.zero.common.model.LoginReward">
+		select
+			rewardType1, rewardType2, rewardType3, rewardType4, rewardType5, rewardType6, rewardType7, reward1, reward2, reward3, reward4, reward5, reward6, reward7, doingEvent  
+		from LoginRewardMeta
+		order by metaKey desc
+		limit 1
+	</select>
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.admintool.security.AdminUserMapper">
+    <insert id="create" >
+		CREATE TABLE IF NOT EXISTS AdminUser (
+		  userKey int(10) unsigned NOT NULL AUTO_INCREMENT,
+		  userId char(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+		  name char(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+		  password char(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+		  enabled tinyint(1) unsigned NOT NULL DEFAULT '1',
+		  <!-- 
+		  birthYmd datetime NOT NULL,
+		  joinYmd datetime NOT NULL,
+		  mobilePhone char(13) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+		  email char(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+		  lineId char(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+		  aboutMe char(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+ 			-->		  
+		  PRIMARY KEY (userKey),
+		  UNIQUE KEY uKeyId (userId)
+		) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+    </insert>
+    
+    <select id="get" parameterType="String" resultType="com.thirtygames.zero.common.model.security.AdminUser">
+        select
+        	userKey, userId, name, password, enabled, authority
+        from AdminUser
+        where userId = #{id}
+        and enabled = 1        
+    </select>
+</mapper>

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 	xmlns="http://www.springframework.org/schema/beans" 
+       	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:p="http://www.springframework.org/schema/p" 
+       	xmlns:context="http://www.springframework.org/schema/context"
+       	xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       	xmlns:tx="http://www.springframework.org/schema/tx"
+       	xmlns:jee="http://www.springframework.org/schema/jee"
+       	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.2.xsd
+			http://mybatis.org/schema/mybatis-spring
+	        http://mybatis.org/schema/mybatis-spring.xsd			
+	   		http://www.springframework.org/schema/tx
+    		http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+    		http://www.springframework.org/schema/jee 
+    		http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
+    	">
+    	
+	<bean id="indexDataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="indexDataSourceSpied" />
+		<property name="logFormatter"> 
+		  <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter"> 
+		    <property name="loggingType" value="MULTI_LINE" /> 
+		    <property name="sqlPrefix" value="SQL:::::::" /> 
+		  </bean> 
+		</property> 
+	</bean>  	    	
+    	
+	<bean id="indexDataSourceSpied" class="com.atomikos.jdbc.AtomikosDataSourceBean"  
+        init-method="init" destroy-method="close">
+        <property name="uniqueResourceName" value="indexDataSource" />
+        <property name="xaDataSourceClassName"
+            value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" />  
+        <property name="xaProperties">
+            <props>
+                <prop key="user">#{config['jdbc.zero_index.username']}</prop>
+                <prop key="password">#{config['jdbc.zero_index.password']}</prop>
+                <prop key="URL">#{config['jdbc.zero_index.url']}</prop>
+            </props>
+        </property>
+        <property name="maintenanceInterval" value="#{config['jdbc.maintenanceInterval']}" />
+        <property name="borrowConnectionTimeout" value="#{config['jdbc.borrowConnectionTimeout']}" />         
+        <property name="maxPoolSize" value="#{config['jdbc.maxPoolSize']}" />
+        <property name="minPoolSize" value="#{config['jdbc.minPoolSize']}" /> 
+        <property name="testQuery">  
+            <value>SELECT 1</value>  
+        </property>
+    </bean>  		
+    	
+	<bean id="game1DataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="game1DataSourceSpied" />
+		<property name="logFormatter"> 
+		  <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter"> 
+		    <property name="loggingType" value="MULTI_LINE" /> 
+		    <property name="sqlPrefix" value="SQL:::::::" /> 
+		  </bean> 
+		</property> 
+	</bean>  	      	
+
+	<bean id="game1DataSourceSpied" class="com.atomikos.jdbc.AtomikosDataSourceBean"  
+        init-method="init" destroy-method="close">
+        <property name="uniqueResourceName" value="game1DataSource" />
+        <property name="xaDataSourceClassName"
+            value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" />  
+        <property name="xaProperties">
+            <props>
+                <prop key="user">#{config['jdbc.zero_game_1.username']}</prop>
+                <prop key="password">#{config['jdbc.zero_game_1.password']}</prop>
+                <prop key="URL">#{config['jdbc.zero_game_1.url']}</prop>            
+            </props>
+        </property>
+        <property name="maintenanceInterval" value="#{config['jdbc.maintenanceInterval']}" />
+        <property name="borrowConnectionTimeout" value="#{config['jdbc.borrowConnectionTimeout']}" />         
+        <property name="maxPoolSize" value="#{config['jdbc.maxPoolSize']}" />
+        <property name="minPoolSize" value="#{config['jdbc.minPoolSize']}" /> 
+        <property name="testQuery">  
+            <value>SELECT 1</value>  
+        </property>
+    </bean>  	
+    	
+	<bean id="game2DataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="game2DataSourceSpied" />
+		<property name="logFormatter"> 
+		  <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter"> 
+		    <property name="loggingType" value="MULTI_LINE" /> 
+		    <property name="sqlPrefix" value="SQL:::::::" /> 
+		  </bean> 
+		</property> 
+	</bean>      
+
+	<bean id="game2DataSourceSpied" class="com.atomikos.jdbc.AtomikosDataSourceBean"  
+        init-method="init" destroy-method="close">
+        <property name="uniqueResourceName" value="game2DataSource" />
+        <property name="xaDataSourceClassName"
+            value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" />  
+        <property name="xaProperties">
+            <props>
+                <prop key="user">#{config['jdbc.zero_game_2.username']}</prop>
+                <prop key="password">#{config['jdbc.zero_game_2.password']}</prop>
+                <prop key="URL">#{config['jdbc.zero_game_2.url']}</prop>               
+            </props>
+        </property>
+        <property name="maintenanceInterval" value="#{config['jdbc.maintenanceInterval']}" />
+        <property name="borrowConnectionTimeout" value="#{config['jdbc.borrowConnectionTimeout']}" />         
+        <property name="maxPoolSize" value="#{config['jdbc.maxPoolSize']}" />
+        <property name="minPoolSize" value="#{config['jdbc.minPoolSize']}" /> 
+        <property name="testQuery">  
+            <value>SELECT 1</value>  
+        </property>
+    </bean>  				
+    	
+	<bean id="log1DataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="log1DataSourceSpied" />
+		<property name="logFormatter"> 
+		  <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter"> 
+		    <property name="loggingType" value="MULTI_LINE" /> 
+		    <property name="sqlPrefix" value="SQL:::::::" /> 
+		  </bean> 
+		</property> 
+	</bean>  
+
+	<bean id="log1DataSourceSpied" class="com.atomikos.jdbc.AtomikosDataSourceBean"  
+        init-method="init" destroy-method="close">
+        <property name="uniqueResourceName" value="log1DataSource" />
+        <property name="xaDataSourceClassName"
+            value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" />  
+        <property name="xaProperties">
+            <props>
+                <prop key="user">#{config['jdbc.zero_log_1.username']}</prop>
+                <prop key="password">#{config['jdbc.zero_log_1.password']}</prop>
+                <prop key="URL">#{config['jdbc.zero_log_1.url']}</prop>              
+            </props>
+        </property>
+        <property name="maintenanceInterval" value="#{config['jdbc.maintenanceInterval']}" />
+        <property name="borrowConnectionTimeout" value="#{config['jdbc.borrowConnectionTimeout']}" />         
+        <property name="maxPoolSize" value="#{config['jdbc.maxPoolSize']}" />
+        <property name="minPoolSize" value="#{config['jdbc.minPoolSize']}" /> 
+        <property name="testQuery">  
+            <value>SELECT 1</value>  
+        </property>
+    </bean>  	
+    			    	
+	<bean id="log2DataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="log2DataSourceSpied" />
+		<property name="logFormatter"> 
+		  <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter"> 
+		    <property name="loggingType" value="MULTI_LINE" /> 
+		    <property name="sqlPrefix" value="SQL:::::::" /> 
+		  </bean> 
+		</property> 
+	</bean>  
+
+	<bean id="log2DataSourceSpied" class="com.atomikos.jdbc.AtomikosDataSourceBean"  
+        init-method="init" destroy-method="close">
+        <property name="uniqueResourceName" value="log2DataSource" />
+        <property name="xaDataSourceClassName"
+            value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" />  
+        <property name="xaProperties">
+            <props>
+                <prop key="user">#{config['jdbc.zero_log_2.username']}</prop>
+                <prop key="password">#{config['jdbc.zero_log_2.password']}</prop>
+                <prop key="URL">#{config['jdbc.zero_log_2.url']}</prop>              
+            </props>
+        </property>
+        <property name="maintenanceInterval" value="#{config['jdbc.maintenanceInterval']}" />
+        <property name="borrowConnectionTimeout" value="#{config['jdbc.borrowConnectionTimeout']}" />         
+        <property name="maxPoolSize" value="#{config['jdbc.maxPoolSize']}" />
+        <property name="minPoolSize" value="#{config['jdbc.minPoolSize']}" /> 
+        <property name="testQuery">  
+            <value>SELECT 1</value>  
+        </property>
+    </bean>  		
+    
+	<bean id="metaDataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="metaDataSourceSpied" />
+		<property name="logFormatter"> 
+		  <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter"> 
+		    <property name="loggingType" value="MULTI_LINE" /> 
+		    <property name="sqlPrefix" value="SQL:::::::" /> 
+		  </bean> 
+		</property> 
+	</bean>      		
+
+	<bean id="metaDataSourceSpied" class="com.atomikos.jdbc.AtomikosDataSourceBean"  
+        init-method="init" destroy-method="close">
+        <property name="uniqueResourceName" value="metaDataSource" />
+        <property name="xaDataSourceClassName"
+            value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" />  
+        <property name="xaProperties">
+            <props>
+                <prop key="user">#{config['jdbc.zero_meta.username']}</prop>
+                <prop key="password">#{config['jdbc.zero_meta.password']}</prop>
+                <prop key="URL">#{config['jdbc.zero_meta.url']}</prop>               
+            </props>
+        </property>
+        <property name="maintenanceInterval" value="#{config['jdbc.maintenanceInterval']}" />
+        <property name="borrowConnectionTimeout" value="#{config['jdbc.borrowConnectionTimeout']}" />         
+        <property name="maxPoolSize" value="#{config['jdbc.maxPoolSize']}" />
+        <property name="minPoolSize" value="#{config['jdbc.minPoolSize']}" /> 
+        <property name="testQuery">  
+            <value>SELECT 1</value>  
+        </property>
+    </bean>  		
+	
+	<bean id="dataSource" class="com.thirtygames.zero.common.etc.datasource.RoutingDataSource">
+		<property name="targetDataSources">
+			<map key-type="com.thirtygames.zero.common.etc.datasource.DataSource">
+				<entry key="ZERO_INDEX" value-ref="indexDataSource"/>
+				<entry key="ZERO_GAME_1" value-ref="game1DataSource"/>
+				<entry key="ZERO_GAME_2" value-ref="game2DataSource"/>
+				<entry key="ZERO_LOG_1" value-ref="log1DataSource"/>
+				<entry key="ZERO_LOG_2" value-ref="log2DataSource"/>
+				<entry key="ZERO_META" value-ref="metaDataSource"/>
+			</map>
+		</property>
+		<!-- Default DataSource -->
+		<property name="defaultTargetDataSource" ref="indexDataSource" />
+	</bean>
+    
+	<bean id="userTransactionService" class="com.atomikos.icatch.config.UserTransactionServiceImp" init-method="init" destroy-method="shutdownForce">
+	    <constructor-arg>
+	        <props>
+	            <prop key="com.atomikos.icatch.service">com.atomikos.icatch.standalone.UserTransactionServiceFactory</prop>
+	            <prop key="com.atomikos.icatch.enable_logging">false</prop>
+	            <prop key="com.atomikos.icatch.console_file_name">admin.tmlog</prop>
+	            <prop key="com.atomikos.icatch.console_log_level">WARN</prop>
+	            <prop key="com.atomikos.icatch.lock_logs">false</prop>
+	            <prop key="com.atomikos.icatch.threaded_2pc">true</prop>
+	            <prop key="com.atomikos.icatch.log_base_dir">#{config['jta.log_base_name']}</prop>
+	            <prop key="com.atomikos.icatch.tm_unique_name">admin.tm</prop>
+	            <prop key="com.atomikos.icatch.max_timeout">300000</prop>
+	            <prop key="com.atomikos.icatch.max_actives">2000</prop>
+	        </props>
+	    </constructor-arg>
+	</bean>
+	
+	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" depends-on="userTransactionService">
+	    <property name="startupTransactionService" value="true"/>
+	    <property name="forceShutdown" value="true"/>
+	</bean>	
+
+	<bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.J2eeUserTransaction">
+		<property name="transactionTimeout" value="300" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager" depends-on="atomikosTransactionManager,atomikosUserTransaction">
+		<property name="transactionManager" ref="atomikosTransactionManager" />
+		<property name="userTransaction" ref="atomikosUserTransaction" />
+		<property name="allowCustomIsolationLevels" value="true" />
+	</bean> 
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+        <property name="typeAliasesPackage" value="com.thirtygames.zero.common.model" />
+        <property name="configLocation" value="/WEB-INF/classes/mybatis-config.xml" />
+	</bean>
+			
+	<!-- scan for mappers and let them be autowired -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.thirtygames.zero.common.mapper" />
+    </bean>
+</beans>

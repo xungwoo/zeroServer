@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.BossCollectionMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.BossCollection" keyColumn="accountId,collectionId">
+        insert into BossCollection (accountId, collectionId, isRewarded)
+        values (#{accountId}, #{collectionId}, #{isRewarded})
+        on duplicate key update
+        	accountId = #{accountId}, 
+        	collectionId = #{collectionId}, 
+        	isRewarded = #{isRewarded}
+    </insert>
+
+    <select id="getCollection" resultType="com.thirtygames.zero.common.model.BossCollection">
+    	/* getCollection */
+        select * from BossCollection
+        where accountId = #{accountId}
+        and collectionId = #{collectionId}
+    </select>
+    
+    <select id="getRewardInfoOfBossCollections" resultType="com.thirtygames.zero.common.model.BossCollection">
+    	/* getRewardInfoOfBossCollections */
+        select * from BossCollection
+        where accountId = #{accountId}
+    </select>
+
+    <select id="isCompleteCollection" resultType="int">
+    	/* isCompleteCollection */
+    	select count(*) from (
+	        select 1 from BossRaidGuest
+	        where accountId = #{accountId}
+	        and isClear = 1
+	        and bossRaidMetaId in 
+			<foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+	        	#{item}
+	  		</foreach>
+	  		group by bossRaidMetaId
+  		) x
+    </select>
+
+	<update id="update" parameterType="com.thirtygames.zero.common.model.BossCollection">
+		update BossCollection BossRaidGuestMapper
+			set isRewarded = 1    	
+	    where collectionId = #{collectionId}
+	    and accountId = #{accountId}		
+	</update>
+    
+
+</mapper>

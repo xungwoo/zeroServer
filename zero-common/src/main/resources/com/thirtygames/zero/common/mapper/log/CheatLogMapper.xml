@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thirtygames.zero.common.mapper.log.CheatLogMapper">
+
+    <insert id="save" parameterType="com.thirtygames.zero.common.model.log.CheatLog">
+        insert into CheatLog (accountId, additionalInfo)
+        values (#{accountId}, #{additionalInfo}) 
+    </insert>
+
+</mapper>
